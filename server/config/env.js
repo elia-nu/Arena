@@ -1,0 +1,18 @@
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, "../..");
+
+dotenv.config({ path: path.join(projectRoot, ".env") });
+
+export const normalizeEmailPassword = (password) => {
+  if (!password) return "";
+  return String(password)
+    .trim()
+    .replace(/^["']+|["']+$/g, "")
+    .replace(/\s+/g, "");
+};
+
+export { projectRoot };

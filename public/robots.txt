@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /team-leader
+Disallow: /player
+
+Sitemap: https://leskickit.com/sitemap.xml

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <rect width="640" height="400" fill="#000"/>
+  <!-- Pitch fill -->
+  <rect x="40" y="40" width="560" height="320" rx="4" fill="#fff"/>
+  <!-- Darken interior so lines read as bright edges for particles -->
+  <rect x="48" y="48" width="544" height="304" fill="#111"/>
+  <g fill="none" stroke="#fff" stroke-width="4">
+    <!-- Outer boundary -->
+    <rect x="48" y="48" width="544" height="304"/>
+    <!-- Halfway line -->
+    <line x1="320" y1="48" x2="320" y2="352"/>
+    <!-- Center circle -->
+    <circle cx="320" cy="200" r="48"/>
+    <circle cx="320" cy="200" r="4" fill="#fff" stroke="none"/>
+    <!-- Left penalty area -->
+    <rect x="48" y="116" width="88" height="168"/>
+    <rect x="48" y="152" width="36" height="96"/>
+    <path d="M136 160 A40 40 0 0 1 136 240"/>
+    <!-- Right penalty area -->
+    <rect x="504" y="116" width="88" height="168"/>
+    <rect x="556" y="152" width="36" height="96"/>
+    <path d="M504 160 A40 40 0 0 0 504 240"/>
+    <!-- Corner arcs -->
+    <path d="M48 60 A12 12 0 0 1 60 48"/>
+    <path d="M580 48 A12 12 0 0 1 592 60"/>
+    <path d="M592 340 A12 12 0 0 1 580 352"/>
+    <path d="M60 352 A12 12 0 0 1 48 340"/>
+  </g>
+</svg>
