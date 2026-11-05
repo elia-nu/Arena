@@ -26,7 +26,7 @@ const MARQUEE_WORDS = [
   "Youth Development",
   "Impact",
   "Fair Play",
-  "Kick It",
+  "Let Rumble",
 ];
 
 const Footer = () => {
@@ -211,9 +211,9 @@ const Footer = () => {
           </p>
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
             <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight max-w-3xl">
-              Ready to{" "}
+              Are you ready to{" "}
               <span className="text-secondary-500 italic font-semibold">
-                Kick It
+                rumble
               </span>
               ?
             </h2>
@@ -238,7 +238,7 @@ const Footer = () => {
             <Link to="/" className="inline-flex items-center gap-3 group">
               <img
                 src={logo2}
-                alt="Les Kick't"
+                alt="The Arena"
                 className="w-16 h-auto transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
                 style={{
                   filter:
@@ -247,7 +247,7 @@ const Footer = () => {
               />
               <div>
                 <span className="block text-xl font-bold tracking-tight">
-                  Les Kick&apos;t
+                  The Arena
                 </span>
                 <span className="block text-xs text-primary-400 tracking-wide">
                   Seattle community soccer
@@ -371,7 +371,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="mt-14 md:mt-16 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-primary-500">
           <p>
-            © {new Date().getFullYear()} Les Kick&apos;t. All rights reserved.
+            © {new Date().getFullYear()} The Arena. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link

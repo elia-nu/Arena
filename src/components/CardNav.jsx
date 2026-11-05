@@ -184,7 +184,7 @@ const CardNav = ({
               className="text-black text-xl font-bold"
               style={{ color: "#000000" }}
             >
-              Les Kick't
+              The Arena
             </span>
           </div>
 

@@ -4,7 +4,7 @@ import { IoMenu, IoClose, IoCart, IoLogOutOutline } from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import NotificationBell from "./NotificationBell";
-import logo from "../../public/logo.png";
+import logo from "../../public/logo.jpg";
 import { contactAPI } from "../services/api";
 
 const Navbar = () => {
@@ -116,46 +116,16 @@ const Navbar = () => {
             {/* Logo with glow effect */}
             <a
               href="/"
-              className="flex items-center gap-2 sm:gap-3 group relative"
+              className="flex items-center gap-2 sm:gap-3 group relative py-1"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-secondary-400/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex items-center justify-center">
+                <div className="absolute -inset-1 bg-secondary-500/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <img
                   src={logo}
                   alt="Logo"
-                  className="relative w-12 sm:w-16 md:w-20 h-auto transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
-                  style={{
-                    filter:
-                      "drop-shadow(0 0 10px #f59e42aa) hue-rotate(-10deg) brightness(1.07) saturate(1.16)",
-                    mixBlendMode: "multiply",
-                  }}
+                  className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-22 lg:h-22 rounded-full object-cover shadow-md border-2 border-secondary-500/30 transition-all duration-500 group-hover:scale-105 group-hover:border-secondary-500"
                 />
-                {/* Orange hue overlay for enhanced warmth */}
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(255,156,66,0.25) 60%, transparent 100%)",
-                    mixBlendMode: "color",
-                  }}
-                />
-              </div>
-              <div className="flex flex-row items-center gap-2">
-                {/*<span
-                  className={`text-lg font-bold transition-colors duration-500 ${
-                    isScrolled ? "text-secondary-600" : "text-secondary-600"
-                  }`}
-                >
-                  Les
-                </span>*/}
-                {/*<span
-                  className={`text-lg font-light tracking-wider transition-colors duration-500 ${
-                    isScrolled ? "text-primary-950" : "text-primary-950"
-                  }`}
-                >
-                  Kick't
-                </span>*/}
               </div>
             </a>
 

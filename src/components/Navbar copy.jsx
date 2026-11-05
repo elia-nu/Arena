@@ -92,7 +92,7 @@ const Navbar = () => {
                   whileHover={{ x: 3 }}
                   transition={{ duration: 0.3 }}
                 >
-                  Les Kick't
+                  The Arena
                 </motion.span>
               </div>
             </Link>

@@ -109,46 +109,20 @@ const ShopHighlights = () => {
   }
 
   return (
-    <section className="py-32 px-4 bg-primary-950 text-secondary-50 relative overflow-hidden">
-      {/* Elegant Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+    <section className="py-28 px-4 bg-primary-950 text-white relative overflow-hidden">
+      {/* Clean Subtle Grid Pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, ${
-              getComputedStyle(document.documentElement).getPropertyValue(
-                "--color-secondary-50"
-              ) || "#ffffff"
-            } 1px, transparent 0)`,
-            backgroundSize: "60px 60px",
+            backgroundImage: `radial-gradient(circle at 2px 2px, #ffffff 1px, transparent 0)`,
+            backgroundSize: "40px 40px",
           }}
         />
       </div>
 
-      {/* Enhanced Background Glow Effects */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-secondary-500 rounded-full blur-[200px] opacity-10"
-        animate={{
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-tertiary-500 rounded-full blur-[150px] opacity-5"
-        animate={{
-          scale: [1, 1.3, 1],
-          x: [0, 50, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {/* Subtle Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-secondary-500/10 rounded-full blur-[180px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
@@ -178,14 +152,11 @@ const ShopHighlights = () => {
             </div>
           </motion.div>
 
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            <span className="bg-gradient-to-r from-secondary-50 via-secondary-300 to-secondary-50 bg-clip-text text-transparent">
-              Merchandise
-            </span>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-4 tracking-tight text-white">
+            Official <span className="text-secondary-400">Merchandise</span>
           </h2>
-          <p className="text-lg md:text-xl text-secondary-200 max-w-2xl mx-auto font-light leading-relaxed">
-            Official tournament gear and premium merchandise. Quality for
-            champions.
+          <p className="text-base sm:text-lg md:text-xl text-primary-300 max-w-2xl mx-auto font-light leading-relaxed">
+            Official tournament gear, streetwear, and premium merchandise built for the pitch.
           </p>
         </motion.div>
 
@@ -234,14 +205,14 @@ const ShopHighlights = () => {
             products.map((product, index) => (
               <motion.div
                 key={product.id}
-                className="group relative bg-gradient-to-br from-secondary-50 to-primary-100 text-primary-950 overflow-hidden rounded-2xl shadow-2xl"
+                className="group relative bg-white text-primary-950 overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-white/10 flex flex-col justify-between"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -12, scale: 1.02 }}
+                whileHover={{ y: -8 }}
               >
                 {/* Shine Effect on Hover */}
                 <motion.div
@@ -250,19 +221,16 @@ const ShopHighlights = () => {
                 />
 
                 {/* Image Container */}
-                <div className="relative h-80 overflow-hidden bg-gradient-to-br from-primary-200 to-primary-300">
+                <div className="relative h-72 sm:h-80 overflow-hidden bg-primary-100/60 p-6 flex items-center justify-center">
                   <motion.img
                     src={product.image}
                     alt={product.title}
                     className="w-full h-full object-contain"
                     animate={{
-                      scale: hoveredIndex === index ? 1.15 : 1,
+                      scale: hoveredIndex === index ? 1.08 : 1,
                     }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   />
-
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-secondary-50 via-secondary-50/60 to-transparent" />
 
                   {/* Animated Shimmer Overlay */}
                   <motion.div
@@ -371,12 +339,12 @@ const ShopHighlights = () => {
                   animate={{
                     borderColor:
                       hoveredIndex === index
-                        ? "rgba(234, 179, 8, 0.6)"
-                        : "rgba(234, 179, 8, 0)",
+                        ? "rgba(254, 87, 35, 0.5)"
+                        : "rgba(254, 87, 35, 0)",
                     boxShadow:
                       hoveredIndex === index
-                        ? "0 0 40px rgba(234, 179, 8, 0.3)"
-                        : "0 0 0px rgba(234, 179, 8, 0)",
+                        ? "0 0 30px rgba(254, 87, 35, 0.2)"
+                        : "0 0 0px rgba(254, 87, 35, 0)",
                   }}
                   transition={{ duration: 0.4 }}
                 />

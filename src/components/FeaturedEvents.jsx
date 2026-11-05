@@ -199,21 +199,18 @@ const FeaturedEvents = () => {
   return (
     <section
       id="events"
-      className="py-24 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-white via-primary-50/30 to-white relative overflow-hidden"
+      className="py-24 md:py-32 px-4 md:px-6 lg:px-8 bg-white relative overflow-hidden"
     >
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0">
-        {/* Subtle grid pattern */}
+      {/* Clean Subtle Background Grid */}
+      <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.015]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
+            backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
+            backgroundSize: "24px 24px",
           }}
         />
-        {/* Gradient orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-tertiary-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary-100/50 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -338,7 +335,7 @@ const FeaturedEvents = () => {
             {events.map((event, index) => (
               <motion.div
                 key={event.id}
-                className="group relative bg-white border border-primary-200/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer"
+                className="group relative bg-white border border-primary-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-secondary-500/60 transition-all duration-300 cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() =>
@@ -619,18 +616,18 @@ const FeaturedEvents = () => {
 
                 {/* Enhanced Hover Border Glow */}
                 <motion.div
-                  className="absolute inset-0 rounded-2xl border-2 border-secondary-400/0 pointer-events-none"
+                  className="absolute inset-0 rounded-2xl border-2 border-secondary-500/0 pointer-events-none"
                   animate={{
                     borderColor:
                       hoveredIndex === index
-                        ? "rgba(250, 204, 21, 0.4)"
-                        : "rgba(250, 204, 21, 0)",
+                        ? "rgba(254, 87, 35, 0.4)"
+                        : "rgba(254, 87, 35, 0)",
                     boxShadow:
                       hoveredIndex === index
-                        ? "0 0 30px rgba(250, 204, 21, 0.2)"
-                        : "0 0 0px rgba(250, 204, 21, 0)",
+                        ? "0 0 25px rgba(254, 87, 35, 0.15)"
+                        : "0 0 0px rgba(254, 87, 35, 0)",
                   }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.3 }}
                 />
               </motion.div>
             ))}
@@ -647,7 +644,7 @@ const FeaturedEvents = () => {
         >
           <Link
             to="/events"
-            className="group relative inline-flex items-center gap-3 px-8 py-4 border-2 border-primary-950/20 text-primary-950 text-sm font-semibold uppercase tracking-wider rounded-full bg-white/50 backdrop-blur-sm hover:border-secondary-500 hover:text-secondary-600 hover:bg-secondary-50/50 transition-all duration-300 shadow-sm hover:shadow-md"
+            className="group relative inline-flex items-center gap-3 px-8 py-4 border-2 border-primary-950 text-primary-950 text-sm font-bold uppercase tracking-wider rounded-full bg-white hover:border-secondary-500 hover:bg-secondary-500 hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg"
           >
             <span>View All Events</span>
             <motion.svg

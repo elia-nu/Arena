@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
         <p>
           We value your privacy and are committed to protecting your personal
           data. This Privacy Policy explains how we collect, use, store, and
-          share information when you use Les Kick't and our related services.
+          share information when you use The Arena and our related services.
         </p>
 
         <section>
@@ -94,7 +94,7 @@ const PrivacyPolicy = () => {
             7. Youth Participants &amp; Parental Consent
           </h2>
           <p>
-            Les Kick&apos;t organizes youth soccer programs and family-friendly events.
+            The Arena organizes youth soccer programs and family-friendly events.
             When a participant is under 18 years of age, registration requires verifiable
             parent or legal guardian consent, including guardian contact information and
             emergency details. We collect only the minimum personal data required to organize

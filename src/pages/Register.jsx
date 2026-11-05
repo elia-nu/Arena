@@ -861,7 +861,7 @@ const Register = () => {
                 animate={{ opacity: 1 }}
                 className="text-secondary-400 text-sm font-semibold tracking-[0.2em] uppercase mb-2"
               >
-                Les Kick&apos;t
+                The Arena
               </motion.p>
               <h2 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                 Create Account
@@ -1327,8 +1327,8 @@ const Register = () => {
                                     <span>
                                       I am the parent/legal guardian and grant
                                       permission for this participant to
-                                      register and participate in Les
-                                      Kick&apos;t events. *
+                                      register and participate in The Arena
+                                      events. *
                                     </span>
                                   </label>
                                   {errors.guardianConsent && (

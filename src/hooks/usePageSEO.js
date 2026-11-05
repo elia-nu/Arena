@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 
-const DEFAULT_TITLE = "Les Kick't | Seattle Community Soccer Tournaments";
+const DEFAULT_TITLE = "The Arena | Seattle Community Soccer Tournaments";
 const DEFAULT_DESC =
-  "Les Kick't brings competitive street soccer tournaments, youth development, and community impact events to Greater Seattle.";
+  "The Arena brings competitive street soccer tournaments, youth development, and community impact events to Greater Seattle.";
 
 export const usePageSEO = (title, description) => {
   useEffect(() => {
-    document.title = title ? `${title} | Les Kick't` : DEFAULT_TITLE;
+    document.title = title ? `${title} | The Arena` : DEFAULT_TITLE;
 
     const metaDescription = document.querySelector("meta[name='description']");
     if (metaDescription) {

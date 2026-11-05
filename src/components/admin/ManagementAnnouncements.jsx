@@ -58,7 +58,7 @@ const ManagementAnnouncements = () => {
         </h2>
         <p className="text-sm text-gray-600 mb-5">
           This will appear on team leader and player dashboards as a message from
-          Let&apos;s Kick It management.
+          The Arena management.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -81,13 +81,13 @@ const Navbar = () => {
                 <div className="relative">
                   <img
                     src={logo}
-                    alt="les kick't"
+                    alt="The Arena"
                     className="h-10 w-10 lg:h-12 lg:w-12 object-contain transition-transform duration-300 group-hover:rotate-12"
                   />
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
-                    les kick't
+                    The Arena
                   </h1>
                   <p className="text-xs text-gray-600 -mt-1">Soccer Academy</p>
                 </div>

@@ -47,7 +47,7 @@ const smsTemplateBodies = {
   tournamentReminder: (d) =>
     `Reminder: ${d.tournamentName || "Tournament"} — check the app for details.`,
   matchScheduled: (d) =>
-    `Match scheduled${d.matchDetails ? `: ${d.matchDetails}` : ""}. Open Les Kick't for info.`,
+    `Match scheduled${d.matchDetails ? `: ${d.matchDetails}` : ""}. Open The Arena for info.`,
   matchReminder: (d) =>
     `Match reminder${d.matchDetails ? `: ${d.matchDetails}` : ""}. See the app.`,
   matchResult: (d) =>

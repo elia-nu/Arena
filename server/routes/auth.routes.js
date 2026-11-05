@@ -1079,7 +1079,7 @@ router.post("/register", async (req, res) => {
           ? `${setPasswordUrlBase}&email=${encodeURIComponent(emailOpt)}`
           : setPasswordUrlBase;
 
-        const smsBody = `You're invited to join "${teamName}" on Les Kick't. Set your password: ${setPasswordUrlBase}`;
+        const smsBody = `You're invited to join "${teamName}" on The Arena. Set your password: ${setPasswordUrlBase}`;
 
         try {
           await sendSms(normalizedPhone, smsBody);
@@ -1477,7 +1477,7 @@ router.post("/forgot-password", async (req, res) => {
 
     if (!notificationSent && user.phone) {
       try {
-        const smsBody = `Reset your Les Kick't password: ${resetPasswordUrl}`;
+        const smsBody = `Reset your The Arena password: ${resetPasswordUrl}`;
         const smsOutcome = await sendSms(user.phone, smsBody);
         notificationSent = !smsOutcome.skipped && Boolean(smsOutcome.sid);
       } catch (err) {

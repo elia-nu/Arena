@@ -65,7 +65,7 @@ const SocialFeed = () => {
           next.push({
             platform: "Instagram",
             handle:
-              extractHandleFromUrl("Instagram", instagramUrl) || "Les Kick't",
+              extractHandleFromUrl("Instagram", instagramUrl) || "The Arena",
             status: "Latest photos & stories",
             url: instagramUrl,
             gradient: "from-[#FEDA75] via-[#FA7E1E] to-[#D62976]",
@@ -75,7 +75,7 @@ const SocialFeed = () => {
         if (isValidUrl(tiktokUrl)) {
           next.push({
             platform: "TikTok",
-            handle: extractHandleFromUrl("TikTok", tiktokUrl) || "Les Kick't",
+            handle: extractHandleFromUrl("TikTok", tiktokUrl) || "The Arena",
             status: "Short-form highlights",
             url: tiktokUrl,
             gradient: "from-[#010101] via-[#69C9D0] to-[#EE1D52]",
@@ -85,7 +85,7 @@ const SocialFeed = () => {
         if (isValidUrl(youtubeUrl)) {
           next.push({
             platform: "YouTube",
-            handle: extractHandleFromUrl("YouTube", youtubeUrl) || "Les Kick't",
+            handle: extractHandleFromUrl("YouTube", youtubeUrl) || "The Arena",
             status: "Match highlights & recaps",
             url: youtubeUrl,
             gradient: "from-[#FF0000] via-[#FF4D4D] to-[#FF8080]",

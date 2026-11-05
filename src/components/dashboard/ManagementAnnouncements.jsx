@@ -10,7 +10,7 @@ const ManagementAnnouncements = ({ announcements = [] }) => {
     >
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-primary-900">
-          Let's Kick It Management
+          The Arena Management
         </h2>
         <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary-100 text-primary-700">
           Announcements

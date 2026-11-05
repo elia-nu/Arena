@@ -898,7 +898,7 @@ router.get(
     try {
       // In a real app, store this in a Settings model or config file
       const branding = {
-        siteName: process.env.SITE_NAME || "Les Kick't",
+        siteName: process.env.SITE_NAME || "The Arena",
         logo: "",
         primaryColor: "#1a1a2e",
         secondaryColor: "#16213e",

@@ -15,7 +15,7 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import logo2 from "../../public/logo.png";
+import logo2 from "../../public/logo.jpg";
 import { contactAPI } from "../services/api";
 
 const MARQUEE_WORDS = [
@@ -26,7 +26,7 @@ const MARQUEE_WORDS = [
   "Youth Development",
   "Impact",
   "Fair Play",
-  "Kick It",
+  "Let Rumble",
 ];
 
 const Footer = () => {
@@ -211,9 +211,9 @@ const Footer = () => {
           </p>
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
             <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight max-w-3xl">
-              Ready to{" "}
+              Are you ready to{" "}
               <span className="text-secondary-500 italic font-semibold">
-                Kick It
+                rumble
               </span>
               ?
             </h2>
@@ -235,23 +235,17 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 lg:gap-12">
           {/* Brand + contact */}
           <div className="md:col-span-5 space-y-6">
-            <Link to="/" className="inline-flex items-center gap-3 group">
-              <img
-                src={logo2}
-                alt="Les Kick't"
-                className="w-16 h-auto transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
-                style={{
-                  filter:
-                    "drop-shadow(0 0 14px #fe572366) brightness(1.08) saturate(1.1)",
-                }}
-              />
-              <div>
-                <span className="block text-xl font-bold tracking-tight">
-                  Les Kick&apos;t
-                </span>
-                <span className="block text-xs text-primary-400 tracking-wide">
-                  Seattle community soccer
-                </span>
+            <Link to="/" className="inline-block group">
+              <div className="relative inline-flex items-center justify-center">
+                <div className="absolute -inset-1 bg-secondary-500/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <img
+                  src={logo2}
+                  alt="Logo"
+                  className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover shadow-2xl border-2 border-secondary-500/40 group-hover:border-secondary-500 transition-all duration-500 group-hover:scale-105"
+                  style={{
+                    filter: "drop-shadow(0 0 16px rgba(254,87,35,0.35))",
+                  }}
+                />
               </div>
             </Link>
 
@@ -371,7 +365,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="mt-14 md:mt-16 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-primary-500">
           <p>
-            © {new Date().getFullYear()} Les Kick&apos;t. All rights reserved.
+            © {new Date().getFullYear()} The Arena. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link

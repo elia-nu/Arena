@@ -42,8 +42,8 @@ const emailTemplates = {
         <p style="font-size: 16px; line-height: 1.6;">Hi ${data.firstName || data.userName},</p>
         ${
           data.registrationType === "team"
-            ? `<p style="font-size: 16px; line-height: 1.6;">Thanks for registering your team${data.teamName ? ` <strong>${data.teamName}</strong>` : ""} for <strong>${data.tournamentName}</strong> on Les Kick't.</p>`
-            : `<p style="font-size: 16px; line-height: 1.6;">Thanks for registering for <strong>${data.tournamentName}</strong> on Les Kick't.</p>`
+            ? `<p style="font-size: 16px; line-height: 1.6;">Thanks for registering your team${data.teamName ? ` <strong>${data.teamName}</strong>` : ""} for <strong>${data.tournamentName}</strong> on The Arena.</p>`
+            : `<p style="font-size: 16px; line-height: 1.6;">Thanks for registering for <strong>${data.tournamentName}</strong> on The Arena.</p>`
         }
         ${
           data.memberCode
@@ -84,7 +84,7 @@ const emailTemplates = {
                 : ""
         }
         <p style="font-size: 16px; line-height: 1.6;">We look forward to seeing you at the tournament!</p>
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -104,7 +104,7 @@ const emailTemplates = {
           <p>Location: ${data.location || "TBD"}</p>
         </div>
         <p>Don't forget to arrive early for check-in!</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -123,7 +123,7 @@ const emailTemplates = {
           <p>Location: ${data.location || "TBD"}</p>
         </div>
         <p>Good luck!</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -142,7 +142,7 @@ const emailTemplates = {
           <p>Location: ${data.location || "TBD"}</p>
         </div>
         <p>See you there!</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -159,7 +159,7 @@ const emailTemplates = {
           <p>Score: ${data.team1Score} - ${data.team2Score}</p>
           ${data.winner ? `<p>Winner: ${data.winner}</p>` : ""}
         </div>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -177,7 +177,7 @@ const emailTemplates = {
           <p><strong>Transaction ID:</strong> ${data.transactionId}</p>
         </div>
         <p>Thank you for your payment!</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -188,7 +188,7 @@ const emailTemplates = {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #1a1a1a; margin-bottom: 20px;">Order Confirmed!</h2>
         <p style="font-size: 16px; line-height: 1.6;">Hi ${data.firstName || data.userName},</p>
-        <p style="font-size: 16px; line-height: 1.6;">Thank you for your purchase on Les Kick't!</p>
+        <p style="font-size: 16px; line-height: 1.6;">Thank you for your purchase on The Arena!</p>
         ${
           data.memberCode
             ? `<p style="font-size: 16px; line-height: 1.6;">Your member number is; <strong>${data.memberCode}</strong></p>`
@@ -244,7 +244,7 @@ const emailTemplates = {
         }
 
         <p style="font-size: 16px; line-height: 1.6;">We'll send you a shipping confirmation email once your order has been processed.</p>
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -255,7 +255,7 @@ const emailTemplates = {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #1a1a1a; margin-bottom: 20px;">Order Received!</h2>
         <p style="font-size: 16px; line-height: 1.6;">Hi ${data.firstName || data.userName},</p>
-        <p style="font-size: 16px; line-height: 1.6;">Thank you for your purchase on Les Kick't!</p>
+        <p style="font-size: 16px; line-height: 1.6;">Thank you for your purchase on The Arena!</p>
         ${
           data.memberCode
             ? `<p style="font-size: 16px; line-height: 1.6;">Your member number is; <strong>${data.memberCode}</strong></p>`
@@ -307,17 +307,17 @@ const emailTemplates = {
             : ""
         }
 
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
 
   registrationPaymentSuccess: (data) => ({
-    subject: `Registration & Payment Successful - Welcome to Les Kick't!`,
+    subject: `Registration & Payment Successful - Welcome to The Arena!`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <p style="font-size: 16px; line-height: 1.6;">Hi ${data.firstName || data.userName},</p>
-        <p style="font-size: 16px; line-height: 1.6;">Thanks for registering on Les Kick't.</p>
+        <p style="font-size: 16px; line-height: 1.6;">Thanks for registering on The Arena.</p>
         ${
           data.memberCode
             ? `<p style="font-size: 16px; line-height: 1.6;">Your member number is; <strong>${data.memberCode}</strong></p>`
@@ -329,7 +329,7 @@ const emailTemplates = {
           <p style="margin: 8px 0; color: #047857;">Transaction ID: ${data.transactionId || data.sessionId}</p>
         </div>
         ${data.teamName ? `<p style="font-size: 16px; line-height: 1.6;">Team: <strong>${data.teamName}</strong></p>` : ""}
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -353,24 +353,24 @@ const emailTemplates = {
           <li>If you continue to experience issues, please contact our support team</li>
         </ol>
         <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
 
   userRegistration: (data) => ({
-    subject: `Welcome to Les Kick't`,
+    subject: `Welcome to The Arena`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <p style="font-size: 16px; line-height: 1.6;">Hi ${data.firstName || data.userName},</p>
-        <p style="font-size: 16px; line-height: 1.6;">Thanks for registering on Les Kick't.</p>
+        <p style="font-size: 16px; line-height: 1.6;">Thanks for registering on The Arena.</p>
         ${
           data.memberCode
             ? `<p style="font-size: 16px; line-height: 1.6;">Your member number is; <strong>${data.memberCode}</strong></p>`
             : ""
         }
         ${data.teamName ? `<p style="font-size: 16px; line-height: 1.6;">Team: <strong>${data.teamName}</strong></p>` : ""}
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -397,30 +397,30 @@ const emailTemplates = {
           <li>View team statistics and performance</li>
           <li>Communicate with team members</li>
         </ul>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
 
   registrationOtp: (data) => ({
-    subject: "Your Les Kick't verification code",
+    subject: "Your The Arena verification code",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #1a1a1a; margin-bottom: 16px;">Verify your email</h2>
         <p style="font-size: 16px; line-height: 1.6;">Hi there,</p>
-        <p style="font-size: 16px; line-height: 1.6;">Use this code to continue creating your Les Kick't account:</p>
+        <p style="font-size: 16px; line-height: 1.6;">Use this code to continue creating your The Arena account:</p>
         <div style="background-color: #111111; color: #ffffff; padding: 24px; border-radius: 12px; margin: 28px 0; text-align: center;">
           <p style="margin: 0 0 8px; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #fe5723;">Verification code</p>
           <p style="margin: 0; font-size: 36px; font-weight: bold; letter-spacing: 0.35em; color: #ffffff;">${data.otp}</p>
         </div>
         <p style="font-size: 14px; line-height: 1.6; color: #555;">This code expires in ${data.expiresInMinutes || 10} minutes. If you didn't request this, you can ignore this email.</p>
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
 
   passwordReset: (data) => ({
-    subject: "Reset your Les Kick't password",
+    subject: "Reset your The Arena password",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #1a1a1a;">Password Reset Request</h2>
@@ -437,19 +437,19 @@ const emailTemplates = {
           <p><strong>Note:</strong> This link will expire in ${data.expiresInHours || 1} hour${(data.expiresInHours || 1) === 1 ? "" : "s"}.</p>
         </div>
         <p>If you didn't request a password reset, you can safely ignore this email.</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
 
   // Invitation for team members to set their password and activate account
   teamMemberInvitation: (data) => ({
-    subject: `You're invited to join team ${data.teamName} on Les Kick't`,
+    subject: `You're invited to join team ${data.teamName} on The Arena`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #1a1a1a;">You've Been Added to a Team!</h2>
         <p>Hello ${data.userName || "Player"},</p>
-        <p>You have been added to the team <strong>${data.teamName}</strong> on Les Kick't.</p>
+        <p>You have been added to the team <strong>${data.teamName}</strong> on The Arena.</p>
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p>To activate your account and join the team, please set your password:</p>
           <p style="text-align: center; margin: 20px 0;">
@@ -462,7 +462,7 @@ const emailTemplates = {
           <p><strong>Note:</strong> This link will expire in ${data.expiresInHours || 24} hours.</p>
         </div>
         <p>Once your password is set, your account will be active and you'll officially be part of the team.</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -494,7 +494,7 @@ const emailTemplates = {
         <h2 style="color: #1a1a1a;">Thank You for Contacting Us!</h2>
         <p>Dear ${data.name},</p>
         <p>Thank you for reaching out to us. We have received your message and will get back to you within 24 hours.</p>
-        <p>Best regards,<br>Les Kick't Team</p>
+        <p>Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -532,7 +532,7 @@ const emailTemplates = {
         }
 
         <p style="font-size: 16px; line-height: 1.6;">You can now access your team dashboard to view team details, register for tournaments, and communicate with your teammates.</p>
-        <p style="margin-top: 30px;">Best regards,<br>Les Kick't Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>The Arena Team</p>
       </div>
     `,
   }),
@@ -580,7 +580,7 @@ export const sendEmail = async (to, templateName, data) => {
     const emailContent = template(data);
 
     const mailOptions = {
-      from: `"Les Kick't" <${env.EMAIL_USER}>`,
+      from: `"The Arena" <${env.EMAIL_USER}>`,
       to,
       subject: emailContent.subject,
       html: emailContent.html,

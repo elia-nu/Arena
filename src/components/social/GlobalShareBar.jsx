@@ -91,8 +91,8 @@ const GlobalShareBar = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Les Kick't",
-          text: `Check out this page on Les Kick't: ${pageLabel}`,
+          title: "The Arena",
+          text: `Check out this page on The Arena: ${pageLabel}`,
           url: shareUrl,
         });
         handleShare("native");
@@ -120,14 +120,14 @@ const GlobalShareBar = () => {
       icon: FaXTwitter,
       href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
         shareUrl,
-      )}&text=${encodeURIComponent("Check this out from Les Kick't")}`,
+      )}&text=${encodeURIComponent("Check this out from The Arena")}`,
     },
     {
       id: "whatsapp",
       label: "WhatsApp",
       icon: FaWhatsapp,
       href: `https://wa.me/?text=${encodeURIComponent(
-        `Check this out from Les Kick't: ${shareUrl}`,
+        `Check this out from The Arena: ${shareUrl}`,
       )}`,
     },
   ];

@@ -73,7 +73,7 @@ const LightboxViewer = ({
   if (!media) return null;
 
   const shareUrl = window.location.origin + "/gallery";
-  const shareText = `Check out ${media.event || "this moment"} from Let's Kick It`;
+  const shareText = `Check out ${media.event || "this moment"} from The Arena`;
 
   const handleShare = (platform) => {
     const url = getShareUrl(platform, shareUrl, shareText);

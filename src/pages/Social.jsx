@@ -84,7 +84,7 @@ const Social = () => {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-primary-950 mb-5 leading-tight">
             Stay connected with{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-500 to-secondary-600">
-              Les Kick't
+              The Arena
             </span>
           </h1>
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-primary-600 leading-relaxed">
@@ -139,7 +139,7 @@ const Social = () => {
               {/* Juicer.io social wall iframe for YouTube-related content */}
               <iframe
                 src="https://www.juicer.io/api/feeds/curuer/iframe"
-                title="Les Kick't YouTube Social Wall"
+                title="The Arena YouTube Social Wall"
                 frameBorder="0"
                 width="100%"
                 height="100%"

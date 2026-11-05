@@ -10,7 +10,7 @@ const TermsAndConditions = () => {
 
       <div className="space-y-6 text-sm leading-relaxed">
         <p>
-          Welcome to Les Kick't. By accessing or using our website, services, or
+          Welcome to The Arena. By accessing or using our website, services, or
           products, you agree to be bound by these Terms &amp; Conditions. If
           you do not agree with any part of these terms, please discontinue use
           of the site and services.

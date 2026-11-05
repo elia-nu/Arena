@@ -87,7 +87,7 @@ const AboutUs = () => {
               </h2>
               <div className="space-y-4 text-primary-600 leading-relaxed font-light">
                 <p className="text-base md:text-lg">
-                  Founded in Seattle, Les Kick&apos;t was born out of neighborhood pickup
+                  Founded in Seattle, The Arena was born out of neighborhood pickup
                   games and public park courts. We organize tournaments, youth clinics,
                   and community events that celebrate the fast-paced energy of street soccer.
                 </p>
@@ -175,7 +175,7 @@ const AboutUs = () => {
             </h2>
             <p className="text-base md:text-lg text-primary-600 leading-relaxed font-light mb-12">
               Join thousands of players, teams, and sports enthusiasts who trust
-              Les Kick't for their tournament needs. Together, we're building a
+              The Arena for their tournament needs. Together, we're building a
               vibrant community that celebrates competition, camaraderie, and
               the love of sports.
             </p>

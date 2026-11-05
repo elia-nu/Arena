@@ -218,7 +218,7 @@ const ApplePayInput = ({ onPaymentSuccess, amount, orderData }) => {
       country: "US",
       currency: "usd",
       total: {
-        label: "Let's Kick It",
+        label: "The Arena",
         amount: Math.round(amount * 100),
       },
       requestPayerName: true,

@@ -10,7 +10,7 @@ import {
 } from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
 
-const logo = "/logo.png";
+const logo = "/logo.jpg";
 
 const DashboardSidebar = ({
   activeTab,
@@ -132,7 +132,7 @@ const DashboardSidebar = ({
             <img src={logo} alt="Logo" className="w-8 h-8 rounded-full shadow-2xs" />
             <div className="flex flex-col">
               <span className="text-sm font-bold text-primary-950 dark:text-white group-hover:text-secondary-500 transition-colors tracking-tight">
-                Let's Kick It
+                The Arena
               </span>
               <span className="text-[10px] font-semibold text-secondary-500 uppercase tracking-widest">
                 {title}

@@ -8,7 +8,7 @@ import {
   IoNotificationsOutline,
 } from "react-icons/io5";
 
-const logo = "/logo.png";
+const logo = "/logo.jpg";
 
 const DashboardHeader = ({ title }) => {
   const { user, logout } = useAuth();
@@ -48,7 +48,7 @@ const DashboardHeader = ({ title }) => {
           >
             <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
             <span className="text-sm font-bold text-primary-950 dark:text-primary-50 group-hover:text-secondary-500 transition-colors">
-              Let's Kick It
+              The Arena
             </span>
           </Link>
 

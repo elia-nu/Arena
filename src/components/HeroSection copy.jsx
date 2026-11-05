@@ -139,7 +139,7 @@ const HeroSection = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
               >
-                Let's
+                Let
               </motion.span>
               <motion.span
                 className="block bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent"
@@ -147,7 +147,7 @@ const HeroSection = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
               >
-                Kick It
+                Rumble
               </motion.span>
               <motion.span
                 className="block"

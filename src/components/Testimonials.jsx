@@ -82,7 +82,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 px-4 md:px-8 bg-gradient-to-b from-secondary-50/40 to-white">
+    <section className="py-20 md:py-28 px-4 md:px-8 bg-white border-t border-primary-100">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-14 md:mb-16">

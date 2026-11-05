@@ -341,7 +341,7 @@ router.post("/:id/invite-member", authenticate, async (req, res) => {
       ? `${setPasswordUrlBase}&email=${encodeURIComponent(emailLower)}`
       : setPasswordUrlBase;
 
-    const smsBody = `You're invited to join "${team.name}" on Les Kick't. Set your password: ${setPasswordUrlBase}`;
+    const smsBody = `You're invited to join "${team.name}" on The Arena. Set your password: ${setPasswordUrlBase}`;
 
     let smsSent = false;
     let smsSkipped = false;

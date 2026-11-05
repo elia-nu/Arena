@@ -154,18 +154,17 @@ const NonProfitHighlights = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-white via-secondary-50/40 to-white relative overflow-hidden">
+    <section className="py-20 md:py-28 px-4 md:px-6 lg:px-8 bg-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.015]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+              "radial-gradient(#000 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
         />
-        <div className="absolute top-0 right-1/4 w-72 h-72 bg-secondary-200/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-tertiary-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-1/4 w-80 h-80 bg-primary-100/60 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -213,7 +212,7 @@ const NonProfitHighlights = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             Join our non-profit activities, volunteering events, and community
-            outreach programs organized through Les Kick't.
+            outreach programs organized through The Arena.
           </motion.p>
         </motion.div>
 
@@ -276,7 +275,7 @@ const NonProfitHighlights = () => {
                   {upcomingActivities.map((a, index) => (
                     <motion.div
                       key={a.id}
-                      className="group relative bg-white border border-primary-200/50 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500"
+                      className="group relative bg-white border border-primary-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-secondary-500/50 transition-all duration-300"
                       onMouseEnter={() => setHoveredIndex(`upcoming-${index}`)}
                       onMouseLeave={() => setHoveredIndex(null)}
                       initial={{ opacity: 0, y: 40 }}
@@ -509,7 +508,7 @@ const NonProfitHighlights = () => {
                           type="button"
                           onClick={() => handleJoin(a.id)}
                           disabled={joiningId === a.id}
-                          className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold rounded-lg bg-primary-950 text-white hover:bg-primary-800 disabled:opacity-60 transition-colors"
+                          className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold rounded-xl bg-primary-950 text-white hover:bg-secondary-500 hover:text-white disabled:opacity-60 transition-all duration-300 shadow-xs hover:shadow-md"
                         >
                           {joiningId === a.id
                             ? "Joining..."

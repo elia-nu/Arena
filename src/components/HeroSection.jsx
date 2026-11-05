@@ -92,32 +92,34 @@ const HeroSection = () => {
       </div>
 
       {/* Main Content — pb clears the absolute bottom promo so CTAs stay fully visible */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-0 sm:pt-20 pb-44 sm:pb-36">
-        <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter m">
-          LES <span className="mx-2 ">KICK'T</span>
-          {/*  <span className="block text-secondary-400 mt-2 ">
-            The game plan is to have fun and win together
-          </span>*/}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8 sm:pt-20 pb-44 sm:pb-36">
+        {/* Modern Top Badge */}
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold tracking-wider uppercase mb-6 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-secondary-400 animate-pulse" />
+          <span>Seattle&apos;s Premier Street Soccer & Tournaments</span>
+        </div>
+
+        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter mb-4 leading-none">
+          THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-400 via-secondary-500 to-secondary-400">ARENA</span>
         </h1>
 
-        <p className="mx-auto mb-8 px-4 text-center text-xl leading-relaxed tracking-widest text-secondary-400 md:mb-10 md:text-xl">
-          THE &nbsp;GAME &nbsp;PLAN &nbsp;IS &nbsp;TO &nbsp;HAVE &nbsp;FUN
+        <p className="mx-auto mb-6 px-4 text-center text-sm sm:text-base md:text-lg leading-relaxed tracking-[0.25em] text-secondary-400 font-semibold uppercase">
+          THE &nbsp;GAME &nbsp;PLAN &nbsp;IS &nbsp;TO &nbsp;HAVE &nbsp;FUN &nbsp;&amp; &nbsp;WIN
         </p>
-        <p className="text-lg md:text-2xl text-primary-200 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
-          Experience the thrill of reliable tournaments and nonstop fun. Your
-          path to glory starts here.
+        <p className="text-base sm:text-lg md:text-xl text-primary-200 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+          Experience the thrill of competitive street soccer tournaments, youth development, and community impact across Greater Seattle.
         </p>
 
         <div className="flex flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center">
           <Link
             to="/events"
-            className="px-5 py-3 sm:px-8 sm:py-4 bg-secondary-500 text-primary-950 text-base sm:text-lg font-bold rounded-full hover:bg-secondary-400 transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(234,179,8,0.3)] whitespace-nowrap"
+            className="px-6 py-3.5 sm:px-8 sm:py-4 bg-secondary-500 text-white text-base sm:text-lg font-bold rounded-full hover:bg-secondary-600 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-secondary-500/30 hover:shadow-secondary-500/50 whitespace-nowrap"
           >
-            Join the Action
+            Join the Action →
           </Link>
           <Link
             to="/about-us"
-            className="px-5 py-3 sm:px-8 sm:py-4 bg-transparent border border-primary-700 text-white text-base sm:text-lg font-medium rounded-full hover:bg-white/5 hover:border-white transition-all duration-300 whitespace-nowrap"
+            className="px-6 py-3.5 sm:px-8 sm:py-4 bg-white/10 border border-white/25 text-white text-base sm:text-lg font-medium rounded-full backdrop-blur-md hover:bg-white/20 hover:border-white/50 transition-all duration-300 transform hover:scale-105 active:scale-95 whitespace-nowrap"
           >
             Learn More
           </Link>
@@ -125,8 +127,8 @@ const HeroSection = () => {
       </div>
 
       {/* Bottom Ticker / Promo Section */}
-      <div className="absolute bottom-0 w-full z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="absolute bottom-0 w-full z-10 border-t border-white/15 bg-primary-950/85 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           {loading ? (
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
               <div className="flex-1">

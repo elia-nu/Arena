@@ -70,7 +70,7 @@ const cleanTestData = async () => {
           name: "Marcus Sterling",
           role: "Youth Coach & Parent",
           quote:
-            "Les Kick't brings the Seattle soccer community together like no other organization. The tournaments provide real competition in a positive, empowering environment for our players.",
+            "The Arena brings the Seattle soccer community together like no other organization. The tournaments provide real competition in a positive, empowering environment for our players.",
           rating: 5,
           status: "published",
           displayOrder: 1,
@@ -80,7 +80,7 @@ const cleanTestData = async () => {
           name: "Downtown Seattle Association",
           role: "Community Partner",
           quote:
-            "Partnering with Les Kick't brought extraordinary energy, street soccer culture, and community engagement to downtown public spaces throughout the summer.",
+            "Partnering with The Arena brought extraordinary energy, street soccer culture, and community engagement to downtown public spaces throughout the summer.",
           rating: 5,
           status: "published",
           displayOrder: 2,
