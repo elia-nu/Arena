@@ -137,43 +137,43 @@ const ContactForm = () => {
 
   return (
     <SpotlightCard
-      className="bg-[#0a0a0a] border border-neutral-800 shadow-2xl p-6 sm:p-8 lg:p-10"
-      spotlightColor="rgba(254, 87, 35, 0.22)"
-      borderColor="rgba(254, 87, 35, 0.55)"
+      className="bg-white border border-neutral-200/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
+      spotlightColor="rgba(254, 87, 35, 0.08)"
+      borderColor="rgba(254, 87, 35, 0.45)"
       glowRadius={440}
     >
       {/* Form Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-150 mb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-500/10 border border-secondary-500/30 text-secondary-400 text-[11px] font-mono uppercase tracking-widest mb-2.5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-600 text-[11px] font-mono uppercase tracking-widest mb-3">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500" />
             </span>
             Direct Communications Line
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Send us a <span className="text-secondary-400">Message</span>
+          <h2 className="text-3xl sm:text-4xl font-black text-neutral-950 tracking-tight">
+            Send us a <span className="text-secondary-500">Message</span>
           </h2>
-          <p className="text-neutral-400 text-sm mt-1">
-            Fill in your details below and our operations desk will follow up directly.
+          <p className="text-neutral-500 text-sm mt-1">
+            Fill in your details below and our Seattle operations desk will follow up directly.
           </p>
         </div>
 
         <div className="hidden sm:flex flex-col items-end text-right flex-shrink-0">
-          <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">
+          <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest">
             Average Response
           </span>
-          <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 whitespace-nowrap">
+          <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5 mt-1 px-3.5 py-1.5 rounded-full bg-neutral-950 border border-neutral-800 whitespace-nowrap shadow-sm">
             <IoFlashOutline className="text-secondary-400" />
             &lt; 24h Turnaround
           </span>
         </div>
       </div>
 
-      {/* Preset Category Chips with Vector Icons */}
+      {/* Preset Category Chips */}
       <div className="mb-6">
-        <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-2.5">
+        <label className="block text-[11px] font-mono uppercase tracking-widest text-neutral-500 mb-2.5">
           Select Topic (Quick Fill)
         </label>
         <div className="flex flex-wrap gap-2">
@@ -185,17 +185,17 @@ const ContactForm = () => {
                 key={preset.label}
                 type="button"
                 onClick={() => handleTopicSelect(preset)}
-                className={`group px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                className={`group px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                   isSelected
-                    ? "bg-secondary-500 text-white font-semibold shadow-lg shadow-secondary-500/25 border border-secondary-400 scale-[1.02]"
-                    : "bg-[#111111] hover:bg-[#181818] text-neutral-300 border border-neutral-800 hover:border-neutral-700 hover:text-white"
+                    ? "bg-neutral-950 text-white font-semibold shadow-md border border-neutral-950 scale-[1.02]"
+                    : "bg-neutral-100/80 hover:bg-neutral-200/80 text-neutral-800 border border-neutral-200/80 hover:border-neutral-300"
                 }`}
               >
                 <Icon
                   className={`text-sm transition-transform duration-200 ${
                     isSelected
-                      ? "text-white scale-110"
-                      : "text-secondary-400 group-hover:scale-110"
+                      ? "text-secondary-400 scale-110"
+                      : "text-neutral-500 group-hover:text-secondary-600 group-hover:scale-110"
                   }`}
                 />
                 <span>{preset.label}</span>
@@ -212,17 +212,17 @@ const ContactForm = () => {
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            className="mb-6 p-4 bg-gradient-to-r from-secondary-500/15 via-secondary-500/10 to-transparent border border-secondary-500/40 rounded-2xl flex items-center gap-3.5"
+            className="mb-6 p-4 bg-secondary-50 border border-secondary-300 rounded-2xl flex items-center gap-3.5 shadow-sm"
           >
-            <div className="w-10 h-10 rounded-xl bg-secondary-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-secondary-500/30">
+            <div className="w-10 h-10 rounded-full bg-secondary-500 flex items-center justify-center text-white flex-shrink-0 shadow-md shadow-secondary-500/30">
               <IoCheckmarkCircle className="text-2xl" />
             </div>
             <div>
-              <p className="font-bold text-white text-sm">
+              <p className="font-bold text-neutral-950 text-sm">
                 Message Transmitted Successfully
               </p>
-              <p className="text-xs text-neutral-300 mt-0.5">
-                Our Seattle desk has received your note and will review it shortly.
+              <p className="text-xs text-neutral-600 mt-0.5">
+                Our Seattle desk has received your note and will review it promptly.
               </p>
             </div>
           </motion.div>
@@ -233,14 +233,14 @@ const ContactForm = () => {
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            className="mb-6 p-4 bg-red-950/40 border border-red-500/50 rounded-2xl flex items-center gap-3.5"
+            className="mb-6 p-4 bg-red-50 border border-red-300 rounded-2xl flex items-center gap-3.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+            <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white flex-shrink-0 shadow-md">
               <IoCloseCircle className="text-2xl" />
             </div>
             <div>
-              <p className="font-bold text-white text-sm">Transmission Error</p>
-              <p className="text-xs text-red-200 mt-0.5">
+              <p className="font-bold text-neutral-950 text-sm">Transmission Error</p>
+              <p className="text-xs text-red-600 mt-0.5">
                 Please check your entries or reach out via our direct email link on the right.
               </p>
             </div>
@@ -255,30 +255,30 @@ const ContactForm = () => {
           <div>
             <label
               htmlFor="contact-name"
-              className="block text-[11px] font-mono uppercase tracking-widest text-neutral-300 mb-2 flex items-center justify-between"
+              className="block text-[11px] font-mono uppercase tracking-widest text-neutral-700 mb-2 flex items-center justify-between"
             >
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 font-bold">
                 <IoPersonOutline
                   className={
                     focusedField === "name"
-                      ? "text-secondary-400"
-                      : "text-neutral-500"
+                      ? "text-secondary-500"
+                      : "text-neutral-400"
                   }
                 />
                 Full Name
               </span>
-              <span className="text-secondary-400 font-bold">*</span>
+              <span className="text-secondary-500 font-bold">*</span>
             </label>
             <div
-              className={`relative rounded-xl border transition-all duration-200 ${
+              className={`relative rounded-2xl border transition-all duration-200 ${
                 errors.name
-                  ? "border-red-500/80 bg-red-950/20"
+                  ? "border-red-400 bg-red-50/50"
                   : focusedField === "name"
-                  ? "border-secondary-500 ring-2 ring-secondary-500/25 bg-[#141414]"
-                  : "border-neutral-800 bg-[#101010] hover:border-neutral-700"
+                  ? "border-secondary-500 ring-4 ring-secondary-500/10 bg-white shadow-sm"
+                  : "border-neutral-200 bg-neutral-50/60 hover:border-neutral-300 hover:bg-white"
               }`}
             >
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400">
                 <IoPersonOutline />
               </div>
               <input
@@ -290,12 +290,12 @@ const ContactForm = () => {
                 onBlur={() => setFocusedField(null)}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="Marcus Vance"
-                className="w-full pl-10 pr-4 py-3 bg-transparent text-white placeholder-neutral-500 text-sm focus:outline-none"
+                className="w-full pl-11 pr-4 py-3.5 bg-transparent text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none font-medium"
                 required
               />
             </div>
             {errors.name && (
-              <p className="mt-1.5 text-xs text-red-400 font-medium">
+              <p className="mt-1.5 text-xs text-red-500 font-medium">
                 {errors.name}
               </p>
             )}
@@ -305,30 +305,30 @@ const ContactForm = () => {
           <div>
             <label
               htmlFor="contact-email"
-              className="block text-[11px] font-mono uppercase tracking-widest text-neutral-300 mb-2 flex items-center justify-between"
+              className="block text-[11px] font-mono uppercase tracking-widest text-neutral-700 mb-2 flex items-center justify-between"
             >
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 font-bold">
                 <IoMailOutline
                   className={
                     focusedField === "email"
-                      ? "text-secondary-400"
-                      : "text-neutral-500"
+                      ? "text-secondary-500"
+                      : "text-neutral-400"
                   }
                 />
                 Email Address
               </span>
-              <span className="text-secondary-400 font-bold">*</span>
+              <span className="text-secondary-500 font-bold">*</span>
             </label>
             <div
-              className={`relative rounded-xl border transition-all duration-200 ${
+              className={`relative rounded-2xl border transition-all duration-200 ${
                 errors.email
-                  ? "border-red-500/80 bg-red-950/20"
+                  ? "border-red-400 bg-red-50/50"
                   : focusedField === "email"
-                  ? "border-secondary-500 ring-2 ring-secondary-500/25 bg-[#141414]"
-                  : "border-neutral-800 bg-[#101010] hover:border-neutral-700"
+                  ? "border-secondary-500 ring-4 ring-secondary-500/10 bg-white shadow-sm"
+                  : "border-neutral-200 bg-neutral-50/60 hover:border-neutral-300 hover:bg-white"
               }`}
             >
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400">
                 <IoMailOutline />
               </div>
               <input
@@ -340,12 +340,12 @@ const ContactForm = () => {
                 onBlur={() => setFocusedField(null)}
                 onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="marcus@example.com"
-                className="w-full pl-10 pr-4 py-3 bg-transparent text-white placeholder-neutral-500 text-sm focus:outline-none"
+                className="w-full pl-11 pr-4 py-3.5 bg-transparent text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none font-medium"
                 required
               />
             </div>
             {errors.email && (
-              <p className="mt-1.5 text-xs text-red-400 font-medium">
+              <p className="mt-1.5 text-xs text-red-500 font-medium">
                 {errors.email}
               </p>
             )}
@@ -356,30 +356,30 @@ const ContactForm = () => {
         <div>
           <label
             htmlFor="contact-subject"
-            className="block text-[11px] font-mono uppercase tracking-widest text-neutral-300 mb-2 flex items-center justify-between"
+            className="block text-[11px] font-mono uppercase tracking-widest text-neutral-700 mb-2 flex items-center justify-between"
           >
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-bold">
               <IoDocumentTextOutline
                 className={
                   focusedField === "subject"
-                    ? "text-secondary-400"
-                    : "text-neutral-500"
+                    ? "text-secondary-500"
+                    : "text-neutral-400"
                 }
               />
               Subject / Topic
             </span>
-            <span className="text-secondary-400 font-bold">*</span>
+            <span className="text-secondary-500 font-bold">*</span>
           </label>
           <div
-            className={`relative rounded-xl border transition-all duration-200 ${
+            className={`relative rounded-2xl border transition-all duration-200 ${
               errors.subject
-                ? "border-red-500/80 bg-red-950/20"
+                ? "border-red-400 bg-red-50/50"
                 : focusedField === "subject"
-                ? "border-secondary-500 ring-2 ring-secondary-500/25 bg-[#141414]"
-                : "border-neutral-800 bg-[#101010] hover:border-neutral-700"
+                ? "border-secondary-500 ring-4 ring-secondary-500/10 bg-white shadow-sm"
+                : "border-neutral-200 bg-neutral-50/60 hover:border-neutral-300 hover:bg-white"
             }`}
           >
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400">
               <IoDocumentTextOutline />
             </div>
             <input
@@ -391,12 +391,12 @@ const ContactForm = () => {
               onBlur={() => setFocusedField(null)}
               onChange={(e) => handleChange("subject", e.target.value)}
               placeholder="e.g. Tournament Registration, Partnership, or Rule Question"
-              className="w-full pl-10 pr-4 py-3 bg-transparent text-white placeholder-neutral-500 text-sm focus:outline-none"
+              className="w-full pl-11 pr-4 py-3.5 bg-transparent text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none font-medium"
               required
             />
           </div>
           {errors.subject && (
-            <p className="mt-1.5 text-xs text-red-400 font-medium">
+            <p className="mt-1.5 text-xs text-red-500 font-medium">
               {errors.subject}
             </p>
           )}
@@ -407,33 +407,33 @@ const ContactForm = () => {
           <div className="flex items-center justify-between mb-2">
             <label
               htmlFor="contact-message"
-              className="text-[11px] font-mono uppercase tracking-widest text-neutral-300 flex items-center gap-1.5"
+              className="text-[11px] font-mono uppercase tracking-widest text-neutral-700 flex items-center gap-1.5 font-bold"
             >
               <IoChatbubblesOutline
                 className={
                   focusedField === "message"
-                    ? "text-secondary-400"
-                    : "text-neutral-500"
+                    ? "text-secondary-500"
+                    : "text-neutral-400"
                 }
               />
               Message Details
-              <span className="text-secondary-400 font-bold">*</span>
+              <span className="text-secondary-500 font-bold">*</span>
             </label>
             <span
-              className={`text-xs font-mono ${
-                isMessageValid ? "text-secondary-400" : "text-neutral-500"
+              className={`text-xs font-mono font-semibold ${
+                isMessageValid ? "text-secondary-600" : "text-neutral-400"
               }`}
             >
               {charCount} / 10 min characters
             </span>
           </div>
           <div
-            className={`relative rounded-xl border transition-all duration-200 ${
+            className={`relative rounded-2xl border transition-all duration-200 ${
               errors.message
-                ? "border-red-500/80 bg-red-950/20"
+                ? "border-red-400 bg-red-50/50"
                 : focusedField === "message"
-                ? "border-secondary-500 ring-2 ring-secondary-500/25 bg-[#141414]"
-                : "border-neutral-800 bg-[#101010] hover:border-neutral-700"
+                ? "border-secondary-500 ring-4 ring-secondary-500/10 bg-white shadow-sm"
+                : "border-neutral-200 bg-neutral-50/60 hover:border-neutral-300 hover:bg-white"
             }`}
           >
             <textarea
@@ -445,28 +445,28 @@ const ContactForm = () => {
               onChange={(e) => handleChange("message", e.target.value)}
               rows={5}
               placeholder="Provide details about your inquiry, squad, or project..."
-              className="w-full px-4 py-3.5 bg-transparent text-white placeholder-neutral-500 text-sm focus:outline-none resize-none"
+              className="w-full px-4 py-3.5 bg-transparent text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none resize-none font-medium"
               required
             />
           </div>
           {errors.message && (
-            <p className="mt-1.5 text-xs text-red-400 font-medium">
+            <p className="mt-1.5 text-xs text-red-500 font-medium">
               {errors.message}
             </p>
           )}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Button (Matching HeroSection pill button style) */}
         <motion.button
           type="submit"
           disabled={isSubmitting}
-          className="relative w-full group overflow-hidden rounded-xl font-bold uppercase tracking-wider text-sm transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-secondary-500/20 hover:shadow-secondary-500/40"
+          className="relative w-full group overflow-hidden rounded-full font-black uppercase tracking-wider text-sm transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-secondary-500/30 hover:shadow-secondary-500/50 hover:scale-[1.01] active:scale-[0.99]"
           whileHover={!isSubmitting ? { scale: 1.01 } : {}}
           whileTap={!isSubmitting ? { scale: 0.99 } : {}}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary-600 via-secondary-500 to-[#ff7e36] transition-all duration-300 group-hover:opacity-95" />
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary-500 via-[#ff6a28] to-secondary-600 transition-all duration-300" />
 
-          <div className="relative px-6 py-4 flex items-center justify-center gap-2.5 text-white">
+          <div className="relative px-8 py-4 flex items-center justify-center gap-3 text-white">
             {isSubmitting ? (
               <>
                 <motion.div
@@ -479,7 +479,7 @@ const ContactForm = () => {
             ) : (
               <>
                 <span>Transmit Message to Arena Desk</span>
-                <IoArrowForward className="text-lg transition-transform duration-300 group-hover:translate-x-1" />
+                <IoArrowForward className="text-lg transition-transform duration-300 group-hover:translate-x-1.5" />
               </>
             )}
           </div>

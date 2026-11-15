@@ -8,6 +8,7 @@ const CountdownTimer = ({
   label = "Time remaining",
   expiredMessage = "Registration has closed",
   registrationDeadline,
+  theme = "dark",
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -109,51 +110,81 @@ const CountdownTimer = ({
     );
   }
 
+  const isDark = theme === "dark";
+
   return (
-    <div className="flex gap-3 justify-center w-full">
+    <div className="flex gap-2 sm:gap-3 justify-center w-full">
       {timeLeft.days > 0 && (
         <div
           key={timeLeft.days}
-          className="bg-white text-secondary-700 px-4 py-4 rounded-xl text-center min-w-[70px] shadow-md border-2 border-secondary-200"
+          className={`${
+            isDark
+              ? "bg-black/60 text-white border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              : "bg-neutral-50 text-neutral-900 shadow-sm border border-neutral-200/90"
+          } px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-center min-w-[58px] sm:min-w-[68px] backdrop-blur-md`}
         >
-          <div className="text-3xl font-black text-secondary-700 mb-1">
+          <div className="text-xl sm:text-2xl font-black text-secondary-500 mb-0.5 leading-none">
             {timeLeft.days}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-secondary-500 font-semibold">
+          <div className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold ${
+            isDark ? "text-white/50" : "text-neutral-500"
+          }`}>
             Days
           </div>
         </div>
       )}
       <div
         key={`${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}
-        className="bg-white text-secondary-700 px-4 py-4 rounded-xl text-center min-w-[70px] shadow-md border-2 border-secondary-200"
+        className={`${
+          isDark
+            ? "bg-black/60 text-white border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+            : "bg-neutral-50 text-neutral-900 shadow-sm border border-neutral-200/90"
+        } px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-center min-w-[58px] sm:min-w-[68px] backdrop-blur-md`}
       >
-        <div className="text-3xl font-black text-secondary-700 mb-1">
+        <div className={`text-xl sm:text-2xl font-black mb-0.5 leading-none ${
+          isDark ? "text-white" : "text-neutral-900"
+        }`}>
           {String(timeLeft.hours).padStart(2, "0")}
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-secondary-500 font-semibold">
+        <div className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold ${
+          isDark ? "text-white/50" : "text-neutral-500"
+        }`}>
           Hours
         </div>
       </div>
       <div
         key={`${timeLeft.minutes}-${timeLeft.seconds}`}
-        className="bg-white text-secondary-700 px-4 py-4 rounded-xl text-center min-w-[70px] shadow-md border-2 border-secondary-200"
+        className={`${
+          isDark
+            ? "bg-black/60 text-white border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+            : "bg-neutral-50 text-neutral-900 shadow-sm border border-neutral-200/90"
+        } px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-center min-w-[58px] sm:min-w-[68px] backdrop-blur-md`}
       >
-        <div className="text-3xl font-black text-secondary-700 mb-1">
+        <div className={`text-xl sm:text-2xl font-black mb-0.5 leading-none ${
+          isDark ? "text-white" : "text-neutral-900"
+        }`}>
           {String(timeLeft.minutes).padStart(2, "0")}
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-secondary-500 font-semibold">
+        <div className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold ${
+          isDark ? "text-white/50" : "text-neutral-500"
+        }`}>
           Min
         </div>
       </div>
       <div
         key={timeLeft.seconds}
-        className="bg-white text-secondary-700 px-4 py-4 rounded-xl text-center min-w-[70px] shadow-md border-2 border-secondary-200"
+        className={`${
+          isDark
+            ? "bg-black/60 text-white border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+            : "bg-neutral-50 text-neutral-900 shadow-sm border border-neutral-200/90"
+        } px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-center min-w-[58px] sm:min-w-[68px] backdrop-blur-md`}
       >
-        <div className="text-3xl font-black text-secondary-700 mb-1">
+        <div className="text-xl sm:text-2xl font-black text-secondary-500 mb-0.5 leading-none">
           {String(timeLeft.seconds).padStart(2, "0")}
         </div>
-        <div className="text-[10px] uppercase tracking-wider text-secondary-500 font-semibold">
+        <div className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold ${
+          isDark ? "text-white/50" : "text-neutral-500"
+        }`}>
           Sec
         </div>
       </div>

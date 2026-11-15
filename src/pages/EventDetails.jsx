@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import RegistrationModal from "../components/events/RegistrationModal";
 import LightboxViewer from "../components/gallery/LightboxViewer";
 import CountdownTimer from "../components/CountdownTimer";
+import SpotlightCard from "../components/reactbits/SpotlightCard";
 import {
   IoArrowBack,
   IoCalendar,
@@ -445,12 +446,12 @@ const EventDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-primary-50 pt-24 flex items-center justify-center">
+      <div className="min-h-screen bg-[#07080a] pt-32 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         >
-          <div className="w-12 h-12 border-4 border-secondary-200 border-t-secondary-500 rounded-full" />
+          <div className="w-12 h-12 border-4 border-secondary-500/20 border-t-secondary-500 rounded-full" />
         </motion.div>
       </div>
     );
@@ -458,7 +459,7 @@ const EventDetails = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-primary-50 pt-24 pb-16">
+      <div className="min-h-screen bg-[#07080a] pt-32 pb-16">
         <EmptyState
           variant="events"
           title="Event not found"
@@ -471,12 +472,38 @@ const EventDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-primary-50 pt-20 relative">
+    <div className="min-h-screen bg-[#07080a] text-white pt-28 sm:pt-32 relative overflow-hidden">
+      {/* Background Stadium Atmosphere */}
+      <div className="absolute inset-0 pointer-events-none">
+        <svg
+          className="absolute inset-0 w-full h-full opacity-15"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern id="detail-page-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
+              <circle cx="0" cy="0" r="1.2" fill="rgba(254, 87, 35, 0.3)" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#detail-page-grid)" />
+        </svg>
+
+        {/* Ambient Orange Stadium Blooms */}
+        <div
+          className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
+          style={{ background: "radial-gradient(circle, #fe5723 0%, transparent 70%)" }}
+        />
+        <div
+          className="absolute top-1/2 -left-40 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-15"
+          style={{ background: "radial-gradient(circle, #ff8b42 0%, transparent 70%)" }}
+        />
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 relative z-10">
         {/* Modern Back Button */}
         <motion.button
           onClick={() => navigate("/events")}
-          className="mb-8 flex items-center gap-3 px-5 py-3 rounded-xl bg-white/80 backdrop-blur-md border border-primary-200/50 text-primary-700 hover:text-secondary-600 hover:bg-white hover:border-secondary-300 hover:shadow-lg transition-all duration-300 group shadow-sm"
+          className="mb-8 flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/80 hover:text-white hover:bg-white/10 hover:border-secondary-500/50 transition-all duration-300 group shadow-lg"
           whileHover={{ x: -4 }}
           whileTap={{ scale: 0.95 }}
           initial={{ opacity: 0, x: -20 }}
@@ -585,60 +612,60 @@ const EventDetails = () => {
 
         {/* Event Media — only when loading, error, or there is media */}
         {mediaLoading || mediaError || eventMedia.length > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-primary-200 mb-10"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <IoInformationCircle className="w-6 h-6 text-primary-600" />
-                  <h3 className="text-xl font-bold text-primary-950">
-                    Event photos & videos
-                  </h3>
-                </div>
-                {mediaLoading && (
-                  <span className="text-xs text-primary-500">
-                    Loading media...
-                  </span>
-                )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 mb-10 backdrop-blur-xl"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <IoInformationCircle className="w-6 h-6 text-secondary-400" />
+                <h3 className="text-xl font-black uppercase tracking-tight text-white">
+                  Event Highlights & Media
+                </h3>
               </div>
-
-              {mediaError && !mediaLoading && (
-                <p className="text-sm text-primary-500">{mediaError}</p>
+              {mediaLoading && (
+                <span className="text-xs text-white/50">
+                  Loading media...
+                </span>
               )}
+            </div>
 
-              {!mediaLoading && eventMedia.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {eventMedia.map((item) => {
-                    const isVideo = item.type === "video";
-                    return (
-                      <button
-                        key={item._id}
-                        type="button"
-                        onClick={() => openEventMedia(item)}
-                        className="relative group rounded-xl overflow-hidden border border-primary-200/70 bg-primary-900/5"
-                      >
-                        <EventMediaTileCover item={item} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary-950/70 via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
-                        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-xs text-white">
-                          <span className="font-medium truncate">
-                            {item.category?.replace(/-/g, " ") || "Event"}
+            {mediaError && !mediaLoading && (
+              <p className="text-sm text-red-400">{mediaError}</p>
+            )}
+
+            {!mediaLoading && eventMedia.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {eventMedia.map((item) => {
+                  const isVideo = item.type === "video";
+                  return (
+                    <button
+                      key={item._id}
+                      type="button"
+                      onClick={() => openEventMedia(item)}
+                      className="relative group rounded-2xl overflow-hidden border border-white/10 bg-black/40 transition-transform duration-300 hover:scale-[1.02]"
+                    >
+                      <EventMediaTileCover item={item} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
+                      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-xs text-white">
+                        <span className="font-semibold truncate">
+                          {item.category?.replace(/-/g, " ") || "Event"}
+                        </span>
+                        {isVideo && (
+                          <span className="px-2 py-0.5 rounded-full bg-secondary-500 text-white text-[10px] font-black uppercase tracking-wide">
+                            Video
                           </span>
-                          {isVideo && (
-                            <span className="px-2 py-0.5 rounded-full bg-black/60 text-[10px] uppercase tracking-wide">
-                              Video
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </motion.div>
-          ) : null}
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        ) : null}
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
@@ -649,110 +676,100 @@ const EventDetails = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2 space-y-6"
           >
-            {/* Key info cards - colored icons per reference */}
+            {/* Key info cards - Spotlight Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white rounded-2xl p-5 border border-primary-200 shadow-sm hover:shadow-md transition-shadow"
-                whileHover={{ y: -2 }}
+              <SpotlightCard
+                className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
+                spotlightColor="rgba(254, 87, 35, 0.2)"
+                borderColor="rgba(254, 87, 35, 0.45)"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <IoCalendar className="w-5 h-5 text-blue-600" />
+                  <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                    <IoCalendar className="w-5 h-5 text-secondary-400" />
                   </div>
                 </div>
-                <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-1 font-semibold">
+                <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
                   Start date
                 </p>
-                <p className="text-xl font-bold text-primary-950">
+                <p className="text-lg font-black text-white">
                   {new Date(event.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}
                 </p>
-                <p className="text-sm text-primary-500 mt-0.5">
+                <p className="text-xs text-secondary-400 font-semibold mt-0.5">
                   {new Date(event.date).toLocaleDateString("en-US", {
                     year: "numeric",
                   })}
                 </p>
-              </motion.div>
+              </SpotlightCard>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="bg-white rounded-2xl p-5 border border-primary-200 shadow-sm hover:shadow-md transition-shadow"
-                whileHover={{ y: -2 }}
+              <SpotlightCard
+                className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
+                spotlightColor="rgba(254, 87, 35, 0.2)"
+                borderColor="rgba(254, 87, 35, 0.45)"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-red-50 rounded-lg">
-                    <IoLocation className="w-5 h-5 text-red-600" />
+                  <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                    <IoLocation className="w-5 h-5 text-secondary-400" />
                   </div>
                 </div>
-                <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-1 font-semibold">
+                <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
                   Location
                 </p>
-                <p className="text-lg font-bold text-primary-950 line-clamp-1">
+                <p className="text-base font-black text-white line-clamp-1">
                   {event.location.includes(",")
                     ? event.location.split(",")[0].trim()
                     : event.location}
                 </p>
-                <p className="text-sm text-primary-500 mt-0.5 line-clamp-1">
+                <p className="text-xs text-white/50 mt-0.5 line-clamp-1 font-medium">
                   {event.location.includes(",")
                     ? event.location.split(",").slice(1).join(",").trim()
-                    : "—"}
+                    : "Seattle, WA"}
                 </p>
-              </motion.div>
+              </SpotlightCard>
 
               {event.type === "tournament" && event.status !== "completed" && (
                 <>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="bg-white rounded-2xl p-5 border border-primary-200 shadow-sm hover:shadow-md transition-shadow"
-                    whileHover={{ y: -2 }}
+                  <SpotlightCard
+                    className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
+                    spotlightColor="rgba(254, 87, 35, 0.2)"
+                    borderColor="rgba(254, 87, 35, 0.45)"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-green-50 rounded-lg">
-                        <IoPeople className="w-5 h-5 text-green-600" />
+                      <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                        <IoPeople className="w-5 h-5 text-secondary-400" />
                       </div>
                     </div>
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-1 font-semibold">
-                      Participants
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
+                      Roster Slots
                     </p>
-                    <p className="text-xl font-bold text-primary-950">
+                    <p className="text-lg font-black text-white">
                       {event.participants}/{event.maxParticipants}
                     </p>
-                    <p className="text-sm text-primary-500 mt-0.5">Confirmed</p>
-                  </motion.div>
+                    <p className="text-xs text-secondary-400 font-semibold mt-0.5">Confirmed</p>
+                  </SpotlightCard>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45 }}
-                    className="bg-white rounded-2xl p-5 border border-primary-200 shadow-sm hover:shadow-md transition-shadow"
-                    whileHover={{ y: -2 }}
+                  <SpotlightCard
+                    className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
+                    spotlightColor="rgba(254, 87, 35, 0.2)"
+                    borderColor="rgba(254, 87, 35, 0.45)"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-amber-50 rounded-lg">
-                        <IoCash className="w-5 h-5 text-amber-600" />
+                      <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                        <IoCash className="w-5 h-5 text-secondary-400" />
                       </div>
                     </div>
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-1 font-semibold">
-                      Entry fee
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
+                      Entry Fee
                     </p>
-                    <p className="text-xl font-bold text-primary-950">
+                    <p className="text-lg font-black text-secondary-400">
                       {event.price > 0 ? `$${event.price.toFixed(2)}` : "Free"}
                     </p>
-                    <p className="text-sm text-primary-500 mt-0.5">
-                      {event.tournamentType === "team"
-                        ? "Per team"
-                        : "Per player"}
+                    <p className="text-xs text-white/50 mt-0.5 font-medium">
+                      {event.tournamentType === "team" ? "Per Squad" : "Per Player"}
                     </p>
-                  </motion.div>
+                  </SpotlightCard>
                 </>
               )}
             </div>
@@ -762,26 +779,26 @@ const EventDetails = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-primary-200"
+              className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 backdrop-blur-xl"
             >
-              <h2 className="text-xl font-bold text-primary-950 mb-6 flex items-center gap-3">
-                <span className="p-2 bg-primary-100 rounded-full">
-                  <IoInformationCircle className="w-5 h-5 text-primary-600" />
+              <h2 className="text-xl font-black uppercase tracking-tight text-white mb-6 flex items-center gap-3">
+                <span className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                  <IoInformationCircle className="w-5 h-5 text-secondary-400" />
                 </span>
-                Event information
+                Event Intel & Schedule
               </h2>
 
               <div className="space-y-4">
                 {/* Date & Time */}
-                <div className="flex items-start gap-4 p-5 bg-primary-50/50 rounded-xl border border-primary-200/50">
-                  <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
-                    <IoCalendar className="w-6 h-6 text-primary-700" />
+                <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
+                  <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
+                    <IoCalendar className="w-6 h-6 text-secondary-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-2 font-semibold">
+                    <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
                       Event schedule
                     </p>
-                    <p className="text-lg font-bold text-primary-950 mb-1">
+                    <p className="text-lg font-bold text-white mb-0.5">
                       {new Date(event.date).toLocaleDateString("en-US", {
                         weekday: "long",
                         month: "long",
@@ -790,7 +807,7 @@ const EventDetails = () => {
                       })}
                     </p>
                     {event.endDate && (
-                      <p className="text-sm text-primary-600">
+                      <p className="text-xs text-secondary-400 font-medium">
                         Ends:{" "}
                         {new Date(event.endDate).toLocaleDateString("en-US", {
                           month: "long",
@@ -803,21 +820,21 @@ const EventDetails = () => {
                 </div>
 
                 {/* Location */}
-                <div className="flex items-start gap-4 p-5 bg-primary-50/50 rounded-xl border border-primary-200/50">
-                  <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
-                    <IoLocation className="w-6 h-6 text-primary-700" />
+                <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
+                  <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
+                    <IoLocation className="w-6 h-6 text-secondary-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-2 font-semibold">
+                    <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
                       Venue
                     </p>
-                    <p className="text-lg font-bold text-primary-950">
+                    <p className="text-lg font-bold text-white">
                       {event.location.includes(",")
                         ? event.location.split(",")[0].trim()
                         : event.location}
                     </p>
                     {event.location.includes(",") && (
-                      <p className="text-sm text-primary-600 mt-0.5">
+                      <p className="text-xs text-white/50 mt-0.5 font-medium">
                         {event.location.split(",").slice(1).join(",").trim()}
                       </p>
                     )}
@@ -826,15 +843,15 @@ const EventDetails = () => {
 
                 {/* Registration Deadline */}
                 {event.registrationDeadline && (
-                  <div className="flex items-start gap-4 p-5 bg-primary-50/50 rounded-xl border border-primary-200/50">
-                    <div className="p-3 bg-primary-100 rounded-lg flex-shrink-0">
-                      <IoTime className="w-6 h-6 text-primary-700" />
+                  <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
+                    <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
+                      <IoTime className="w-6 h-6 text-secondary-400" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-2 font-semibold">
+                      <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
                         Registration deadline
                       </p>
-                      <p className="text-lg font-bold text-primary-950">
+                      <p className="text-lg font-bold text-white">
                         {new Date(
                           event.registrationDeadline,
                         ).toLocaleDateString("en-US", {
@@ -845,7 +862,7 @@ const EventDetails = () => {
                           minute: "2-digit",
                         })}
                       </p>
-                      <p className="text-sm text-primary-500 mt-1">
+                      <p className="text-xs text-secondary-400/80 mt-1 font-medium">
                         Registration closes 24 hours prior
                       </p>
                     </div>
@@ -856,21 +873,21 @@ const EventDetails = () => {
                 {event.type === "tournament" && (
                   <>
                     {event.status !== "completed" && (
-                      <div className="p-5 bg-primary-50/50 rounded-2xl border border-primary-200/50">
-                        <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-2 font-semibold">
-                          Registration progress
+                      <div className="p-5 bg-white/[0.03] rounded-2xl border border-white/8">
+                        <p className="text-[11px] text-white/50 uppercase tracking-widest mb-2 font-bold">
+                          Roster capacity
                         </p>
-                        <div className="flex items-center justify-between gap-4 mb-2">
-                          <span className="text-base font-bold text-primary-950">
-                            {event.participants}/{event.maxParticipants} Registered
+                        <div className="flex items-center justify-between gap-4 mb-2.5">
+                          <span className="text-base font-black text-white">
+                            {event.participants} / {event.maxParticipants} Registered
                           </span>
-                          <span className="text-base font-bold text-green-600">
-                            {Math.round(progress)}%
+                          <span className="text-sm font-black text-emerald-400">
+                            {Math.round(progress)}% Filled
                           </span>
                         </div>
-                        <div className="w-full bg-primary-200/60 rounded-full h-2.5 overflow-hidden border border-green-200">
+                        <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden border border-white/5">
                           <motion.div
-                            className="bg-gradient-to-r from-green-500 to-emerald-500 h-full rounded-full"
+                            className="bg-gradient-to-r from-secondary-500 via-orange-500 to-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(254,87,35,0.6)]"
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.max(progress, 2)}%` }}
                             transition={{ duration: 1, ease: "easeOut" }}
@@ -879,18 +896,19 @@ const EventDetails = () => {
                       </div>
                     )}
 
-                    {/* Prize Pool - prominent golden box */}
+                    {/* Prize Pool - championship golden card */}
                     {event.prizePool > 0 && (
-                      <div className="p-6 rounded-2xl border-2 border-amber-300/70 bg-gradient-to-br from-amber-50/80 to-white shadow-md">
+                      <div className="relative overflow-hidden p-6 rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-[#0e1015] to-amber-950/20 shadow-[0_0_30px_rgba(245,158,11,0.12)]">
+                        <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
                         <div className="flex items-center gap-4">
-                          <div className="p-3 bg-amber-100 rounded-xl">
-                            <IoTrophy className="w-9 h-9 text-amber-600" />
+                          <div className="p-3.5 bg-amber-500/20 border border-amber-500/40 rounded-2xl">
+                            <IoTrophy className="w-8 h-8 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-[11px] text-primary-500 uppercase tracking-widest mb-1 font-semibold">
-                              Total prize pool
+                            <p className="text-[11px] text-amber-400/80 uppercase tracking-widest mb-1 font-bold">
+                              Championship Prize Pool
                             </p>
-                            <p className="text-3xl font-black text-amber-700">
+                            <p className="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight drop-shadow-[0_0_15px_rgba(251,191,36,0.25)]">
                               $
                               {Number(event.prizePool).toLocaleString("en-US", {
                                 minimumFractionDigits: 2,
@@ -902,18 +920,18 @@ const EventDetails = () => {
                     )}
 
                     {/* Event tags - pill style with icons */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 pt-2">
                       {event.tournamentType && (
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-primary-200 bg-white text-primary-800 capitalize">
-                          <IoFlag className="w-4 h-4 text-red-500" />
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/[0.04] text-white/90 uppercase tracking-wider">
+                          <IoFlag className="w-4 h-4 text-secondary-400" />
                           {event.tournamentType === "both"
                             ? "Individual / Team"
                             : event.tournamentType}
                         </span>
                       )}
                       {event.format && (
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-primary-200 bg-white text-primary-800 capitalize">
-                          <IoTrophy className="w-4 h-4 text-amber-500" />
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/[0.04] text-white/90 uppercase tracking-wider">
+                          <IoTrophy className="w-4 h-4 text-amber-400" />
                           {event.format.replace("-", " ")}
                         </span>
                       )}
@@ -929,15 +947,17 @@ const EventDetails = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-2xl p-8 shadow-sm border border-primary-200"
+                className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 backdrop-blur-xl"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <IoShieldCheckmark className="w-6 h-6 text-primary-600" />
-                  <h3 className="text-xl font-bold text-primary-950">
-                    Rules & regulations
+                  <span className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
+                    <IoShieldCheckmark className="w-5 h-5 text-secondary-400" />
+                  </span>
+                  <h3 className="text-xl font-black uppercase tracking-tight text-white">
+                    Rules & Regulations
                   </h3>
                 </div>
-                <div className="text-primary-700 whitespace-pre-wrap leading-relaxed bg-primary-50/50 p-6 rounded-xl border border-primary-200/50 text-sm">
+                <div className="text-white/80 whitespace-pre-wrap leading-relaxed bg-white/[0.03] p-6 rounded-2xl border border-white/8 text-sm">
                   {event.rules}
                 </div>
               </motion.div>
@@ -958,14 +978,18 @@ const EventDetails = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-primary-200"
+                className="bg-[#0e1015]/90 rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-xl"
               >
-                <p className="text-xs text-primary-500 uppercase tracking-wider font-semibold mb-4">
-                  Event starts in
-                </p>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-2 h-2 rounded-full bg-secondary-500 animate-ping" />
+                  <p className="text-xs text-secondary-400 uppercase tracking-widest font-black">
+                    Kickoff Countdown
+                  </p>
+                </div>
                 <CountdownTimer
                   targetDate={event.date}
                   registrationDeadline={event.registrationDeadline}
+                  theme="dark"
                 />
               </motion.div>
             )}
@@ -975,21 +999,22 @@ const EventDetails = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-primary-200"
+              className="bg-[#0e1015]/90 rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-xl"
             >
-              <h4 className="text-lg font-bold text-primary-950 mb-4">
-                Quick facts
+              <h4 className="text-lg font-black uppercase tracking-tight text-white mb-5 flex items-center gap-2">
+                <IoStar className="w-5 h-5 text-secondary-400" />
+                Tournament Intel
               </h4>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <span className="p-1.5 bg-amber-50 rounded-lg flex-shrink-0">
-                    <IoStar className="w-5 h-5 text-amber-600" />
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+                  <span className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-xl flex-shrink-0">
+                    <IoStar className="w-4 h-4 text-amber-400" />
                   </span>
                   <div>
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest font-semibold">
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
                       Event type
                     </p>
-                    <p className="text-sm font-medium text-primary-900 capitalize">
+                    <p className="text-sm font-bold text-white capitalize">
                       {event.type === "tournament" && event.tournamentType
                         ? `${event.tournamentType === "both" ? "Team / Individual" : event.tournamentType} Tournament`
                         : event.type}
@@ -997,46 +1022,46 @@ const EventDetails = () => {
                   </div>
                 </div>
                 {event.type === "tournament" && (
-                  <div className="flex items-start gap-3">
-                    <span className="p-1.5 bg-blue-50 rounded-lg flex-shrink-0">
-                      <IoShieldCheckmark className="w-5 h-5 text-blue-600" />
+                  <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+                    <span className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl flex-shrink-0">
+                      <IoShieldCheckmark className="w-4 h-4 text-blue-400" />
                     </span>
                     <div>
-                      <p className="text-[11px] text-primary-500 uppercase tracking-widest font-semibold">
+                      <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
                         Format
                       </p>
-                      <p className="text-sm font-medium text-primary-900 capitalize">
+                      <p className="text-sm font-bold text-white capitalize">
                         Double elimination
                       </p>
                     </div>
                   </div>
                 )}
-                <div className="flex items-start gap-3">
-                  <span className="p-1.5 bg-green-50 rounded-lg flex-shrink-0">
-                    <IoGlobe className="w-5 h-5 text-green-600" />
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+                  <span className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex-shrink-0">
+                    <IoGlobe className="w-4 h-4 text-emerald-400" />
                   </span>
                   <div>
-                    <p className="text-[11px] text-primary-500 uppercase tracking-widest font-semibold">
+                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
                       Region
                     </p>
-                    <p className="text-sm font-medium text-primary-900">
-                      International / Global
+                    <p className="text-sm font-bold text-white">
+                      Pacific Northwest / Seattle
                     </p>
                   </div>
                 </div>
                 {event.type === "tournament" &&
                   event.tournamentType !== "individual" &&
                   event.minTeamMembers && (
-                    <div className="flex items-start gap-3">
-                      <span className="p-1.5 bg-primary-100 rounded-lg flex-shrink-0">
-                        <IoPeople className="w-5 h-5 text-primary-600" />
+                    <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+                      <span className="p-2 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
+                        <IoPeople className="w-4 h-4 text-secondary-400" />
                       </span>
                       <div>
-                        <p className="text-[11px] text-primary-500 uppercase tracking-widest font-semibold">
-                          Team size
+                        <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
+                          Squad Size
                         </p>
-                        <p className="text-sm font-medium text-primary-900">
-                          {event.minTeamMembers}–{event.maxTeamMembers} members
+                        <p className="text-sm font-bold text-white">
+                          {event.minTeamMembers}–{event.maxTeamMembers} players
                         </p>
                       </div>
                     </div>
@@ -1050,22 +1075,22 @@ const EventDetails = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-primary-900 rounded-2xl p-6 text-white"
+                className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-secondary-600/30 via-[#0e1015] to-black border border-secondary-500/40 shadow-[0_0_35px_rgba(254,87,35,0.25)] text-white backdrop-blur-xl"
               >
-                <h3 className="text-xl font-bold mb-2">Ready to compete?</h3>
-                <p className="text-white/80 text-sm mb-6">
-                  Secure your spot in the most prestigious tournament of the
-                  season.
+                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-secondary-500/20 rounded-full blur-2xl pointer-events-none" />
+                <h3 className="text-xl font-black uppercase tracking-tight mb-2">Ready to rumble?</h3>
+                <p className="text-white/70 text-xs sm:text-sm mb-6 leading-relaxed">
+                  Lock in your squad's place in the Arena and compete for the championship.
                 </p>
                 {isAlreadyRegistered ? (
-                  <div className="w-full px-6 py-4 border border-green-500/60 bg-green-500/10 text-green-300 font-semibold text-sm rounded-xl flex items-center justify-center gap-2">
+                  <div className="w-full px-6 py-4 border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold text-sm rounded-xl flex items-center justify-center gap-2">
                     <IoCheckmarkCircle className="w-5 h-5" />
-                    Registered
+                    Confirmed Entry
                   </div>
                 ) : showRegisterButton ? (
                   <motion.button
                     onClick={handleRegisterClick}
-                    className="w-full px-6 py-4 bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-lg rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-secondary-500/30"
+                    className="w-full px-6 py-4 bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-400 hover:to-secondary-500 text-white font-black text-sm uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(254,87,35,0.4)]"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -1073,7 +1098,7 @@ const EventDetails = () => {
                     Register now
                   </motion.button>
                 ) : (
-                  <div className="w-full px-6 py-4 border border-primary-700/50 bg-primary-800/60 text-primary-100 font-semibold text-sm rounded-xl text-center">
+                  <div className="w-full px-6 py-4 border border-white/10 bg-white/5 text-white/50 font-bold text-sm rounded-xl text-center uppercase tracking-wider">
                     Registration closed
                   </div>
                 )}

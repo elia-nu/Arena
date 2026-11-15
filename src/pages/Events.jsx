@@ -195,96 +195,79 @@ const Events = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-primary-50/30 to-white pt-24 relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0">
-        {/* Subtle grid pattern */}
+    <div className="min-h-screen bg-[#07080a] text-white pt-28 sm:pt-32 relative overflow-hidden">
+      {/* Background Stadium Grid & Atmosphere */}
+      <div className="absolute inset-0 pointer-events-none">
+        <svg
+          className="absolute inset-0 w-full h-full opacity-20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern id="events-page-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
+              <circle cx="0" cy="0" r="1.2" fill="rgba(254, 87, 35, 0.3)" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#events-page-grid)" />
+        </svg>
+
+        {/* Ambient Orange Stadium Blooms */}
         <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
+          className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
+          style={{ background: "radial-gradient(circle, #fe5723 0%, transparent 70%)" }}
         />
-        {/* Gradient orbs */}
-        <motion.div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-tertiary-200/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.2, 0.25, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+        <div
+          className="absolute top-1/2 -left-40 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-15"
+          style={{ background: "radial-gradient(circle, #ff8b42 0%, transparent 70%)" }}
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16 relative z-10">
-        {/* Enhanced Header Section */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
+        {/* Header Section */}
         <motion.div
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-10 md:mb-14 flex flex-col items-center"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <motion.div
-            className="inline-block mb-6"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex items-center gap-3 px-5 py-2.5 border border-primary-950/10 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-              <motion.div
-                className="w-2 h-2 bg-secondary-400 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="text-primary-950 text-xs font-medium tracking-[0.2em] uppercase">
-                All Events
-              </span>
-            </div>
-          </motion.div>
+          {/* Tactical Badge */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-secondary-500/30 bg-secondary-500/10 backdrop-blur-md mb-4 shadow-[0_0_20px_rgba(254,87,35,0.15)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500 shadow-[0_0_8px_#fe5723]" />
+            </span>
+            <span className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">
+              ARENA TOURNAMENT CALENDAR
+            </span>
+          </div>
 
           <motion.h1
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight"
+            className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            THE ARENA{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-400 via-secondary-500 to-secondary-400">
+              SHOWDOWNS
+            </span>
+          </motion.h1>
+
+          <motion.p
+            className="text-sm md:text-base text-white/60 max-w-2xl mx-auto font-light leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            <span className="text-primary-950">Upcoming </span>
-            <span className="text-secondary-500">Events</span>
-          </motion.h1>
-
-          <motion.p
-            className="text-base md:text-lg text-primary-600 max-w-2xl mx-auto font-light leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            Join tournaments, matches, and competitions. Register now and
-            compete for glory.
+            Browse competitive tournaments, cage matches, and championship brackets. Register your squad and claim your place in Seattle street soccer history.
           </motion.p>
         </motion.div>
 
-        {/* Enhanced Filters */}
+        {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
           className="mb-8"
         >
           <EventFilters 
@@ -295,28 +278,26 @@ const Events = () => {
           />
         </motion.div>
 
-        {/* Enhanced Results Count */}
+        {/* Results Count */}
         <motion.div
-          className="mb-6 flex items-center justify-between"
+          className="mb-6 flex items-center justify-between text-xs sm:text-sm text-white/50"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.5 }}
         >
-          <p className="text-sm text-primary-600 font-medium">
-            <span className="text-secondary-600 font-semibold">
+          <p>
+            <span className="text-secondary-400 font-bold">
               {filteredEvents.length}
             </span>{" "}
             {filteredEvents.length === 1 ? "event" : "events"} found
           </p>
           {filter !== "all" && (
-            <motion.button
+            <button
               onClick={() => setFilter("all")}
-              className="text-xs text-primary-500 hover:text-secondary-600 uppercase tracking-wider transition-colors duration-200"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="text-xs text-secondary-400 hover:text-secondary-300 uppercase tracking-wider font-bold transition-colors duration-200"
             >
               Clear filters
-            </motion.button>
+            </button>
           )}
         </motion.div>
 
@@ -375,12 +356,12 @@ const Events = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 rounded-2xl bg-secondary-50 border border-secondary-200 text-center max-w-2xl mx-auto"
+                className="p-6 rounded-3xl bg-secondary-500/10 border border-secondary-500/30 text-center max-w-2xl mx-auto backdrop-blur-md"
               >
-                <p className="text-secondary-900 font-semibold mb-1">
+                <p className="text-secondary-400 font-black uppercase tracking-wider mb-1 text-sm">
                   Championship Season Update
                 </p>
-                <p className="text-sm text-primary-700">
+                <p className="text-sm text-white/70">
                   There are no open upcoming tournaments right now. Explore our past completed tournaments and champion results below!
                 </p>
               </motion.div>
@@ -390,10 +371,11 @@ const Events = () => {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
               >
-                <h2 className="text-2xl md:text-3xl font-semibold text-primary-950 mb-6">
-                  Upcoming Events
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mb-6 flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-secondary-500 animate-pulse" />
+                  Upcoming Tournaments
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
                   {upcomingEvents.map((event, index) => (
@@ -403,7 +385,7 @@ const Events = () => {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{
-                        delay: 0.8 + index * 0.1,
+                        delay: 0.7 + index * 0.1,
                         duration: 0.6,
                         ease: "easeOut",
                       }}
@@ -422,15 +404,17 @@ const Events = () => {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
               >
                 <div className="mb-6">
-                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                    <span className="text-primary-950">Past </span>
-                    <span className="text-secondary-500">Events</span>
+                  <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white">
+                    Past{" "}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-400 via-secondary-500 to-secondary-400">
+                      Showdowns & Results
+                    </span>
                   </h2>
-                  <p className="text-sm md:text-base text-primary-600 font-light mt-2">
-                    Relive previous tournaments, matches, and competitions.
+                  <p className="text-sm md:text-base text-white/50 font-light mt-1">
+                    Relive previous tournaments, champion rosters, and competition archives.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">

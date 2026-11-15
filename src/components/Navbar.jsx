@@ -103,57 +103,106 @@ const Navbar = () => {
     <>
       <nav
         ref={navRef}
-        className={`fixed top-3 left-3 right-3 sm:top-4 sm:left-6 sm:right-6 md:top-5 md:left-10 md:right-10 z-50 rounded-2xl md:rounded-full transition-all duration-700 ${
+        className={`fixed top-3 left-3 right-3 sm:top-4 sm:left-6 sm:right-6 md:top-5 md:left-10 md:right-10 z-50 rounded-2xl md:rounded-full transition-all duration-500 ${
           isScrolled
-            ? "bg-white/90 backdrop-blur-2xl border-b border-primary-200 shadow-lg"
-            : "bg-white backdrop-blur-xl border-b border-primary-200/50 shadow-xl"
+            ? "bg-neutral-950/85 backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)]"
+            : "bg-black/45 backdrop-blur-xl border border-white/12 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
         }`}
       >
         {/* Animated gradient background on hover */}
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="flex items-center justify-between h-14 sm:h-15 md:h-22">
-            {/* Logo with glow effect */}
+            {/* Logo */}
             <a
               href="/"
-              className="flex items-center gap-2 sm:gap-3 group relative py-1"
+              className="flex items-center gap-2.5 sm:gap-3 group relative py-1 select-none"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <div className="relative flex items-center justify-center">
-                <div className="absolute -inset-1 bg-secondary-500/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-22 lg:h-22 rounded-full object-cover shadow-md border-2 border-secondary-500/30 transition-all duration-500 group-hover:scale-105 group-hover:border-secondary-500"
+              {/* Badge mark — mirrors the circular logo */}
+              <div className="relative flex-shrink-0">
+                {/* Hover glow */}
+                <div className="absolute -inset-1.5 rounded-full bg-secondary-500/25 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                {/* Outer orange ring */}
+                <div
+                  className="relative flex items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-105"
+                  style={{
+                    width: 52,
+                    height: 52,
+                    background: "linear-gradient(135deg, #fe5723 0%, #ff8b42 50%, #fe5723 100%)",
+                    padding: 2.5,
+                  }}
+                >
+                  {/* Inner dark circle */}
+                  <div
+                    className="w-full h-full rounded-full flex flex-col items-center justify-center overflow-hidden"
+                    style={{ background: "#1a1a1a" }}
+                  >
+                    {/* Actual logo image inside the dark circle */}
+                    <img
+                      src={logo}
+                      alt="The Arena"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Spinning ring on hover */}
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-secondary-500/0 group-hover:border-secondary-500/40 transition-all duration-700"
+                  style={{ animation: "spin-slow 8s linear infinite" }}
                 />
+              </div>
+
+              {/* Wordmark — text version of the logo for desktop */}
+              <div className="hidden sm:flex flex-col leading-none">
+                <span
+                  className="font-black uppercase tracking-tight text-white transition-colors duration-300"
+                  style={{ fontSize: 15, letterSpacing: "-0.02em" }}
+                >
+                  THE{" "}
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, #fe5723, #ff8b42)",
+                      WebkitBackgroundClip: "text",
+                      backgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    ARENA
+                  </span>
+                </span>
+                <span
+                  className="font-bold uppercase tracking-widest text-secondary-400 transition-colors duration-300 group-hover:text-secondary-300"
+                  style={{ fontSize: 7.5, letterSpacing: "0.22em" }}
+                >
+                  LETS RUMBLE
+                </span>
               </div>
             </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center ">
+            <div className="hidden lg:flex items-center">
               {navItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
                   onMouseEnter={() => setHoveredItem(item.label)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  className={`relative px-3 md:px-3 xl:px-4 py-2.5 text-sm font-medium transition-all  duration-300 rounded-lg group ${
-                    isScrolled
-                      ? isActive(item.href)
-                        ? "text-secondary-600"
-                        : "text-primary-800"
-                      : isActive(item.href)
-                        ? "text-secondary-600"
-                        : "text-primary-800"
-                  } ${isActive(item.href) ? "font-semibold" : ""}`}
+                  className={`relative px-3 md:px-3 xl:px-4 py-2.5 text-sm transition-all duration-300 rounded-lg group ${
+                    isActive(item.href)
+                      ? "text-secondary-400 font-bold"
+                      : "text-white/80 hover:text-white font-medium"
+                  }`}
                 >
                   <span className="relative z-10">{item.label}</span>
 
-                  {/* Yellow underline animation - expands from center */}
+                  {/* Orange underline animation - expands from center */}
                   <div
                     className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-500 ease-out w-[80%] bg-secondary-500 ${
                       hoveredItem === item.label || isActive(item.href)
-                        ? "w-full opacity-100"
+                        ? "w-full opacity-100 shadow-[0_0_8px_#fe5723]"
                         : "w-0 opacity-0"
                     }`}
                   />
@@ -162,44 +211,40 @@ const Navbar = () => {
 
               {/* Cart Icon */}
               {shopPageEnabled && (
-              <a
-                href="/cart"
-                className={`relative p-2.5 transition-all duration-300 rounded-lg group ${
-                  isScrolled
-                    ? isActive("/cart")
-                      ? "text-secondary-600 font-semibold"
-                      : "text-primary-800"
-                    : isActive("/cart")
-                      ? "text-secondary-600 font-semibold"
-                      : "text-primary-800"
-                }`}
-              >
-                <IoCart className="w-5 h-5 xl:w-6 xl:h-6" />
-                {/* Cart Badge */}
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary-500 text-primary-950 text-xs font-bold rounded-full flex items-center justify-center shadow-lg">
-                    {cartItemCount}
-                  </span>
-                )}
-              </a>
+                <a
+                  href="/cart"
+                  className={`relative p-2.5 transition-all duration-300 rounded-lg group ${
+                    isActive("/cart")
+                      ? "text-secondary-400 font-semibold"
+                      : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  <IoCart className="w-5 h-5 xl:w-6 xl:h-6" />
+                  {/* Cart Badge */}
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-secondary-500/50">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </a>
               )}
 
               {/* Elegant Divider */}
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-primary-300 to-transparent mx-2 xl:mx-3" />
+              <div className="w-px h-6 bg-white/15 mx-2 xl:mx-3" />
 
               {/* Auth Buttons */}
               {isAuthenticated ? (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <NotificationBell />
                   <span
-                    className={`text-xs xl:text-sm font-medium text-primary-800 max-w-[80px] xl:max-w-none truncate`}
+                    className={`text-xs xl:text-sm font-medium text-white/90 max-w-[80px] xl:max-w-none truncate`}
                   >
                     {user?.username || user?.email}
                   </span>
                   {user?.role === "admin" && (
                     <a
                       href="/admin"
-                      className="px-3 xl:px-4 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all duration-300 text-secondary-600 hover:text-secondary-700 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
                     >
                       Dashboard
                     </a>
@@ -207,7 +252,7 @@ const Navbar = () => {
                   {user?.role === "team_leader" && (
                     <a
                       href="/team-leader"
-                      className="px-3 xl:px-4 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all duration-300 text-secondary-600 hover:text-secondary-700 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
                     >
                       Dashboard
                     </a>
@@ -215,7 +260,7 @@ const Navbar = () => {
                   {user?.role === "player" && (
                     <a
                       href="/player"
-                      className="px-3 xl:px-4 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all duration-300 text-secondary-600 hover:text-secondary-700 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
                     >
                       Dashboard
                     </a>
@@ -227,29 +272,33 @@ const Navbar = () => {
                       navigate("/");
                     }}
                     aria-label="Logout"
-                    className="flex items-center gap-2 px-3 py-2 text-xs xl:text-sm border-2 border-secondary-500 text-secondary-600 font-medium rounded-lg transition-all duration-300 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs xl:text-sm border border-secondary-500/50 text-secondary-400 font-semibold rounded-lg transition-all duration-300 hover:bg-secondary-500 hover:text-white"
                   >
                     <IoLogOutOutline className="w-4 h-4" />
                     <span>Logout</span>
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <a
                     href="/login"
-                    className={`px-3 xl:px-4 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all duration-300 ${
+                    className={`px-3 xl:px-4 py-2 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 ${
                       isActive("/login")
-                        ? "text-secondary-600 font-semibold"
-                        : "text-primary-800"
+                        ? "text-secondary-400"
+                        : "text-white/80 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     Login
                   </a>
                   <a
                     href="/register"
-                    className="relative px-4 xl:px-8 py-2 xl:py-3 bg-secondary-500 text-xs xl:text-sm font-semibold rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-secondary-500/20"
+                    className="relative px-4 xl:px-6 py-2 xl:py-2.5 font-bold text-xs xl:text-sm text-white rounded-full overflow-hidden group transition-all duration-300 hover:scale-105"
+                    style={{
+                      background: "linear-gradient(135deg, #fe5723 0%, #ff7a40 100%)",
+                      boxShadow: "0 0 20px rgba(254,87,35,0.4)",
+                    }}
                   >
-                    <span className="relative z-10 flex items-center text-primary-950 gap-1 xl:gap-2">
+                    <span className="relative z-10 flex items-center gap-1.5">
                       Register
                       <svg
                         className="w-3 h-3 xl:w-4 xl:h-4 transition-transform duration-300 group-hover:translate-x-1"
@@ -260,13 +309,13 @@ const Navbar = () => {
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={2}
+                          strokeWidth={2.5}
                           d="M13 7l5 5m0 0l-5 5m5-5H6"
                         />
                       </svg>
                     </span>
                     {/* Shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   </a>
                 </div>
               )}
@@ -274,7 +323,7 @@ const Navbar = () => {
 
             {/* Mobile/Tablet Menu Button */}
             <button
-              className="lg:hidden p-2 sm:p-3 transition-all duration-300 rounded-lg relative group text-primary-950 hover:bg-secondary-100"
+              className="lg:hidden p-2 sm:p-2.5 transition-all duration-300 rounded-lg relative group text-white hover:bg-white/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -314,7 +363,7 @@ const Navbar = () => {
 
           {/* Menu Panel */}
           <div
-            className="fixed top-20 sm:top-22 md:top-24 left-3 right-3 sm:left-6 sm:right-6 md:left-auto md:right-10 md:w-96 bg-white/95 backdrop-blur-2xl z-50 lg:hidden rounded-2xl shadow-2xl border border-primary-200 overflow-hidden max-h-[calc(100vh-6rem)] overflow-y-auto"
+            className="fixed top-20 sm:top-22 md:top-24 left-3 right-3 sm:left-6 sm:right-6 md:left-auto md:right-10 md:w-96 bg-neutral-950/95 backdrop-blur-2xl z-50 lg:hidden rounded-2xl shadow-2xl border border-white/12 overflow-hidden max-h-[calc(100vh-6rem)] overflow-y-auto"
             style={{
               animation: "slideDown 0.4s ease-out",
             }}
@@ -326,8 +375,8 @@ const Navbar = () => {
                   href={item.href}
                   className={`block py-3 sm:py-4 px-4 sm:px-5 text-sm sm:text-base font-medium rounded-xl transition-all duration-300 ${
                     isActive(item.href)
-                      ? "font-semibold text-secondary-600 bg-secondary-50"
-                      : "text-primary-950 hover:bg-primary-50"
+                      ? "font-bold text-secondary-400 bg-secondary-500/10 border-l-2 border-secondary-500"
+                      : "text-white/80 hover:text-white hover:bg-white/5"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                   style={{
@@ -346,8 +395,8 @@ const Navbar = () => {
                 href="/cart"
                 className={`flex items-center justify-between py-3 sm:py-4 px-4 sm:px-5 text-sm sm:text-base font-medium rounded-xl transition-all duration-300 ${
                   isActive("/cart")
-                    ? "font-semibold text-secondary-600 bg-secondary-50"
-                    : "text-primary-950 hover:bg-primary-50"
+                    ? "font-bold text-secondary-400 bg-secondary-500/10 border-l-2 border-secondary-500"
+                    : "text-white/80 hover:text-white hover:bg-white/5"
                 }`}
                 onClick={() => setIsMenuOpen(false)}
                 style={{
@@ -356,12 +405,12 @@ const Navbar = () => {
                   }s both`,
                 }}
               >
-                <span className="flex items-center gap-1">
-                  <IoCart className="w-5 h-5" />
+                <span className="flex items-center gap-1.5">
+                  <IoCart className="w-5 h-5 text-secondary-400" />
                   <span>Shopping Cart</span>
                 </span>
                 {cartItemCount > 0 && (
-                  <span className="w-6 h-6 bg-secondary-500 text-primary-950 text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="w-6 h-6 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-secondary-500/50">
                     {cartItemCount}
                   </span>
                 )}
@@ -369,12 +418,12 @@ const Navbar = () => {
               )}
 
               {/* Mobile/Tablet Auth */}
-              <div className="pt-4 sm:pt-6 mt-3 sm:mt-4 border-t border-primary-200 space-y-2">
+              <div className="pt-4 sm:pt-6 mt-3 sm:mt-4 border-t border-white/10 space-y-2">
                 {isAuthenticated ? (
                   <>
-                    <div className="px-4 sm:px-5 py-2 sm:py-3 text-primary-950 text-xs sm:text-sm">
+                    <div className="px-4 sm:px-5 py-2 sm:py-3 text-white text-xs sm:text-sm">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold truncate flex-1">
+                        <p className="font-semibold truncate flex-1 text-white/90">
                           {user?.username || user?.email}
                         </p>
                         <div onClick={() => setIsMenuOpen(false)}>
@@ -384,7 +433,7 @@ const Navbar = () => {
                       {user?.role === "admin" && (
                         <a
                           href="/admin"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-50 text-secondary-700 hover:bg-secondary-100 hover:text-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Dashboard
@@ -393,7 +442,7 @@ const Navbar = () => {
                       {user?.role === "team_leader" && (
                         <a
                           href="/team-leader"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-50 text-secondary-700 hover:bg-secondary-100 hover:text-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Dashboard
@@ -402,7 +451,7 @@ const Navbar = () => {
                       {user?.role === "player" && (
                         <a
                           href="/player"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-50 text-secondary-700 hover:bg-secondary-100 hover:text-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Dashboard
@@ -417,7 +466,7 @@ const Navbar = () => {
                         navigate("/");
                       }}
                       aria-label="Logout"
-                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-primary-950 text-white text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 shadow-lg hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 focus:ring-offset-white"
+                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 text-white text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 hover:bg-white/15"
                     >
                       Logout
                     </button>
@@ -426,10 +475,10 @@ const Navbar = () => {
                   <>
                     <a
                       href="/login"
-                      className={`block w-full px-4 sm:px-6 py-3 sm:py-4 bg-primary-100 text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 hover:bg-primary-200 ${
+                      className={`block w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/10 text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 hover:bg-white/10 ${
                         isActive("/login")
-                          ? "text-secondary-600 ring-2 ring-secondary-500"
-                          : "text-primary-950"
+                          ? "text-secondary-400 border-secondary-500/40"
+                          : "text-white"
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -437,7 +486,7 @@ const Navbar = () => {
                     </a>
                     <a
                       href="/register"
-                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-secondary-500 text-primary-950 text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 shadow-lg hover:bg-secondary-600"
+                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white text-sm sm:text-base font-bold rounded-xl text-center transition-all duration-300 active:scale-95 shadow-lg shadow-secondary-500/30"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Register Now
@@ -451,6 +500,11 @@ const Navbar = () => {
       )}
 
       <style>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

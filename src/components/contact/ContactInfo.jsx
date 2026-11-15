@@ -101,7 +101,11 @@ const ContactInfo = () => {
           const state = data.contactInfo.state || "WA";
 
           let displayAddress = "";
-          if (rawAddress && rawAddress !== "United States" && rawAddress !== "United States America") {
+          if (
+            rawAddress &&
+            rawAddress !== "United States" &&
+            rawAddress !== "United States America"
+          ) {
             displayAddress = rawAddress;
           } else {
             displayAddress = `${city}, ${state} · United States`;
@@ -203,7 +207,7 @@ const ContactInfo = () => {
       icon: FaTiktok,
       href: contactInfo.socialMedia.tiktok,
       tag: "@arenasoccer",
-      color: "hover:border-white hover:text-white",
+      color: "hover:border-neutral-900 hover:text-neutral-900",
     },
     {
       id: "youtube",
@@ -211,7 +215,7 @@ const ContactInfo = () => {
       icon: FaYoutube,
       href: contactInfo.socialMedia.youtube,
       tag: "Arena Street Soccer",
-      color: "hover:border-red-500 hover:text-red-500",
+      color: "hover:border-red-600 hover:text-red-600",
     },
     {
       id: "twitter",
@@ -219,7 +223,7 @@ const ContactInfo = () => {
       icon: IoLogoTwitter,
       href: contactInfo.socialMedia.twitter,
       tag: "@arenasports",
-      color: "hover:border-secondary-400 hover:text-secondary-400",
+      color: "hover:border-secondary-500 hover:text-secondary-500",
     },
     {
       id: "linkedin",
@@ -257,7 +261,7 @@ const ContactInfo = () => {
             icon: FaTiktok,
             href: "https://tiktok.com",
             tag: "@arenasoccer",
-            color: "hover:border-white hover:text-white",
+            color: "hover:border-neutral-900 hover:text-neutral-900",
           },
           {
             id: "youtube",
@@ -265,13 +269,13 @@ const ContactInfo = () => {
             icon: FaYoutube,
             href: "https://youtube.com",
             tag: "Arena Soccer",
-            color: "hover:border-red-500 hover:text-red-500",
+            color: "hover:border-red-600 hover:text-red-600",
           },
         ];
 
   return (
     <div className="space-y-6">
-      {/* Direct Channel Cards (Spotlight) */}
+      {/* Direct Channel Cards */}
       <div className="space-y-4">
         {channelCards.map((channel) => {
           const Icon = channel.icon;
@@ -280,41 +284,41 @@ const ContactInfo = () => {
           return (
             <SpotlightCard
               key={channel.id}
-              className="bg-[#0a0a0a] border border-neutral-800 p-5 hover:border-neutral-700 transition-all duration-300"
-              spotlightColor="rgba(254, 87, 35, 0.16)"
+              className="bg-white border border-neutral-200/90 rounded-3xl p-5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
+              spotlightColor="rgba(254, 87, 35, 0.08)"
             >
               {/* Top row: Icon + Tag & Action Buttons */}
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-[#121212] border border-neutral-800 flex items-center justify-center flex-shrink-0 text-secondary-400">
+                  <div className="w-10 h-10 rounded-2xl bg-neutral-950 flex items-center justify-center flex-shrink-0 text-secondary-400 shadow-sm">
                     <Icon className="text-xl" />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[10px] font-mono tracking-widest uppercase text-secondary-400 font-bold block">
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-secondary-600 font-bold block">
                       {channel.tag}
                     </span>
-                    <span className="text-neutral-400 text-xs">
+                    <span className="text-neutral-500 text-xs font-medium">
                       {channel.title}
                     </span>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons (Pill style) */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     type="button"
                     onClick={(e) => copyToClipboard(channel.copyText, channel.id, e)}
-                    className="px-2.5 py-1.5 rounded-lg bg-[#141414] border border-neutral-800 hover:border-secondary-500/60 text-neutral-300 hover:text-white transition-all duration-200 cursor-pointer flex items-center gap-1.5 text-xs font-mono"
+                    className="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-all duration-200 cursor-pointer flex items-center gap-1.5 text-xs font-mono font-medium border border-neutral-200"
                     title="Copy to clipboard"
                   >
                     {isCopied ? (
                       <>
-                        <IoCheckmark className="text-secondary-400 text-sm" />
-                        <span className="text-secondary-400 font-semibold">Copied</span>
+                        <IoCheckmark className="text-secondary-600 text-sm font-bold" />
+                        <span className="text-secondary-600 font-bold">Copied</span>
                       </>
                     ) : (
                       <>
-                        <IoCopyOutline className="text-xs" />
+                        <IoCopyOutline className="text-xs text-neutral-600" />
                         <span>Copy</span>
                       </>
                     )}
@@ -324,7 +328,7 @@ const ContactInfo = () => {
                     href={channel.actionHref}
                     target={channel.external ? "_blank" : undefined}
                     rel={channel.external ? "noopener noreferrer" : undefined}
-                    className="px-3 py-1.5 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-md shadow-secondary-500/20"
+                    className="px-3.5 py-1.5 rounded-full bg-neutral-950 hover:bg-secondary-500 text-white text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-sm"
                   >
                     <span>{channel.actionLabel}</span>
                     <IoOpenOutline className="text-xs" />
@@ -333,8 +337,8 @@ const ContactInfo = () => {
               </div>
 
               {/* Bottom row: Full Width Contact Value */}
-              <div className="pt-2 border-t border-neutral-850">
-                <p className="text-white font-bold text-base sm:text-lg break-words select-all font-mono">
+              <div className="pt-2.5 border-t border-neutral-150">
+                <p className="text-neutral-950 font-bold text-base sm:text-lg break-words select-all font-mono">
                   {channel.value}
                 </p>
               </div>
@@ -345,19 +349,19 @@ const ContactInfo = () => {
 
       {/* Program Schedule & Seattle Real-Time Clock */}
       <SpotlightCard
-        className="bg-[#0a0a0a] border border-neutral-800 p-6"
-        spotlightColor="rgba(254, 87, 35, 0.16)"
+        className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
+        spotlightColor="rgba(254, 87, 35, 0.08)"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-800 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-150 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#121212] border border-neutral-800 flex items-center justify-center text-secondary-400">
+            <div className="w-10 h-10 rounded-2xl bg-neutral-950 flex items-center justify-center text-secondary-400">
               <IoTimeOutline className="text-xl" />
             </div>
             <div>
-              <h3 className="text-white font-bold text-base">
+              <h3 className="text-neutral-950 font-bold text-base">
                 Operational &amp; Support Hours
               </h3>
-              <p className="text-neutral-400 text-xs font-mono">
+              <p className="text-neutral-500 text-xs font-mono">
                 Pacific Standard Time (Seattle, WA)
               </p>
             </div>
@@ -365,51 +369,51 @@ const ContactInfo = () => {
 
           {/* Live Seattle Clock */}
           {seattleTime && (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#121212] border border-secondary-500/30 text-secondary-300 text-xs font-mono">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-700 text-xs font-mono">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500" />
               </span>
-              <span className="tabular-nums">Seattle: {seattleTime}</span>
+              <span className="tabular-nums font-bold">Seattle: {seattleTime}</span>
             </div>
           )}
         </div>
 
         <div className="space-y-3 text-xs sm:text-sm">
-          <div className="flex items-center justify-between py-1.5 border-b border-neutral-800/60">
-            <span className="text-neutral-400 font-mono">Weekdays (Desk)</span>
-            <span className="text-white font-medium">
+          <div className="flex items-center justify-between py-1.5 border-b border-neutral-100">
+            <span className="text-neutral-500 font-mono">Weekdays (Desk)</span>
+            <span className="text-neutral-950 font-semibold">
               {contactInfo.hours.weekdays}
             </span>
           </div>
-          <div className="flex items-center justify-between py-1.5 border-b border-neutral-800/60">
-            <span className="text-neutral-400 font-mono">Saturday (Matches)</span>
-            <span className="text-secondary-400 font-semibold">
+          <div className="flex items-center justify-between py-1.5 border-b border-neutral-100">
+            <span className="text-neutral-500 font-mono">Saturday (Matches)</span>
+            <span className="text-secondary-600 font-bold">
               Tournament Kickoffs &amp; Field Desk
             </span>
           </div>
           <div className="flex items-center justify-between py-1.5">
-            <span className="text-neutral-400 font-mono">Sunday (Finals)</span>
-            <span className="text-secondary-400 font-semibold">
+            <span className="text-neutral-500 font-mono">Sunday (Finals)</span>
+            <span className="text-secondary-600 font-bold">
               Championship Rounds &amp; Clinics
             </span>
           </div>
         </div>
       </SpotlightCard>
 
-      {/* Social Network Grid */}
+      {/* Community Channels */}
       <SpotlightCard
-        className="bg-[#0a0a0a] border border-neutral-800 p-6"
-        spotlightColor="rgba(254, 87, 35, 0.15)"
+        className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
+        spotlightColor="rgba(254, 87, 35, 0.08)"
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <IoCompassOutline className="text-secondary-400 text-lg" />
-            <h3 className="text-white font-bold text-base tracking-tight">
+            <IoCompassOutline className="text-secondary-500 text-lg" />
+            <h3 className="text-neutral-950 font-bold text-base tracking-tight">
               Community Channels
             </h3>
           </div>
-          <span className="text-xs font-mono text-neutral-400">
+          <span className="text-xs font-mono text-neutral-400 font-medium">
             @ArenaCommunity
           </span>
         </div>
@@ -428,16 +432,16 @@ const ContactInfo = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`block p-3.5 rounded-2xl bg-[#111111] border border-neutral-800 hover:border-neutral-700 hover:bg-[#161616] transition-all duration-300 text-neutral-300 group cursor-pointer ${social.color}`}
+                  className={`block p-3.5 rounded-2xl bg-neutral-50/70 hover:bg-white border border-neutral-200/90 hover:border-neutral-900 transition-all duration-300 text-neutral-700 group cursor-pointer shadow-sm ${social.color}`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <Icon className="text-xl group-hover:scale-110 transition-transform" />
                     <IoOpenOutline className="text-xs opacity-40 group-hover:opacity-100" />
                   </div>
-                  <p className="text-xs font-bold text-white group-hover:text-secondary-400 transition-colors">
+                  <p className="text-xs font-bold text-neutral-950 group-hover:text-secondary-500 transition-colors">
                     {social.label}
                   </p>
-                  <p className="text-[11px] font-mono text-neutral-400 truncate">
+                  <p className="text-[11px] font-mono text-neutral-500 truncate">
                     {social.tag}
                   </p>
                 </a>
@@ -449,12 +453,12 @@ const ContactInfo = () => {
 
       {/* Interactive FAQ Accordion */}
       <SpotlightCard
-        className="bg-[#0a0a0a] border border-neutral-800 p-6"
-        spotlightColor="rgba(254, 87, 35, 0.15)"
+        className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
+        spotlightColor="rgba(254, 87, 35, 0.08)"
       >
         <div className="flex items-center gap-2.5 mb-4">
-          <IoHelpCircleOutline className="text-xl text-secondary-400" />
-          <h3 className="text-white font-bold text-base">
+          <IoHelpCircleOutline className="text-xl text-secondary-500" />
+          <h3 className="text-neutral-950 font-bold text-base">
             Frequently Asked Inquiries
           </h3>
         </div>
@@ -466,18 +470,18 @@ const ContactInfo = () => {
             return (
               <div
                 key={index}
-                className="rounded-xl border border-neutral-800/80 bg-[#111111] overflow-hidden transition-colors duration-200"
+                className="rounded-2xl border border-neutral-200 bg-neutral-50/60 overflow-hidden transition-colors duration-200"
               >
                 <button
                   type="button"
                   onClick={() =>
                     setExpandedFaq(isExpanded ? null : index)
                   }
-                  className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 text-white font-medium text-xs sm:text-sm hover:text-secondary-300 transition-colors cursor-pointer"
+                  className="w-full px-4 py-3.5 text-left flex items-center justify-between gap-3 text-neutral-900 font-semibold text-xs sm:text-sm hover:text-secondary-600 transition-colors cursor-pointer"
                 >
                   <span>{faq.q}</span>
                   <IoChevronDown
-                    className={`text-base text-secondary-400 flex-shrink-0 transition-transform duration-200 ${
+                    className={`text-base text-secondary-500 flex-shrink-0 transition-transform duration-200 ${
                       isExpanded ? "rotate-180" : ""
                     }`}
                   />
@@ -491,7 +495,7 @@ const ContactInfo = () => {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2, ease: "easeInOut" }}
                     >
-                      <div className="px-4 pb-3.5 text-xs text-neutral-300 leading-relaxed border-t border-neutral-800/60 pt-2 font-light">
+                      <div className="px-4 pb-3.5 text-xs text-neutral-600 leading-relaxed border-t border-neutral-200/80 pt-2 font-normal">
                         {faq.a}
                       </div>
                     </motion.div>

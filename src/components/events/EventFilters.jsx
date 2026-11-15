@@ -13,11 +13,12 @@ const EventFilters = ({
   ];
 
   const option =
-    "rounded-full px-4 py-2 text-sm font-medium transition-[color,background-color] duration-150 outline-none focus-visible:ring-2 focus-visible:ring-secondary-400 focus-visible:ring-offset-2";
+    "rounded-full px-5 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 outline-none";
 
-  const optionActive = "bg-secondary-500 text-white";
+  const optionActive =
+    "bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg shadow-secondary-500/35 scale-105 border border-secondary-400/40";
   const optionInactive =
-    "bg-transparent text-primary-600 hover:bg-secondary-50 hover:text-secondary-600";
+    "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white";
 
   const FilterRow = ({ value, options, onChange }) => (
     <div className="flex flex-wrap justify-center gap-1.5">

@@ -1,7 +1,8 @@
 import HeroSection from "../components/HeroSection";
 import FeaturedEvents from "../components/FeaturedEvents";
 import ShopHighlights from "../components/ShopHighlights";
-import NonProfitHighlights from "../components/NonProfitHighlights";
+import GalleryHighlights from "../components/GalleryHighlights";
+import DomeGallerySection from "../components/DomeGallerySection";
 import Testimonials from "../components/Testimonials";
 
 const Home = () => {
@@ -10,7 +11,8 @@ const Home = () => {
       <HeroSection />
       <FeaturedEvents />
       <ShopHighlights />
-      <NonProfitHighlights />
+      <GalleryHighlights />
+      <DomeGallerySection />
       <Testimonials />
     </div>
   );

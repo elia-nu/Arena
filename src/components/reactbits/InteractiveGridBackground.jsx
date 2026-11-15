@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 
 const InteractiveGridBackground = ({
+  theme = "light",
   gridSize = 48,
-  lineColor = "rgba(255, 255, 255, 0.05)",
-  glowColor = "rgba(254, 87, 35, 0.14)",
-  dotColor = "rgba(254, 87, 35, 0.35)",
+  lineColor,
+  glowColor,
+  dotColor,
   showEmbers = true,
 }) => {
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const containerRef = useRef(null);
+
+  const isLight = theme === "light";
+
+  const effectiveBg = isLight ? "#ffffff" : "#050505";
+  const effectiveLine = lineColor || (isLight ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.05)");
+  const effectiveMajorLine = isLight ? "rgba(254, 87, 35, 0.1)" : "rgba(254, 87, 35, 0.12)";
+  const effectiveDot = dotColor || (isLight ? "rgba(254, 87, 35, 0.4)" : "rgba(254, 87, 35, 0.35)");
+  const effectiveGlow = glowColor || (isLight ? "rgba(254, 87, 35, 0.09)" : "rgba(254, 87, 35, 0.14)");
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -23,11 +32,11 @@ const InteractiveGridBackground = ({
     <div
       ref={containerRef}
       className="absolute inset-0 pointer-events-none overflow-hidden select-none"
-      style={{ background: "#050505" }}
+      style={{ background: effectiveBg }}
     >
       {/* Base Grid Pattern */}
       <svg
-        className="absolute inset-0 w-full h-full opacity-70"
+        className="absolute inset-0 w-full h-full opacity-80"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -40,11 +49,11 @@ const InteractiveGridBackground = ({
             <path
               d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
               fill="none"
-              stroke={lineColor}
+              stroke={effectiveLine}
               strokeWidth="1"
             />
             {/* Small intersection dot */}
-            <circle cx="0" cy="0" r="1.5" fill={dotColor} />
+            <circle cx="0" cy="0" r="1.5" fill={effectiveDot} />
           </pattern>
 
           {/* Larger 4x4 major grid */}
@@ -62,16 +71,16 @@ const InteractiveGridBackground = ({
             <path
               d={`M ${gridSize * 4} 0 L 0 0 0 ${gridSize * 4}`}
               fill="none"
-              stroke="rgba(254, 87, 35, 0.12)"
+              stroke={effectiveMajorLine}
               strokeWidth="1.2"
             />
           </pattern>
 
-          {/* Radial mask for soft fadeout at bottom */}
+          {/* Radial mask for soft fadeout */}
           <linearGradient id="fade-mask" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
-            <stop offset="70%" stopColor="#fff" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0.3" />
+            <stop offset="75%" stopColor="#fff" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#fff" stopOpacity="0.4" />
           </linearGradient>
         </defs>
 
@@ -87,30 +96,36 @@ const InteractiveGridBackground = ({
       <div
         className="absolute inset-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, ${glowColor}, transparent 80%)`,
+          background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, ${effectiveGlow}, transparent 75%)`,
         }}
       />
 
-      {/* Ambient Atmospheric Blooms in Orange & Dark Smoke */}
+      {/* Ambient Atmospheric Blooms */}
       <div
-        className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[160px] opacity-25"
+        className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[160px]"
         style={{
-          background:
-            "radial-gradient(circle, #fe5723 0%, rgba(254, 87, 35, 0) 70%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(254, 87, 35, 0.08) 0%, rgba(254, 87, 35, 0) 70%)"
+            : "radial-gradient(circle, #fe5723 0%, rgba(254, 87, 35, 0) 70%)",
+          opacity: isLight ? 0.9 : 0.25,
         }}
       />
       <div
-        className="absolute top-1/3 -right-48 w-[700px] h-[700px] rounded-full blur-[200px] opacity-20"
+        className="absolute top-1/3 -right-48 w-[700px] h-[700px] rounded-full blur-[200px]"
         style={{
-          background:
-            "radial-gradient(circle, #ff8b42 0%, rgba(255, 139, 66, 0) 70%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(255, 139, 66, 0.07) 0%, rgba(255, 139, 66, 0) 70%)"
+            : "radial-gradient(circle, #ff8b42 0%, rgba(255, 139, 66, 0) 70%)",
+          opacity: isLight ? 0.9 : 0.2,
         }}
       />
       <div
-        className="absolute bottom-10 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px] opacity-15"
+        className="absolute bottom-10 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px]"
         style={{
-          background:
-            "radial-gradient(circle, #fe5723 0%, rgba(254, 87, 35, 0) 70%)",
+          background: isLight
+            ? "radial-gradient(circle, rgba(254, 87, 35, 0.06) 0%, rgba(254, 87, 35, 0) 70%)"
+            : "radial-gradient(circle, #fe5723 0%, rgba(254, 87, 35, 0) 70%)",
+          opacity: isLight ? 0.9 : 0.15,
         }}
       />
 
@@ -133,12 +148,14 @@ const InteractiveGridBackground = ({
                   height: `${size}px`,
                   left: `${left}%`,
                   top: `${top}%`,
-                  backgroundColor: i % 2 === 0 ? "#fe5723" : "#ffffff",
+                  backgroundColor: i % 2 === 0 ? "#fe5723" : isLight ? "#d4d4d4" : "#ffffff",
                   boxShadow:
                     i % 2 === 0
-                      ? "0 0 10px #fe5723, 0 0 20px rgba(254, 87, 35, 0.6)"
+                      ? "0 0 10px rgba(254, 87, 35, 0.5)"
+                      : isLight
+                      ? "none"
                       : "0 0 8px #ffffff",
-                  opacity: 0.4,
+                  opacity: isLight ? 0.35 : 0.4,
                   animation: `float-particle ${duration}s ease-in-out infinite`,
                   animationDelay: `${delay}s`,
                 }}
@@ -150,7 +167,7 @@ const InteractiveGridBackground = ({
 
       {/* Subtle Noise / Grain overlay for rich cinematic texture */}
       <div
-        className="absolute inset-0 opacity-[0.035]"
+        className="absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}
@@ -160,11 +177,11 @@ const InteractiveGridBackground = ({
         @keyframes float-particle {
           0%, 100% {
             transform: translateY(0px) translateX(0px);
-            opacity: 0.2;
+            opacity: 0.15;
           }
           50% {
             transform: translateY(-30px) translateX(15px);
-            opacity: 0.7;
+            opacity: 0.6;
           }
         }
       `}</style>

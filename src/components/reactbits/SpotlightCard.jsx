@@ -3,11 +3,12 @@ import { useRef, useState } from "react";
 const SpotlightCard = ({
   children,
   className = "",
-  spotlightColor = "rgba(254, 87, 35, 0.18)",
-  borderColor = "rgba(254, 87, 35, 0.45)",
-  defaultBorder = "rgba(255, 255, 255, 0.08)",
+  spotlightColor = "rgba(254, 87, 35, 0.09)",
+  borderColor = "rgba(254, 87, 35, 0.4)",
+  defaultBorder,
   glowRadius = 380,
   onClick,
+  style = {},
   ...props
 }) => {
   const cardRef = useRef(null);
@@ -29,6 +30,12 @@ const SpotlightCard = ({
     setPosition({ x: -1000, y: -1000 });
   };
 
+  const currentBorder = isHovered
+    ? borderColor
+    : defaultBorder !== undefined
+    ? defaultBorder
+    : undefined;
+
   return (
     <div
       ref={cardRef}
@@ -38,7 +45,8 @@ const SpotlightCard = ({
       onClick={onClick}
       className={`relative rounded-3xl overflow-hidden transition-all duration-300 ${className}`}
       style={{
-        borderColor: isHovered ? borderColor : defaultBorder,
+        ...(currentBorder ? { borderColor: currentBorder } : {}),
+        ...style,
       }}
       {...props}
     >

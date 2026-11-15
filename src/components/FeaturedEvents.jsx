@@ -5,69 +5,21 @@ import { tournamentAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNotification } from "./NotificationProvider";
 import RegistrationModal from "./events/RegistrationModal";
-import CountdownTimer from "./CountdownTimer";
 import EmptyState from "./EmptyState";
+import EventCard from "./events/EventCard";
 import { absoluteMediaSrc } from "../utils/mediaUtils";
+import DecryptedText from "./reactbits/DecryptedText";
+import ShinyText from "./reactbits/ShinyText";
 
 const FeaturedEvents = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const [events, setEvents] = useState([]);
   const [isPastEventsView, setIsPastEventsView] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const { isAuthenticated, isTeamLeader, isPlayer, isAdmin, user } = useAuth();
+  const { isAuthenticated, isTeamLeader, isAdmin } = useAuth();
   const { showError } = useNotification();
   const navigate = useNavigate();
-
-  const isAlreadyRegistered = (event) => {
-    if (!event || !user || event.type !== "tournament") return false;
-
-    const userId = user._id || user.id;
-    if (!userId) return false;
-
-    const normalizeId = (value) => {
-      if (!value) return null;
-      if (typeof value === "string") return value;
-      if (typeof value === "object") return value._id || value.id || null;
-      return null;
-    };
-
-    // Check individual registrations
-    if (Array.isArray(event.registeredPlayers)) {
-      const isPlayerRegistered = event.registeredPlayers.some((reg) => {
-        const playerId = normalizeId(reg.player || reg.playerId || reg);
-        return playerId && playerId.toString() === userId.toString();
-      });
-      if (isPlayerRegistered) return true;
-    }
-
-    // Check team registrations (team leader or team member)
-    if (Array.isArray(event.registeredTeams)) {
-      const isTeamRegistered = event.registeredTeams.some((reg) => {
-        const team = reg.team || reg;
-        if (!team) return false;
-
-        const leaderId = normalizeId(team.leader);
-        if (leaderId && leaderId.toString() === userId.toString()) {
-          return true;
-        }
-
-        if (Array.isArray(team.members)) {
-          return team.members.some((member) => {
-            const memberId = normalizeId(member);
-            return memberId && memberId.toString() === userId.toString();
-          });
-        }
-
-        return false;
-      });
-
-      if (isTeamRegistered) return true;
-    }
-
-    return false;
-  };
 
   useEffect(() => {
     const fetchUpcomingTournaments = async () => {
@@ -75,15 +27,12 @@ const FeaturedEvents = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch tournaments that are not completed
-        // Request more than we need since we'll filter by status
         const data = await tournamentAPI.getAll({
           limit: 20,
         });
 
         const allTournaments = data.tournaments || [];
 
-        // Filter out completed and cancelled tournaments, and those with displayStatus "completed"
         const activeTournaments = allTournaments.filter(
           (tournament) =>
             tournament.status !== "completed" &&
@@ -91,7 +40,6 @@ const FeaturedEvents = () => {
             tournament.displayStatus !== "completed"
         );
 
-        // Prefer featured (promoted) tournaments for this section
         const featuredTournaments = activeTournaments.filter(
           (tournament) => tournament.isPromoted
         );
@@ -104,7 +52,6 @@ const FeaturedEvents = () => {
         } else if (activeTournaments.length > 0) {
           tournamentsToShow = activeTournaments.slice(0, 6);
         } else {
-          // Fallback to recent past/completed tournaments so page is never empty
           const pastTournaments = allTournaments
             .filter((t) => t.status !== "cancelled")
             .sort(
@@ -120,22 +67,18 @@ const FeaturedEvents = () => {
         }
         setIsPastEventsView(isPast);
 
-        // Map tournaments from DB into the card shape used by this component
         const mapped = tournamentsToShow.map((tournament) => {
           const totalRegistrations =
             (tournament.registeredTeams?.length || 0) +
             (tournament.registeredPlayers?.length || 0);
 
-          // Use displayStatus and registrationOpen from backend (calculated based on dates)
           const displayStatus = tournament.displayStatus || "upcoming";
           const registrationOpen = tournament.registrationOpen || false;
 
-          // Check if registration deadline has passed
           const isRegistrationDeadlinePassed = tournament.registrationDeadline
             ? new Date(tournament.registrationDeadline).getTime() < new Date().getTime()
             : false;
 
-          // Show register button only if registration is open AND deadline hasn't passed
           const showRegisterButton =
             registrationOpen && !isRegistrationDeadlinePassed;
 
@@ -145,7 +88,7 @@ const FeaturedEvents = () => {
             date: tournament.startDate,
             countdownDate: tournament.startDate,
             registrationDeadline: tournament.registrationDeadline,
-            location: tournament.location || tournament.venue || "TBA",
+            location: tournament.location || tournament.venue || "Seattle, WA",
             participants: totalRegistrations,
             maxParticipants: tournament.maxTeams || 0,
             minTeamMembers: tournament.minTeamMembers || 2,
@@ -154,32 +97,23 @@ const FeaturedEvents = () => {
             registeredPlayers: tournament.registeredPlayers || [],
             registeredTeams: tournament.registeredTeams || [],
             price: tournament.entryFee || 0,
-            type: "tournament", // Distinguish tournaments from matches
-            status: displayStatus, // Set the status for the badge
-            registrationOpen: registrationOpen, // Set registration open status
+            type: "tournament",
+            status: displayStatus,
+            registrationOpen: registrationOpen,
             description:
               tournament.description ||
-              "Upcoming tournament. Register now to secure your spot.",
+              "Compete for glory and dominate the pitch in this Seattle street soccer showdown.",
             image:
               absoluteMediaSrc(tournament.image) ||
-              "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",
-            // Show a clear badge when the tournament is featured
-            badge: isPast
-              ? "Completed"
-              : tournament.isPromoted
-              ? "Featured"
-              : "Upcoming",
-            link: `/events/tournament/${tournament._id}`,
-            buttonText: showRegisterButton
-              ? "Register Now"
-              : "View Results & Details",
+              "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1200&auto=format&fit=crop",
+            showRegisterButton,
           };
         });
 
         setEvents(mapped);
-      } catch (error) {
-        console.error("Failed to fetch upcoming tournaments:", error);
-        setError(error.message || "Failed to load tournaments");
+      } catch (err) {
+        console.error("Failed to fetch upcoming tournaments:", err);
+        setError(err.message || "Failed to load tournaments");
         setEvents([]);
       } finally {
         setLoading(false);
@@ -189,120 +123,168 @@ const FeaturedEvents = () => {
     fetchUpcomingTournaments();
   }, []);
 
-  const badgeColors = {
-    Featured: "bg-secondary-400 text-primary-950",
-    Popular: "bg-secondary-500 text-primary-950",
-    New: "bg-tertiary-400 text-primary-950",
-    Completed: "bg-primary-900 text-white",
+  const handleRegisterEvent = (event) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    } else if (
+      event.tournamentType === "team" &&
+      !isTeamLeader &&
+      !isAdmin
+    ) {
+      showError("Only team leaders can register for team tournaments.");
+    } else {
+      setSelectedEvent(event);
+    }
   };
 
   return (
     <section
       id="events"
-      className="py-24 md:py-32 px-4 md:px-6 lg:px-8 bg-white relative overflow-hidden"
+      className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 bg-white text-neutral-900 overflow-hidden border-t-4 border-secondary-500"
     >
-      {/* Clean Subtle Background Grid */}
+      {/* ── Background Decoration Layer ── */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Dense orange dot grid */}
+        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="events-grid-v2" width="40" height="40" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1.4" fill="rgba(254,87,35,0.18)" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#events-grid-v2)" />
+        </svg>
+
+        {/* Large orange blob — top right */}
         <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `radial-gradient(#000 1px, transparent 1px)`,
-            backgroundSize: "24px 24px",
-          }}
+          className="absolute -top-48 -right-48 w-[700px] h-[700px] rounded-full blur-[200px] opacity-30"
+          style={{ background: "radial-gradient(circle, #fe5723 0%, #ff9a56 50%, transparent 80%)" }}
         />
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary-100/50 rounded-full blur-3xl pointer-events-none" />
+        {/* Medium orange blob — bottom left */}
+        <div
+          className="absolute -bottom-40 -left-48 w-[550px] h-[550px] rounded-full blur-[180px] opacity-20"
+          style={{ background: "radial-gradient(circle, #ff7a40 0%, #fe5723 60%, transparent 100%)" }}
+        />
+
+        {/* Top-right diagonal stripe pattern */}
+        <div className="absolute top-0 right-0 w-96 h-96 overflow-hidden">
+          <svg width="384" height="384" viewBox="0 0 384 384" fill="none">
+            {[0,1,2,3,4,5,6,7,8,9].map(i => (
+              <line key={i} x1={i*44} y1="0" x2="384" y2={384 - i*44} stroke="#fe5723" strokeWidth="1.5" strokeOpacity="0.10" />
+            ))}
+          </svg>
+        </div>
+
+        {/* Bottom-left diagonal stripe */}
+        <div className="absolute bottom-0 left-0 w-72 h-72 overflow-hidden">
+          <svg width="288" height="288" viewBox="0 0 288 288" fill="none">
+            {[0,1,2,3,4,5,6].map(i => (
+              <line key={i} x1="0" y1={i*48} x2={288-i*48} y2="288" stroke="#fe5723" strokeWidth="1.5" strokeOpacity="0.10" />
+            ))}
+          </svg>
+        </div>
+
+        {/* Vertical orange side rails */}
+        <div className="absolute left-0 top-32 bottom-32 w-1.5 bg-gradient-to-b from-transparent via-secondary-500/50 to-transparent rounded-r-full" />
+        <div className="absolute right-0 top-32 bottom-32 w-1.5 bg-gradient-to-b from-transparent via-secondary-500/50 to-transparent rounded-l-full" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Enhanced Section Header */}
+        {/* Section Header */}
         <motion.div
-          className="text-center mb-16 md:mb-24"
+          className="text-center mb-16 md:mb-20 flex flex-col items-center"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <motion.div
-            className="inline-block mb-6"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex items-center gap-3 px-5 py-2.5 border border-primary-950/10 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-              <motion.div
-                className="w-2 h-2 bg-secondary-400 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="text-primary-950 text-xs font-medium tracking-[0.2em] uppercase">
-                Featured Events
-              </span>
-            </div>
-          </motion.div>
+          {/* Tactical Badge Pill */}
+          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-secondary-400/40 bg-gradient-to-r from-secondary-50 to-orange-50 backdrop-blur-md mb-6 shadow-sm shadow-secondary-500/10">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary-500 shadow-[0_0_10px_#fe5723]" />
+            </span>
+            <DecryptedText
+              text="ARENA TOURNAMENT CIRCUIT"
+              speed={28}
+              maxIterations={12}
+              className="text-secondary-700 text-xs font-black tracking-[0.25em] uppercase"
+            />
+          </div>
 
-          <motion.h2
-            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 font-bold"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <span className="text-primary-950">
-              {isPastEventsView ? "Recent " : "Upcoming "}
+          {/* Section Headline */}
+          <h2 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-neutral-950 mb-5 leading-none">
+            {isPastEventsView ? "Recent " : "Upcoming "}
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-500 via-secondary-600 to-secondary-400">
+                {isPastEventsView ? "Champions" : "Showdowns"}
+              </span>
+              {/* Underline squiggle */}
+              <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 300 8" preserveAspectRatio="none">
+                <path d="M0,4 Q37.5,0 75,4 Q112.5,8 150,4 Q187.5,0 225,4 Q262.5,8 300,4" stroke="#fe5723" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+              </svg>
             </span>
-            <span className="text-secondary-500">
-              {isPastEventsView ? "Tournaments & Champions" : "Events"}
-            </span>
-          </motion.h2>
-          <motion.p
-            className="text-base md:text-lg text-primary-600 max-w-2xl mx-auto font-light leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
+          </h2>
+
+          {/* Section Tagline */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-px w-10 bg-gradient-to-r from-transparent to-secondary-400" />
+            <p className="text-secondary-600 text-xs sm:text-sm font-black tracking-[0.3em] uppercase">
+              <ShinyText
+                text={
+                  isPastEventsView
+                    ? "RELIVE THE CHAMPIONSHIP MOMENTS"
+                    : "STEP INTO THE CAGE • COMPETE & WIN"
+                }
+                speed={4}
+                className="text-secondary-600"
+              />
+            </p>
+            <div className="h-px w-10 bg-gradient-to-l from-transparent to-secondary-400" />
+          </div>
+
+          <p className="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
             {isPastEventsView
               ? "Relive recent tournaments, team brackets, and champions from our Seattle street soccer competitions."
-              : "Discover upcoming tournaments and matches. Register now and compete for glory."}
-          </motion.p>
+              : "High-intensity street soccer tournaments across Greater Seattle. Bring your squad, dominate the pitch, and claim the championship trophy."}
+          </p>
+
+          {/* Orange stats bar below headline */}
+          <div className="flex items-center justify-center gap-8 mt-10 flex-wrap">
+            {[
+              { label: "Active Tournaments", value: "12+" },
+              { label: "Prize Pool", value: "$10K" },
+              { label: "Registered Teams", value: "200+" },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl font-black text-secondary-500 leading-none">{s.value}</div>
+                <div className="text-[11px] font-bold text-neutral-500 uppercase tracking-widest mt-0.5">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* Enhanced Events Grid */}
+        {/* Events Grid */}
         {loading ? (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
             {[1, 2, 3].map((index) => (
-              <motion.div
+              <div
                 key={index}
-                className="bg-white border border-primary-200/50 rounded-2xl overflow-hidden shadow-sm"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.15,
-                  ease: "easeOut",
-                }}
+                className="bg-neutral-50 border-2 border-secondary-100/80 rounded-3xl overflow-hidden animate-pulse h-[460px]"
               >
-                <div className="h-64 md:h-72 bg-primary-100 animate-pulse" />
-                <div className="p-6 md:p-8">
-                  <div className="h-6 bg-primary-200 rounded mb-3 animate-pulse" />
-                  <div className="h-4 bg-primary-200 rounded mb-6 animate-pulse" />
-                  <div className="h-4 bg-primary-200 rounded mb-6 animate-pulse" />
-                  <div className="h-10 bg-primary-200 rounded animate-pulse" />
+                <div className="h-60 bg-gradient-to-b from-secondary-50/60 to-orange-50/30" />
+                <div className="p-6 space-y-3">
+                  <div className="h-6 bg-secondary-100/60 rounded-xl w-3/4" />
+                  <div className="h-4 bg-neutral-100 rounded-lg w-full" />
+                  <div className="h-4 bg-neutral-50 rounded-lg w-2/3" />
+                  <div className="h-12 bg-secondary-50 rounded-xl mt-4" />
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         ) : error ? (
           <EmptyState
             variant="error"
+            theme="light"
             title="Unable to load events"
             description={error}
             actionLabel="Browse all events"
@@ -311,6 +293,7 @@ const FeaturedEvents = () => {
         ) : events.length === 0 ? (
           <EmptyState
             variant="events"
+            theme="light"
             title={
               isPastEventsView
                 ? "No past tournaments yet"
@@ -325,354 +308,42 @@ const FeaturedEvents = () => {
             actionTo="/events"
           />
         ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            {events.map((event, index) => (
-              <motion.div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-14 md:mb-18">
+            {events.map((event) => (
+              <EventCard
                 key={event.id}
-                className="group relative bg-white border border-primary-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-secondary-500/60 transition-all duration-300 cursor-pointer"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() =>
-                  navigate(`/events/${event.type || "tournament"}/${event.id}`)
-                }
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.15,
-                  ease: "easeOut",
-                }}
-                whileHover={{ y: -12, scale: 1.02 }}
-              >
-                {/* Image Container with Enhanced Effects */}
-                <div className="relative h-64 md:h-72 overflow-hidden bg-primary-100">
-                  <motion.img
-                    src={absoluteMediaSrc(event.image) || event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                    animate={{
-                      scale: hoveredIndex === index ? 1.15 : 1,
-                    }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                  />
-                  {/* Multi-layer gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/40 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-secondary-500/10 via-transparent to-transparent" />
-
-                  {/* Badge with enhanced styling */}
-                  {event.badge && (
-                    <motion.div
-                      className="absolute top-4 right-4 z-10"
-                      initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        delay: 0.4 + index * 0.1,
-                        type: "spring",
-                        stiffness: 200,
-                      }}
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                    >
-                      <div
-                        className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-lg ${
-                          badgeColors[event.badge] || "bg-secondary-400"
-                        }`}
-                      >
-                        {event.badge}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Shine effect on hover */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    initial={{ x: "-100%", rotate: 45 }}
-                    animate={{
-                      x: hoveredIndex === index ? "200%" : "-100%",
-                    }}
-                    transition={{ duration: 0.8 }}
-                  />
-                </div>
-
-                {/* Enhanced Content Section */}
-                <div className="p-6 md:p-8">
-                  <motion.div
-                    className="mb-5"
-                    animate={{
-                      y: hoveredIndex === index ? -3 : 0,
-                    }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <h3 className="text-xl md:text-2xl font-semibold text-primary-950 mb-3 leading-tight group-hover:text-secondary-600 transition-colors duration-300">
-                      {event.title}
-                    </h3>
-                    <p className="text-sm md:text-base text-primary-600 mb-6 font-light leading-relaxed line-clamp-2">
-                      {event.description}
-                    </p>
-                  </motion.div>
-
-                  {/* Enhanced Event Info */}
-                  <div className="space-y-2.5 mb-6 border-t border-primary-200 pt-6">
-                    {event.date && (
-                      <motion.div
-                        className="flex items-center gap-3 text-sm text-primary-700"
-                        whileHover={{ x: 4 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <svg
-                          className="w-4 h-4 text-secondary-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span className="font-medium">
-                          {new Date(event.date).toLocaleDateString("en-US", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </motion.div>
-                    )}
-                    {event.location && (
-                      <motion.div
-                        className="flex items-center gap-3 text-sm text-primary-700"
-                        whileHover={{ x: 4 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <svg
-                          className="w-4 h-4 text-secondary-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        <span className="font-medium">{event.location}</span>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  {/* Countdown Timer */}
-                  {event.date && new Date(event.date) > new Date() && (
-                    <div className="mb-6">
-                      <div className="mb-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-secondary-400 rounded-full" />
-                        <p className="text-xs text-primary-600 uppercase tracking-wider font-medium">
-                          Event Starts In
-                        </p>
-                      </div>
-                      <CountdownTimer
-                        targetDate={event.date}
-                        registrationDeadline={event.registrationDeadline}
-                      />
-                    </div>
-                  )}
-
-                  {/* Enhanced Participants Progress */}
-                  {event.participants !== undefined && (
-                    <div className="mb-6">
-                      <div className="flex justify-between items-center text-xs text-primary-600 mb-2.5 font-medium">
-                        <span className="uppercase tracking-wider">
-                          Registered
-                        </span>
-                        <span className="text-secondary-600 font-semibold">
-                          {event.participants}/{event.maxParticipants}
-                        </span>
-                      </div>
-                      <div className="w-full bg-primary-200 rounded-full h-2 overflow-hidden">
-                        <motion.div
-                          className="bg-gradient-to-r from-secondary-400 to-secondary-500 h-full rounded-full shadow-sm"
-                          initial={{ width: 0 }}
-                          whileInView={{
-                            width: `${
-                              (event.participants / event.maxParticipants) * 100
-                            }%`,
-                          }}
-                          viewport={{ once: true }}
-                          transition={{
-                            duration: 1.2,
-                            delay: 0.5 + index * 0.1,
-                            ease: "easeOut",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Enhanced Button / Registered state */}
-                  {event.type === "tournament" && (
-                    <motion.div
-                      animate={{
-                        y: hoveredIndex === index ? -2 : 0,
-                      }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {isAlreadyRegistered(event) ? (
-                        <div className="group/btn relative inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 border border-green-500/70 bg-green-500/5 text-green-600 text-xs font-semibold uppercase tracking-wider rounded-lg">
-                          <span className="relative z-10 flex items-center gap-2">
-                            Registered
-                            <svg
-                              className="w-4 h-4 relative z-10"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          </span>
-                        </div>
-                      ) : (
-                        event.buttonText === "Register Now" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (!isAuthenticated) {
-                                navigate("/login");
-                              } else if (
-                                event.tournamentType === "team" &&
-                                !isTeamLeader &&
-                                !isAdmin
-                              ) {
-                                showError(
-                                  "Only team leaders can register for team tournaments."
-                                );
-                              } else {
-                                setSelectedEvent(event);
-                              }
-                            }}
-                            className="group/btn relative inline-flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-primary-950 text-white text-sm font-semibold uppercase tracking-wider rounded-lg overflow-hidden transition-all duration-300 hover:text-secondary-200"
-                          >
-                            <span className="relative z-10 flex items-center gap-2">
-                              {event.buttonText || "Learn More"}
-                              <motion.svg
-                                className="w-4 h-4 relative z-10"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                animate={{
-                                  x: hoveredIndex === index ? 4 : 0,
-                                }}
-                                transition={{ duration: 0.3 }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                                />
-                              </motion.svg>
-                            </span>
-                            {/* Button hover effect */}
-                            <motion.div
-                              className="absolute inset-0 bg-gradient-to-r from-secondary-500 to-secondary-400"
-                              initial={{ x: "-100%" }}
-                              whileHover={{ x: "0%" }}
-                              transition={{ duration: 0.4, ease: "easeInOut" }}
-                            />
-                            {/* Shine effect */}
-                            <motion.div
-                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                              initial={{ x: "-100%" }}
-                              whileHover={{ x: "200%" }}
-                              transition={{ duration: 0.6 }}
-                            />
-                          </button>
-                        )
-                      )}
-                    </motion.div>
-                  )}
-                </div>
-
-                {/* Enhanced Hover Border Glow */}
-                <motion.div
-                  className="absolute inset-0 rounded-2xl border-2 border-secondary-500/0 pointer-events-none"
-                  animate={{
-                    borderColor:
-                      hoveredIndex === index
-                        ? "rgba(254, 87, 35, 0.4)"
-                        : "rgba(254, 87, 35, 0)",
-                    boxShadow:
-                      hoveredIndex === index
-                        ? "0 0 25px rgba(254, 87, 35, 0.15)"
-                        : "0 0 0px rgba(254, 87, 35, 0)",
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.div>
+                event={event}
+                onRegister={() => handleRegisterEvent(event)}
+              />
             ))}
-          </motion.div>
+          </div>
         )}
 
-        {/* Enhanced View All Link */}
+        {/* CTA row */}
         <motion.div
-          className="text-center"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.6 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
         >
           <Link
             to="/events"
-            className="group relative inline-flex items-center gap-3 px-8 py-4 border-2 border-primary-950 text-primary-950 text-sm font-bold uppercase tracking-wider rounded-full bg-white hover:border-secondary-500 hover:bg-secondary-500 hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg"
+            className="group relative inline-flex items-center gap-3 px-9 py-4 font-black text-sm uppercase tracking-widest text-white rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, #fe5723 0%, #ff7a40 100%)",
+              boxShadow: "0 8px 30px rgba(254,87,35,0.35)",
+            }}
           >
-            <span>View All Events</span>
-            <motion.svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              animate={{ x: [0, 6, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </motion.svg>
-            {/* Hover background */}
-            <motion.div
-              className="absolute inset-0 rounded-full bg-secondary-100/50"
-              initial={{ scale: 0 }}
-              whileHover={{ scale: 1 }}
-              transition={{ duration: 0.3 }}
-            />
+            <span>Explore All Tournaments</span>
+            <span className="group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+          </Link>
+          <Link
+            to="/events"
+            className="group inline-flex items-center gap-2.5 px-7 py-4 font-bold text-sm uppercase tracking-widest text-secondary-600 rounded-full border-2 border-secondary-300 hover:border-secondary-500 hover:bg-secondary-50 transition-all duration-300"
+          >
+            <span>View Schedule</span>
+            <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
           </Link>
         </motion.div>
       </div>
