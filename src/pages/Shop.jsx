@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/shop/ProductCard";
 import ShopFilters from "../components/shop/ShopFilters";
 import { useCart } from "../context/CartContext";
@@ -14,39 +14,36 @@ import {
   IoFilter,
   IoClose,
   IoArrowDown,
-  IoArrowForward,
   IoShieldCheckmarkOutline,
   IoFlashOutline,
   IoRefreshOutline,
   IoCarOutline,
-  IoSparklesOutline,
 } from "react-icons/io5";
 import EmptyState from "../components/EmptyState";
 
 const ProductSkeleton = ({ viewMode }) => {
   if (viewMode === "list") {
     return (
-      <div className="bg-white border border-primary-200 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row gap-5 sm:gap-6 animate-pulse shadow-xs">
-        <div className="w-full sm:w-48 h-56 sm:h-48 bg-primary-100 rounded-2xl" />
-        <div className="flex-1 space-y-4 py-2">
-          <div className="h-6 bg-primary-100 rounded-md w-2/3" />
-          <div className="h-4 bg-primary-100 rounded-md w-full" />
-          <div className="h-4 bg-primary-100 rounded-md w-4/5" />
-          <div className="h-8 bg-primary-100 rounded-md w-1/3 mt-6" />
+      <div className="bg-white border border-neutral-200 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5">
+        <div className="w-full sm:w-48 h-48 bg-neutral-100 rounded-lg animate-pulse" />
+        <div className="flex-1 space-y-3 py-1">
+          <div className="h-5 bg-neutral-100 rounded w-1/3 animate-pulse" />
+          <div className="h-4 bg-neutral-100 rounded w-2/3 animate-pulse" />
+          <div className="h-4 bg-neutral-100 rounded w-1/2 animate-pulse" />
+          <div className="h-8 bg-neutral-100 rounded w-1/4 mt-4 animate-pulse" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-primary-200 rounded-3xl overflow-hidden animate-pulse shadow-xs">
-      <div className="aspect-square bg-primary-100" />
-      <div className="p-6 space-y-4">
-        <div className="h-5 bg-primary-100 rounded-md w-3/4" />
-        <div className="h-4 bg-primary-100 rounded-md w-full" />
-        <div className="h-4 bg-primary-100 rounded-md w-2/3" />
-        <div className="h-8 bg-primary-100 rounded-md w-1/3 pt-2" />
-        <div className="h-11 bg-primary-100 rounded-xl w-full" />
+    <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
+      <div className="aspect-square bg-neutral-100 animate-pulse" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-neutral-100 rounded w-1/4 animate-pulse" />
+        <div className="h-5 bg-neutral-100 rounded w-3/4 animate-pulse" />
+        <div className="h-6 bg-neutral-100 rounded w-1/3 animate-pulse" />
+        <div className="h-9 bg-neutral-100 rounded w-full animate-pulse" />
       </div>
     </div>
   );
@@ -55,31 +52,31 @@ const ProductSkeleton = ({ viewMode }) => {
 const trustPerks = [
   {
     icon: IoCarOutline,
-    title: "Regional Delivery",
+    title: "Regional delivery",
     desc: "Speedy dispatch in Addis Ababa & Hawassa",
   },
   {
     icon: IoFlashOutline,
-    title: "Official Matchwear",
+    title: "Official matchwear",
     desc: "Authentic Arena Gunners tournament kits",
   },
   {
     icon: IoShieldCheckmarkOutline,
-    title: "Secure Checkout",
-    desc: "Protected payment & card encryption",
+    title: "Secure checkout",
+    desc: "Protected payment & order encryption",
   },
   {
     icon: IoRefreshOutline,
-    title: "Hassle-Free Exchange",
-    desc: "Easy size swaps for all apparel orders",
+    title: "Hassle-free exchange",
+    desc: "Easy size swaps for apparel orders",
   },
 ];
 
 const categoryPills = [
-  { value: "all", label: "All Drops" },
-  { value: "apparel", label: "Apparel & Kits" },
+  { value: "all", label: "All products" },
+  { value: "apparel", label: "Apparel & kits" },
   { value: "accessories", label: "Accessories" },
-  { value: "equipment", label: "Match Equipment" },
+  { value: "equipment", label: "Equipment" },
 ];
 
 const Shop = () => {
@@ -274,11 +271,11 @@ const Shop = () => {
 
   if (settingsLoaded && !shopPageEnabled) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-primary-50/30 to-white pt-24 sm:pt-28 pb-16">
+      <div className="min-h-screen bg-white pt-28 pb-16">
         <EmptyState
           variant="shop"
-          title="Shop is offline"
-          description="Our shop is currently disabled by the site administrator. Please check back later."
+          title="Shop is currently offline"
+          description="The shop is temporarily unavailable. Please check back later."
           actionLabel="Back to home"
           actionTo="/"
         />
@@ -290,117 +287,78 @@ const Shop = () => {
     "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=1600&h=800&fit=crop&q=80";
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden selection:bg-secondary-500 selection:text-white">
-      {/* ─── FULL-BLEED HERO BANNER (MATCHING ABOUT & EVENTS AESTHETIC) ─── */}
-      <section className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[740px] flex items-center pt-32 sm:pt-40 pb-20 md:pb-28 overflow-hidden bg-neutral-950">
-        {/* Background Image */}
-        <div className="absolute inset-0">
+    <div className="min-h-screen bg-white text-neutral-900">
+      {/* ─── Grounded Hero Header ─── */}
+      <section className="relative w-full bg-[#0e0f12] text-white pt-28 sm:pt-36 pb-16 sm:pb-20 overflow-hidden">
+        {/* Background Atmosphere */}
+        <div className="absolute inset-0 z-0 opacity-40">
           <img
             src={shopHeroImage}
-            alt="The Arena Official Merchandise and Street Soccer Gear"
-            className="w-full h-full object-cover object-center scale-102"
+            alt="The Arena Official Store"
+            className="w-full h-full object-cover"
           />
-          {/* Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/92 via-black/65 to-black/35" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0e0f12] via-[#0e0f12]/80 to-transparent" />
         </div>
 
-        {/* Hero Content */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full relative z-10">
-          <div className="max-w-2xl text-left">
-            {/* Top movement pill */}
-            <motion.div
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white/90 text-xs font-semibold tracking-wide uppercase mb-6"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="w-2 h-2 rounded-full bg-secondary-500 animate-pulse" />
-              <span>Official Merchandise • The Arena Gunners Store</span>
-            </motion.div>
+        {/* Content */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-700 bg-neutral-900/80 text-xs text-neutral-300 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary-500" />
+              <span>Official Store · The Arena</span>
+            </div>
 
-            {/* Massive Bold Heading */}
-            <motion.h1
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[0.98] mb-6 uppercase"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-            >
-              ARENA <span className="text-secondary-500">MERCH</span>
-            </motion.h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">
+              Arena Kits & Gear
+            </h1>
 
-            {/* Subtitle */}
-            <motion.p
-              className="text-base sm:text-lg md:text-xl text-white/90 font-light max-w-xl leading-relaxed mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              Engineered for street ballers, champions, and everyday supporters. Official jerseys, accessories, and tournament kits crafted with Ethiopian football passion.
-            </motion.p>
+            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed mb-6">
+              Official tournament matchwear, training apparel, and equipment engineered for Ethiopian street football.
+            </p>
 
-            {/* Dual CTA Buttons */}
-            <motion.div
-              className="flex flex-wrap items-center gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="#shop-catalog"
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg hover:shadow-secondary-500/30 transition-all duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-xs font-semibold uppercase tracking-wider transition-colors duration-150"
               >
-                EXPLORE GEAR <IoArrowDown className="text-sm" />
+                <span>Explore catalog</span>
+                <IoArrowDown className="text-xs" />
               </a>
 
               <button
+                type="button"
                 onClick={() => navigate("/cart")}
-                className="relative inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-black/40 hover:bg-black/60 text-white font-bold text-xs uppercase tracking-widest rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 text-xs font-medium uppercase tracking-wider transition-colors duration-150"
               >
-                <IoCart className="text-base" />
-                <span>VIEW CART</span>
+                <IoCart className="text-sm" />
+                <span>View cart</span>
                 {cartItemCount > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-secondary-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  <span className="min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-semibold rounded-full flex items-center justify-center tabular-nums">
                     {cartItemCount}
                   </span>
                 )}
               </button>
-            </motion.div>
+            </div>
           </div>
         </div>
-
-        {/* Bottom Right Tagline Watermark */}
-        <motion.div
-          className="absolute bottom-8 right-8 sm:bottom-12 sm:right-12 text-right select-none pointer-events-none z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-        >
-          <div className="text-[10px] tracking-[0.25em] text-secondary-500 font-bold uppercase mb-0.5">
-            THE ARENA
-          </div>
-          <div className="text-base sm:text-lg font-black text-white tracking-wider uppercase">
-            LET'S RUMBLE.
-          </div>
-        </motion.div>
       </section>
 
-      {/* ─── TRUST & VALUE PERKS STRIP ─── */}
-      <section className="border-b border-primary-200 bg-primary-50/70 py-6">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      {/* ─── Trust Perks Strip ─── */}
+      <section className="border-b border-neutral-200 bg-neutral-50/70 py-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {trustPerks.map((perk, i) => {
               const Icon = perk.icon;
               return (
-                <div key={i} className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-primary-200 text-secondary-500 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-secondary-500 flex items-center justify-center text-base flex-shrink-0">
                     <Icon />
                   </div>
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-primary-950 leading-tight">
+                    <h4 className="text-xs font-semibold text-neutral-900 leading-tight">
                       {perk.title}
                     </h4>
-                    <p className="text-[11px] text-primary-500 leading-tight mt-0.5 hidden sm:block">
+                    <p className="text-[11px] text-neutral-500 leading-tight mt-0.5 hidden sm:block">
                       {perk.desc}
                     </p>
                   </div>
@@ -411,23 +369,23 @@ const Shop = () => {
         </div>
       </section>
 
-      {/* ─── CATALOG & PRODUCTS SECTION ─── */}
-      <section id="shop-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 scroll-mt-20">
-        {/* Top Controls: Search, Quick Category Pills & Views */}
-        <div className="space-y-6 mb-10 pb-8 border-b border-primary-200">
-          {/* Quick Category Bar */}
+      {/* ─── Catalog Section ─── */}
+      <section id="shop-catalog" className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 scroll-mt-20">
+        {/* Category bar & Item counter */}
+        <div className="space-y-4 mb-8 pb-6 border-b border-neutral-200">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-lg bg-neutral-100 border border-neutral-200">
               {categoryPills.map((pill) => {
                 const isActive = filters.category === pill.value;
                 return (
                   <button
                     key={pill.value}
+                    type="button"
                     onClick={() => handleFilterChange({ category: pill.value })}
-                    className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
                       isActive
-                        ? "bg-secondary-500 text-white shadow-md shadow-secondary-500/25"
-                        : "bg-primary-100 hover:bg-primary-200/70 text-primary-700 hover:text-primary-950 border border-primary-200"
+                        ? "bg-white text-neutral-900 shadow-xs"
+                        : "text-neutral-600 hover:text-neutral-900"
                     }`}
                   >
                     {pill.label}
@@ -436,78 +394,75 @@ const Shop = () => {
               })}
             </div>
 
-            {/* Total items badge */}
-            <span className="text-xs text-primary-500 uppercase tracking-widest font-semibold">
+            <span className="text-xs text-neutral-500 tabular-nums">
               {loading
                 ? "Loading products..."
-                : `${pagination.total} ${
-                    pagination.total === 1 ? "Item Available" : "Items Available"
-                  }`}
+                : `${pagination.total} ${pagination.total === 1 ? "product" : "products"}`}
             </span>
           </div>
 
-          {/* Search Input & Sort & Views */}
-          <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Search, Sort & View Controls */}
+          <div className="flex flex-col md:flex-row items-center gap-3">
             {/* Search Input */}
             <form onSubmit={handleSearch} className="flex-1 w-full relative">
-              <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg" />
+              <IoSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm" />
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search jerseys, hoodies, balls, shin guards..."
+                placeholder="Search jerseys, hoodies, balls..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-10 py-3 rounded-2xl border border-primary-200 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 outline-none text-sm bg-primary-50/50 focus:bg-white transition-all placeholder-primary-400"
+                className="w-full h-10 pl-9 pr-9 rounded-lg border border-neutral-300 focus:border-neutral-900 focus:ring-0 outline-none text-xs bg-white text-neutral-900 transition-colors placeholder-neutral-400"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-primary-400 hover:text-primary-950 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-900"
                   aria-label="Clear search"
                 >
-                  <IoClose className="text-lg" />
+                  <IoClose className="text-sm" />
                 </button>
               )}
             </form>
 
-            {/* Sort & Mobile Filter Buttons */}
-            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-              {/* Mobile Filter Toggle */}
+            <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+              {/* Mobile Filter Button */}
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="lg:hidden inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-primary-200 bg-white hover:bg-primary-50 text-xs font-bold uppercase tracking-wider text-primary-800 transition-colors shadow-xs"
+                className="lg:hidden h-10 inline-flex items-center gap-1.5 px-3 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 transition-colors"
               >
-                <IoFilter className="text-base text-secondary-500" />
+                <IoFilter className="text-xs" />
                 <span>Filters</span>
                 {hasActiveFilters && (
-                  <span className="w-5 h-5 rounded-full bg-secondary-500 text-white text-[10px] flex items-center justify-center font-bold">
+                  <span className="w-4 h-4 rounded-full bg-secondary-500 text-white text-[10px] flex items-center justify-center font-semibold">
                     {activeFilterChips.length}
                   </span>
                 )}
               </button>
 
               {/* Sort Dropdown */}
-              <div className="flex items-center gap-1.5 bg-primary-100/70 p-1 rounded-2xl border border-primary-200">
+              <div className="flex items-center h-10 px-2 rounded-lg border border-neutral-300 bg-white">
                 <select
                   value={sortBy}
                   onChange={(e) => {
                     setSortBy(e.target.value);
                     resetToFirstPage();
                   }}
-                  className="text-xs font-bold text-primary-800 outline-none bg-transparent py-1.5 px-3 cursor-pointer uppercase tracking-wider"
+                  className="text-xs font-medium text-neutral-800 outline-none bg-transparent pr-1 cursor-pointer"
                 >
-                  <option value="createdAt">Newest First</option>
+                  <option value="createdAt">Newest first</option>
                   <option value="price">Price</option>
-                  <option value="name">Product Name</option>
+                  <option value="name">Name</option>
                 </select>
                 <button
+                  type="button"
                   onClick={() => {
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                     resetToFirstPage();
                   }}
-                  className="w-7 h-7 rounded-xl bg-white text-xs font-bold text-primary-800 hover:text-secondary-600 transition-colors flex items-center justify-center shadow-xs"
+                  className="p-1 rounded text-neutral-600 hover:text-neutral-950 transition-colors text-xs font-semibold"
                   aria-label={
                     sortOrder === "asc" ? "Sort descending" : "Sort ascending"
                   }
@@ -516,25 +471,27 @@ const Shop = () => {
                 </button>
               </div>
 
-              {/* Grid / List View Toggle */}
-              <div className="flex items-center gap-1 bg-primary-100/70 p-1 rounded-2xl border border-primary-200">
+              {/* View Toggle */}
+              <div className="flex items-center p-0.5 rounded-lg border border-neutral-300 bg-white">
                 <button
+                  type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all ${
+                  className={`w-8 h-8 rounded-md flex items-center justify-center text-xs transition-colors ${
                     viewMode === "grid"
-                      ? "bg-white text-secondary-600 shadow-xs"
-                      : "text-primary-400 hover:text-primary-800"
+                      ? "bg-neutral-100 text-neutral-900"
+                      : "text-neutral-400 hover:text-neutral-700"
                   }`}
                   aria-label="Grid view"
                 >
                   <IoGrid />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setViewMode("list")}
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-all ${
+                  className={`w-8 h-8 rounded-md flex items-center justify-center text-xs transition-colors ${
                     viewMode === "list"
-                      ? "bg-white text-secondary-600 shadow-xs"
-                      : "text-primary-400 hover:text-primary-800"
+                      ? "bg-neutral-100 text-neutral-900"
+                      : "text-neutral-400 hover:text-neutral-700"
                   }`}
                   aria-label="List view"
                 >
@@ -546,25 +503,27 @@ const Shop = () => {
 
           {/* Active Filter Chips */}
           {hasActiveFilters && (
-            <div className="flex flex-wrap items-center gap-2 pt-2">
-              <span className="text-xs text-primary-400 font-medium mr-1">Active filters:</span>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs text-neutral-400">Filters:</span>
               {activeFilterChips.map((chip) => (
                 <button
                   key={chip.key}
+                  type="button"
                   onClick={() =>
                     chip.key === "search"
                       ? clearSearch()
                       : clearSingleFilter(chip.key)
                   }
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-secondary-50 text-secondary-700 border border-secondary-200 hover:border-secondary-400 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200 hover:border-neutral-300 transition-colors"
                 >
-                  {chip.label}
-                  <IoClose className="text-sm" />
+                  <span>{chip.label}</span>
+                  <IoClose className="text-xs" />
                 </button>
               ))}
               <button
+                type="button"
                 onClick={clearAllFilters}
-                className="text-xs font-bold text-secondary-600 hover:text-secondary-700 underline underline-offset-2 ml-2 transition-colors"
+                className="text-xs text-neutral-500 hover:text-neutral-900 ml-1 transition-colors"
               >
                 Clear all
               </button>
@@ -572,9 +531,8 @@ const Shop = () => {
           )}
         </div>
 
-        {/* Main Content Layout (Sidebar Filters + Products Grid) */}
+        {/* Content Layout */}
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Sidebar Filters */}
           <ShopFilters
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -582,14 +540,13 @@ const Shop = () => {
             onClose={() => setFiltersOpen(false)}
           />
 
-          {/* Products View */}
           <div className="flex-1 w-full">
             {loading ? (
               <div
                 className={
                   viewMode === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-                    : "space-y-6"
+                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                    : "space-y-4"
                 }
               >
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -598,64 +555,53 @@ const Shop = () => {
               </div>
             ) : products.length > 0 ? (
               <>
-                <motion.div
+                <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-                      : "space-y-6"
+                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                      : "space-y-4"
                   }
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4 }}
                 >
-                  {products.map((product, index) => (
-                    <motion.div
+                  {products.map((product) => (
+                    <ProductCard
                       key={product._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        delay: Math.min(index * 0.04, 0.3),
-                        duration: 0.4,
-                      }}
-                    >
-                      <ProductCard
-                        product={product}
-                        onAddToCart={handleAddToCart}
-                        viewMode={viewMode}
-                      />
-                    </motion.div>
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      viewMode={viewMode}
+                    />
                   ))}
-                </motion.div>
+                </div>
 
-                {/* Pagination Controls */}
                 {pagination.pages > 1 && (
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-14 pt-8 border-t border-primary-200">
+                  <div className="flex items-center justify-center gap-2 mt-12 pt-6 border-t border-neutral-200">
                     <button
+                      type="button"
                       onClick={() => {
                         setPagination((prev) => ({
                           ...prev,
                           page: prev.page - 1,
                         }));
-                        window.scrollTo({ top: 400, behavior: "smooth" });
+                        window.scrollTo({ top: 350, behavior: "smooth" });
                       }}
                       disabled={pagination.page === 1}
-                      className="px-5 py-2.5 rounded-full border border-primary-200 bg-white hover:bg-primary-50 text-xs font-bold uppercase tracking-wider text-primary-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
+                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
-                    <span className="text-xs font-semibold text-primary-600 px-4">
+                    <span className="text-xs text-neutral-500 px-3 tabular-nums">
                       Page {pagination.page} of {pagination.pages}
                     </span>
                     <button
+                      type="button"
                       onClick={() => {
                         setPagination((prev) => ({
                           ...prev,
                           page: prev.page + 1,
                         }));
-                        window.scrollTo({ top: 400, behavior: "smooth" });
+                        window.scrollTo({ top: 350, behavior: "smooth" });
                       }}
                       disabled={pagination.page >= pagination.pages}
-                      className="px-5 py-2.5 rounded-full border border-primary-200 bg-white hover:bg-primary-50 text-xs font-bold uppercase tracking-wider text-primary-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
+                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
