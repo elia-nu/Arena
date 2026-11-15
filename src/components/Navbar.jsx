@@ -109,7 +109,7 @@ const Navbar = () => {
       case "team_leader":
         return { title: "Captain", color: "bg-sky-500/10 text-sky-400 border-sky-500/30" };
       case "player":
-        return { title: "Player", color: "bg-orange-500/10 text-orange-400 border-orange-500/30" };
+        return { title: "Player", color: "bg-secondary-500/20 text-secondary-400 border-secondary-500/30" };
       default:
         return { title: "Member", color: "bg-white/10 text-neutral-300 border-white/10" };
     }
@@ -141,8 +141,8 @@ const Navbar = () => {
                   className="flex items-center gap-3 select-none py-1 group"
                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
-                  {/* Clean circular logo */}
-                  <div className="relative flex-shrink-0 w-9 h-9 rounded-full overflow-hidden bg-neutral-900 border border-neutral-700/60">
+                  {/* Clean circular logo with brand orange border */}
+                  <div className="relative flex-shrink-0 w-9 h-9 rounded-full overflow-hidden bg-neutral-900 border-2 border-secondary-500">
                     <img
                       src={logo}
                       alt="The Arena"
@@ -153,23 +153,23 @@ const Navbar = () => {
                   {/* Clean wordmark */}
                   <div className="flex flex-col leading-none">
                     <span
-                      className="text-sm font-semibold tracking-wide text-neutral-100"
+                      className="text-sm font-black tracking-wide text-white uppercase"
                       style={{
                         fontFamily: '"Saira Stencil One", "Allerta Stencil", sans-serif',
                       }}
                     >
                       THE <span className="text-secondary-500">ARENA</span>
                     </span>
-                    <span className="text-[10px] text-neutral-400 mt-0.5 tracking-wider font-medium">
+                    <span className="text-[10px] text-secondary-400 mt-0.5 tracking-wider font-bold uppercase">
                       Street Soccer
                     </span>
                   </div>
                 </Link>
               </div>
 
-              {/* ── Center: Quiet Desktop Navigation ── */}
+              {/* ── Center: Desktop Navigation ── */}
               <nav
-                className="hidden lg:flex items-center gap-1 p-1 rounded-lg bg-neutral-900/60 border border-neutral-800"
+                className="hidden lg:flex items-center gap-1 p-1 rounded-lg bg-neutral-900/80 border border-neutral-800"
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 {navItems.map((item) => {
@@ -181,18 +181,24 @@ const Navbar = () => {
                       key={item.label}
                       to={item.href}
                       onMouseEnter={() => setHoveredItem(item.label)}
-                      className={`relative px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors duration-150 select-none flex items-center gap-1.5 ${
+                      className={`relative px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors duration-150 select-none flex items-center gap-1.5 ${
                         active
-                          ? "text-neutral-100 bg-neutral-800"
+                          ? "text-white bg-secondary-500 shadow-xs"
                           : isHovered
-                          ? "text-neutral-200 bg-neutral-800/40"
-                          : "text-neutral-400 hover:text-neutral-200"
+                          ? "text-white bg-neutral-800"
+                          : "text-neutral-300 hover:text-white"
                       }`}
                     >
                       <span>{item.label}</span>
 
                       {item.badge && (
-                        <span className="px-1.5 py-0.2 text-[9px] font-semibold uppercase rounded bg-secondary-500/20 text-secondary-400 border border-secondary-500/30">
+                        <span
+                          className={`px-1.5 py-0.2 text-[9px] font-bold uppercase rounded ${
+                            active
+                              ? "bg-white text-secondary-600"
+                              : "bg-secondary-500 text-white"
+                          }`}
+                        >
                           {item.badge}
                         </span>
                       )}
@@ -208,14 +214,14 @@ const Navbar = () => {
                     to="/cart"
                     className={`relative p-2 rounded-lg border transition-colors duration-150 flex items-center justify-center ${
                       isActive("/cart")
-                        ? "border-secondary-500/50 bg-secondary-500/10 text-secondary-400"
-                        : "border-neutral-800 bg-neutral-900/60 text-neutral-300 hover:text-white hover:bg-neutral-800"
+                        ? "border-secondary-500 bg-secondary-500/20 text-secondary-400"
+                        : "border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-secondary-500/40"
                     }`}
                     aria-label="View Shopping Cart"
                   >
-                    <IoCart className="w-4 h-4" />
+                    <IoCart className="w-4 h-4 text-secondary-400" />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-semibold rounded-full flex items-center justify-center tabular-nums">
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center tabular-nums">
                         {cartItemCount}
                       </span>
                     )}
@@ -231,14 +237,14 @@ const Navbar = () => {
                 {isAuthenticated ? (
                   <div className="hidden sm:flex items-center gap-2 pl-1">
                     <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800">
-                      <div className="w-5 h-5 rounded-md bg-secondary-500 text-white font-semibold text-[10px] flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-md bg-secondary-500 text-white font-bold text-[10px] flex items-center justify-center">
                         {userInitials}
                       </div>
-                      <span className="text-xs font-medium text-neutral-200 max-w-[110px] truncate">
+                      <span className="text-xs font-semibold text-neutral-200 max-w-[110px] truncate">
                         {user?.username || user?.email}
                       </span>
                       <span
-                        className={`text-[9px] font-medium uppercase px-1.5 py-0.2 rounded border ${roleMeta.color}`}
+                        className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border ${roleMeta.color}`}
                       >
                         {roleMeta.title}
                       </span>
@@ -247,7 +253,7 @@ const Navbar = () => {
                     {user?.role === "admin" && (
                       <Link
                         to="/admin"
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Admin
                       </Link>
@@ -255,7 +261,7 @@ const Navbar = () => {
                     {user?.role === "team_leader" && (
                       <Link
                         to="/team-leader"
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Captain
                       </Link>
@@ -263,7 +269,7 @@ const Navbar = () => {
                     {user?.role === "player" && (
                       <Link
                         to="/player"
-                        className="px-2.5 py-1 text-xs font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Dashboard
                       </Link>
@@ -286,14 +292,14 @@ const Navbar = () => {
                   <div className="hidden sm:flex items-center gap-2 pl-1">
                     <Link
                       to="/login"
-                      className="px-3 py-1.5 text-xs font-medium text-neutral-300 hover:text-white transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold text-neutral-300 hover:text-white transition-colors"
                     >
                       Log in
                     </Link>
 
                     <Link
                       to="/register"
-                      className="px-3.5 py-1.5 text-xs font-medium text-white rounded-lg bg-secondary-500 hover:bg-secondary-600 transition-colors"
+                      className="px-4 py-1.5 text-xs font-bold text-white rounded-lg bg-secondary-500 hover:bg-secondary-600 uppercase tracking-wider transition-colors shadow-xs"
                     >
                       Register
                     </Link>
@@ -360,20 +366,26 @@ const Navbar = () => {
                       key={item.label}
                       to={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                         active
-                          ? "bg-neutral-800 text-neutral-100"
+                          ? "bg-secondary-500 text-white"
                           : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40"
                       }`}
                     >
                       <span>{item.label}</span>
                       <div className="flex items-center gap-2">
                         {item.badge && (
-                          <span className="px-1.5 py-0.2 text-[9px] font-medium uppercase rounded bg-secondary-500/20 text-secondary-400">
+                          <span
+                            className={`px-1.5 py-0.2 text-[9px] font-bold uppercase rounded ${
+                              active
+                                ? "bg-white text-secondary-600"
+                                : "bg-secondary-500 text-white"
+                            }`}
+                          >
                             {item.badge}
                           </span>
                         )}
-                        <IoChevronForward className="w-3.5 h-3.5 text-neutral-600" />
+                        <IoChevronForward className="w-3.5 h-3.5" />
                       </div>
                     </Link>
                   );
@@ -383,9 +395,9 @@ const Navbar = () => {
                   <Link
                     to="/cart"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/cart")
-                        ? "bg-neutral-800 text-neutral-100"
+                        ? "bg-secondary-500 text-white"
                         : "text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40"
                     }`}
                   >
@@ -394,7 +406,7 @@ const Navbar = () => {
                       <span>Shopping Cart</span>
                     </div>
                     {cartItemCount > 0 ? (
-                      <span className="px-1.5 py-0.2 bg-secondary-500 text-white text-[10px] font-semibold rounded">
+                      <span className="px-1.5 py-0.2 bg-secondary-500 text-white text-[10px] font-bold rounded">
                         {cartItemCount}
                       </span>
                     ) : (
@@ -410,15 +422,15 @@ const Navbar = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded bg-secondary-500 text-white font-semibold text-[10px] flex items-center justify-center">
+                        <div className="w-6 h-6 rounded bg-secondary-500 text-white font-bold text-[10px] flex items-center justify-center">
                           {userInitials}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-neutral-200 truncate">
+                          <p className="text-xs font-semibold text-neutral-200 truncate">
                             {user?.username || user?.email}
                           </p>
                           <span
-                            className={`inline-block text-[9px] font-medium uppercase px-1 py-0.1 rounded border ${roleMeta.color}`}
+                            className={`inline-block text-[9px] font-bold uppercase px-1 py-0.1 rounded border ${roleMeta.color}`}
                           >
                             {roleMeta.title}
                           </span>
@@ -433,7 +445,7 @@ const Navbar = () => {
                       <Link
                         to="/admin"
                         onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-medium rounded-lg bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Admin Dashboard
                       </Link>
@@ -442,7 +454,7 @@ const Navbar = () => {
                       <Link
                         to="/team-leader"
                         onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-medium rounded-lg bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Captain Dashboard
                       </Link>
@@ -451,7 +463,7 @@ const Navbar = () => {
                       <Link
                         to="/player"
                         onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-medium rounded-lg bg-neutral-800 text-neutral-200 hover:bg-neutral-700 transition-colors"
+                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
                       >
                         Player Dashboard
                       </Link>
@@ -464,7 +476,7 @@ const Navbar = () => {
                         setIsMenuOpen(false);
                         navigate("/");
                       }}
-                      className="w-full py-2 text-xs font-medium rounded-lg border border-neutral-800 text-neutral-400 hover:text-neutral-200 bg-neutral-900 transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full py-2 text-xs font-semibold rounded-lg border border-neutral-800 text-neutral-400 hover:text-neutral-200 bg-neutral-900 transition-colors flex items-center justify-center gap-1.5"
                     >
                       <IoLogOutOutline className="w-3.5 h-3.5" />
                       Log out
@@ -475,14 +487,14 @@ const Navbar = () => {
                     <Link
                       to="/login"
                       onClick={() => setIsMenuOpen(false)}
-                      className="py-2 text-center text-xs font-medium rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors"
+                      className="py-2 text-center text-xs font-semibold rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 transition-colors"
                     >
                       Log in
                     </Link>
                     <Link
                       to="/register"
                       onClick={() => setIsMenuOpen(false)}
-                      className="py-2 text-center text-xs font-medium rounded-lg text-white bg-secondary-500 hover:bg-secondary-600 transition-colors"
+                      className="py-2 text-center text-xs font-bold text-white bg-secondary-500 hover:bg-secondary-600 uppercase tracking-wider rounded-lg transition-colors shadow-xs"
                     >
                       Register
                     </Link>

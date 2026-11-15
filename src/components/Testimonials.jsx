@@ -79,78 +79,42 @@ const getInitials = (name) => {
 };
 
 const TestimonialCard = ({ testimonial }) => {
-  const { name, role, quote, rating = 5, avatar } = testimonial;
+  const { name, role, quote, rating = 5 } = testimonial;
   const initials = getInitials(name);
 
   return (
-    <div className="group relative w-[320px] sm:w-[350px] md:w-[380px] shrink-0 mx-3 sm:mx-4 my-3 bg-white rounded-2xl p-6 md:p-7 border border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-2xl hover:shadow-secondary-500/15 hover:border-secondary-500 hover:scale-[1.04] hover:-translate-y-2 hover:rotate-2 hover:skew-x-3 transition-all duration-300 ease-out flex flex-col justify-between cursor-pointer select-none">
-      {/* Subtle Orange Accent Glow */}
-      <div className="absolute inset-x-6 top-0 h-[2px] bg-gradient-to-r from-transparent via-secondary-500/0 to-transparent group-hover:via-secondary-500/70 transition-all duration-500 rounded-t-2xl" />
-
+    <div className="w-[320px] sm:w-[360px] shrink-0 mx-2.5 my-2 bg-white rounded-xl p-5 border border-neutral-200 hover:border-secondary-500/50 hover:shadow-md transition-all duration-150 flex flex-col justify-between select-none">
       <div>
-        {/* Rating & Decorative Quote */}
-        <div className="flex items-center justify-between mb-4">
-          <div
-            className="flex items-center gap-1"
-            aria-label={`${rating} out of 5 stars`}
-          >
-            {[...Array(5)].map((_, i) => (
-              <svg
-                key={i}
-                className={`w-4 h-4 transition-colors ${
-                  i < rating
-                    ? "text-secondary-500 fill-secondary-500"
-                    : "text-neutral-200 fill-neutral-200"
-                }`}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
-          </div>
-
-          <span className="text-2xl font-serif text-neutral-300 group-hover:text-secondary-400/50 transition-colors duration-300 leading-none select-none">
-            &ldquo;
-          </span>
+        {/* Rating Stars in Brand Orange */}
+        <div className="flex items-center gap-1 mb-3" aria-label={`${rating} out of 5 stars`}>
+          {[...Array(5)].map((_, i) => (
+            <svg
+              key={i}
+              className={`w-3.5 h-3.5 ${
+                i < rating ? "text-secondary-500" : "text-neutral-200"
+              }`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
         </div>
 
-        {/* Quote in High-Contrast Charcoal/Black */}
-        <p className="text-neutral-800 text-sm leading-relaxed line-clamp-4 min-h-[4.5rem]">
+        {/* Quote */}
+        <p className="text-neutral-700 text-xs sm:text-sm leading-relaxed mb-4">
           &ldquo;{quote}&rdquo;
         </p>
       </div>
 
-      {/* Divider & Author in Black & White with Orange Accents */}
-      <div className="border-t border-neutral-100 pt-4 mt-5 flex items-center gap-3">
-        {avatar ? (
-          <img
-            src={avatar}
-            alt={name}
-            className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-neutral-200 group-hover:ring-secondary-500 transition-colors"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-              const fallback = e.currentTarget.nextElementSibling;
-              if (fallback) fallback.classList.remove("hidden");
-            }}
-          />
-        ) : null}
-        <div
-          className={`w-10 h-10 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center shrink-0 tracking-wider group-hover:bg-secondary-500 transition-colors duration-300 shadow-sm ${
-            avatar ? "hidden" : ""
-          }`}
-          aria-hidden
-        >
+      {/* Author Footer */}
+      <div className="flex items-center gap-2.5 pt-3 border-t border-neutral-100">
+        <div className="w-7 h-7 rounded-full bg-secondary-500 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 shadow-xs">
           {initials}
         </div>
-
-        <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-bold text-black truncate group-hover:text-secondary-600 transition-colors">
-            {name}
-          </h4>
-          <p className="text-xs text-neutral-500 truncate font-medium">
-            {role}
-          </p>
+        <div className="min-w-0">
+          <h4 className="text-xs font-bold text-neutral-900 truncate">{name}</h4>
+          <p className="text-[11px] text-neutral-500 truncate">{role}</p>
         </div>
       </div>
     </div>
@@ -158,9 +122,9 @@ const TestimonialCard = ({ testimonial }) => {
 };
 
 const Testimonials = ({
-  badge = "TESTIMONIALS",
-  title = "What Clients Say",
-  subtitle = "Real stories from players, teams, and families who experienced the thrill and community of The Arena.",
+  badge = "Community Feedback",
+  title = "What Community",
+  subtitle = "Stories from team captains, players, and families across Addis Ababa and Hawassa.",
 }) => {
   const [dbTestimonials, setDbTestimonials] = useState([]);
 
@@ -188,7 +152,6 @@ const Testimonials = ({
     };
   }, []);
 
-  // Merge database testimonials with defaults to ensure full marquee density
   const itemsList = useMemo(() => {
     if (dbTestimonials.length >= 8) {
       return dbTestimonials;
@@ -199,7 +162,6 @@ const Testimonials = ({
     return DEFAULT_TESTIMONIALS;
   }, [dbTestimonials]);
 
-  // Split into two distinct rows for the dual-row marquee
   const { row1, row2 } = useMemo(() => {
     const r1 = itemsList.filter((_, idx) => idx % 2 === 0);
     const r2 = itemsList.filter((_, idx) => idx % 2 !== 0);
@@ -211,75 +173,66 @@ const Testimonials = ({
   }, [itemsList]);
 
   return (
-    <section className="py-20 md:py-28 bg-[#fafafa] overflow-hidden relative border-t border-neutral-200/60">
-      {/* Ambient Glow */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-secondary-500/[0.04] rounded-full blur-[140px]" />
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header in Orange, Black & White */}
-        <div className="text-center mb-12 md:mb-16 px-4 max-w-3xl mx-auto">
-          {/* Orange Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-500/10 border border-secondary-500/25 mb-4 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-secondary-500 animate-pulse" />
-            <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-secondary-500">
+    <section className="py-20 sm:py-24 bg-neutral-50/70 overflow-hidden border-t border-neutral-200">
+      <div className="max-w-6xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center mb-12 px-4 max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary-500/10 border border-secondary-500/30 mb-3 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-secondary-500" />
+            <span className="text-xs font-semibold text-secondary-600">
               {badge}
             </span>
           </div>
 
-          {/* Black & Orange Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight mb-4">
-            What Clients <span className="text-secondary-500">Say</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-neutral-950 tracking-tight mb-3 uppercase">
+            {title} <span className="text-secondary-500">Says</span>
           </h2>
 
-          {/* Subtitle in Clean Charcoal */}
-          <p className="text-sm md:text-base text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
             {subtitle}
           </p>
         </div>
 
-        {/* Skewed Carousel Track Container (inspired by reactbits.dev) */}
-        <div className="relative w-full overflow-hidden py-8 sm:py-12">
-          {/* Left and Right Smooth Gradient Fades */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-36 md:w-56 bg-gradient-to-r from-[#fafafa] via-[#fafafa]/90 to-transparent z-20" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-36 md:w-56 bg-gradient-to-l from-[#fafafa] via-[#fafafa]/90 to-transparent z-20" />
+        {/* Level Marquee Track */}
+        <div className="relative w-full overflow-hidden py-2">
+          {/* Edge gradient masks */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 bg-gradient-to-r from-neutral-50 via-neutral-50/80 to-transparent z-10" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 bg-gradient-to-l from-neutral-50 via-neutral-50/80 to-transparent z-10" />
 
-          {/* Skewed Marquee Track with -rotate-2 -skew-x-3 and scale */}
-          <div className="transform -rotate-2 sm:-rotate-3 -skew-x-2 sm:-skew-x-3 scale-[1.03] sm:scale-105 transition-transform duration-500 origin-center py-4">
-            {/* Row 1: Scrolling Left */}
-            <div className="mb-4 sm:mb-6">
-              <Marquee
-                direction="left"
-                speed={35}
-                pauseOnHover={true}
-                autoFill={true}
-                className="py-3 overflow-visible"
-              >
-                {row1.map((item, idx) => (
-                  <TestimonialCard
-                    key={item._id ? `r1-${item._id}` : `r1-${idx}`}
-                    testimonial={item}
-                  />
-                ))}
-              </Marquee>
-            </div>
+          {/* Row 1 */}
+          <div className="mb-2">
+            <Marquee
+              direction="left"
+              speed={28}
+              pauseOnHover={true}
+              autoFill={true}
+              className="py-1 overflow-visible"
+            >
+              {row1.map((item, idx) => (
+                <TestimonialCard
+                  key={item._id ? `r1-${item._id}` : `r1-${idx}`}
+                  testimonial={item}
+                />
+              ))}
+            </Marquee>
+          </div>
 
-            {/* Row 2: Scrolling Right */}
-            <div>
-              <Marquee
-                direction="right"
-                speed={30}
-                pauseOnHover={true}
-                autoFill={true}
-                className="py-3 overflow-visible"
-              >
-                {row2.map((item, idx) => (
-                  <TestimonialCard
-                    key={item._id ? `r2-${item._id}` : `r2-${idx}`}
-                    testimonial={item}
-                  />
-                ))}
-              </Marquee>
-            </div>
+          {/* Row 2 */}
+          <div>
+            <Marquee
+              direction="right"
+              speed={24}
+              pauseOnHover={true}
+              autoFill={true}
+              className="py-1 overflow-visible"
+            >
+              {row2.map((item, idx) => (
+                <TestimonialCard
+                  key={item._id ? `r2-${item._id}` : `r2-${idx}`}
+                  testimonial={item}
+                />
+              ))}
+            </Marquee>
           </div>
         </div>
       </div>

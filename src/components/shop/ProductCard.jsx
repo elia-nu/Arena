@@ -43,7 +43,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
   // ─── LIST VIEW ───
   if (viewMode === "list") {
     return (
-      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden p-4 sm:p-5 flex flex-col sm:flex-row gap-5 hover:border-neutral-300 hover:shadow-sm transition-all duration-150">
+      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden p-4 sm:p-5 flex flex-col sm:flex-row gap-5 hover:border-secondary-500/50 hover:shadow-md transition-all duration-150">
         <Link
           to={`/shop/product/${productId}`}
           className="relative flex-shrink-0 w-full sm:w-48 h-48 rounded-lg overflow-hidden bg-neutral-100 flex items-center justify-center group"
@@ -55,20 +55,20 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
           />
 
           {hasDiscount && (
-            <span className="absolute top-2.5 right-2.5 text-[11px] font-semibold bg-secondary-500 text-white px-2 py-0.5 rounded shadow-xs">
+            <span className="absolute top-2.5 right-2.5 text-[11px] font-bold bg-secondary-500 text-white px-2 py-0.5 rounded shadow-xs uppercase">
               -{discountPercentage}%
             </span>
           )}
 
           {cartQty > 0 && (
-            <span className="absolute top-2.5 left-2.5 text-[10px] font-medium bg-neutral-900/90 text-white px-2 py-0.5 rounded shadow-xs">
+            <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-neutral-900/90 text-white px-2 py-0.5 rounded shadow-xs">
               {cartQty} in cart
             </span>
           )}
 
           {!product.inStock && (
             <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center">
-              <span className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-600 text-xs font-medium">
+              <span className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-600 text-xs font-semibold uppercase">
                 Out of stock
               </span>
             </div>
@@ -78,7 +78,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
         <div className="flex-1 flex flex-col justify-between py-1">
           <div>
             <div className="flex items-center justify-between gap-2 mb-1.5">
-              <span className="text-xs font-medium text-neutral-500 capitalize">
+              <span className="text-xs font-bold text-secondary-600 uppercase tracking-wider">
                 {product.category || "Apparel"}
               </span>
               <span
@@ -97,7 +97,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
 
             <Link
               to={`/shop/product/${productId}`}
-              className="text-base sm:text-lg font-semibold text-neutral-900 hover:text-secondary-600 transition-colors block leading-snug mb-1.5"
+              className="text-base sm:text-lg font-bold text-neutral-900 hover:text-secondary-500 transition-colors block leading-snug mb-1.5"
             >
               {product.name}
             </Link>
@@ -111,7 +111,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-100">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-neutral-950 tabular-nums">
+              <span className="text-2xl font-black text-secondary-500 tabular-nums">
                 ${finalPrice.toFixed(2)}
               </span>
               {hasDiscount && (
@@ -124,11 +124,11 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
             <button
               onClick={handleAddToCart}
               disabled={!product.inStock}
-              className={`h-9 px-4 rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 transition-colors duration-150 ${
+              className={`h-9 px-5 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors duration-150 ${
                 product.inStock
                   ? justAdded
                     ? "bg-emerald-600 text-white"
-                    : "bg-secondary-500 hover:bg-secondary-600 text-white"
+                    : "bg-secondary-500 hover:bg-secondary-600 text-white shadow-xs"
                   : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
               }`}
             >
@@ -152,7 +152,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
 
   // ─── GRID VIEW ───
   return (
-    <div className="h-full bg-white rounded-xl border border-neutral-200 overflow-hidden flex flex-col justify-between hover:border-neutral-300 hover:shadow-sm transition-all duration-150 group">
+    <div className="h-full bg-white rounded-xl border border-neutral-200 overflow-hidden flex flex-col justify-between hover:border-secondary-500/50 hover:shadow-md transition-all duration-150 group">
       <div>
         {/* Product Image */}
         <Link
@@ -166,26 +166,26 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
           />
 
           {hasDiscount && (
-            <span className="absolute top-2.5 right-2.5 z-10 bg-secondary-500 text-white font-semibold text-[11px] px-2 py-0.5 rounded shadow-xs">
+            <span className="absolute top-2.5 right-2.5 z-10 bg-secondary-500 text-white font-bold text-[11px] px-2 py-0.5 rounded shadow-xs uppercase">
               -{discountPercentage}%
             </span>
           )}
 
           {promotionActive && !hasDiscount && (
-            <span className="absolute top-2.5 right-2.5 z-10 bg-neutral-900 text-white font-medium text-[11px] px-2 py-0.5 rounded shadow-xs">
+            <span className="absolute top-2.5 right-2.5 z-10 bg-secondary-500 text-white font-bold text-[11px] px-2 py-0.5 rounded shadow-xs uppercase">
               Special
             </span>
           )}
 
           {cartQty > 0 && product.inStock && (
-            <span className="absolute top-2.5 left-2.5 z-10 text-[10px] font-medium bg-neutral-900/90 text-white px-2 py-0.5 rounded shadow-xs">
+            <span className="absolute top-2.5 left-2.5 z-10 text-[10px] font-bold bg-neutral-900/90 text-white px-2 py-0.5 rounded shadow-xs uppercase">
               {cartQty} in cart
             </span>
           )}
 
           {!product.inStock && (
             <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center z-10">
-              <span className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-600 text-xs font-medium">
+              <span className="px-2.5 py-1 rounded bg-neutral-100 text-neutral-600 text-xs font-semibold uppercase">
                 Out of stock
               </span>
             </div>
@@ -195,7 +195,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
         {/* Card Body Information */}
         <div className="p-4 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-neutral-500 capitalize font-medium">
+            <span className="text-secondary-600 font-bold uppercase tracking-wider text-[11px]">
               {product.category || "Apparel"}
             </span>
             <span
@@ -213,7 +213,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
           </div>
 
           <Link to={`/shop/product/${productId}`} className="block">
-            <h3 className="text-sm sm:text-base font-semibold text-neutral-900 leading-snug group-hover:text-secondary-600 transition-colors line-clamp-1">
+            <h3 className="text-sm sm:text-base font-bold text-neutral-900 leading-snug group-hover:text-secondary-500 transition-colors line-clamp-1">
               {product.name}
             </h3>
           </Link>
@@ -223,7 +223,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
           </p>
 
           <div className="flex items-baseline gap-2 pt-1.5">
-            <span className="text-lg font-bold text-neutral-950 tabular-nums">
+            <span className="text-xl font-black text-secondary-500 tabular-nums">
               ${finalPrice.toFixed(2)}
             </span>
             {hasDiscount && (
@@ -240,11 +240,11 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
         <button
           onClick={handleAddToCart}
           disabled={!product.inStock}
-          className={`w-full h-10 px-4 rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 transition-colors duration-150 ${
+          className={`w-full h-10 px-4 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors duration-150 ${
             product.inStock
               ? justAdded
                 ? "bg-emerald-600 text-white"
-                : "bg-secondary-500 hover:bg-secondary-600 text-white"
+                : "bg-secondary-500 hover:bg-secondary-600 text-white shadow-xs"
               : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
           }`}
         >

@@ -128,7 +128,10 @@ export default function DomeGallery({
   openedImageBorderRadius = '24px',
   grayscale = false,
   spinOnFirstScroll = true,
-  spinDuration = 7500
+  spinDuration = 7000,
+  spinDegrees = 160,
+  autoRotate = false,
+  autoRotateSpeed = 0.08
 }) {
   const rootRef = useRef(null);
   const mainRef = useRef(null);
@@ -262,6 +265,7 @@ export default function DomeGallery({
   }, []);
 
   const hasSpunRef = useRef(false);
+  const isSpinningEntranceRef = useRef(false);
 
   useEffect(() => {
     if (!spinOnFirstScroll) return;
@@ -281,26 +285,44 @@ export default function DomeGallery({
           if (entry.isIntersecting && !hasSpunRef.current) {
             hasSpunRef.current = true;
             observer.disconnect();
+            isSpinningEntranceRef.current = true;
 
             let startTs = null;
-            const duration = spinDuration; // Smooth, relaxed rotation speed
-            const totalSpinDeg = 360; // 360 degree spin around Y axis
+            const duration = spinDuration; // Smooth, relaxed entrance rotation
+            const totalSpinDeg = spinDegrees; // Degrees to rotate before stopping
             const startY = rotationRef.current.y;
 
             const spinStep = ts => {
-              if (draggingRef.current || focusedElRef.current) return;
+              if (draggingRef.current || focusedElRef.current) {
+                isSpinningEntranceRef.current = false;
+                return;
+              }
               if (!startTs) startTs = ts;
               const elapsed = ts - startTs;
               const progress = Math.min(1, elapsed / duration);
 
-              // Ease-out cubic: starts with momentum and slows down smoothly
-              const ease = 1 - Math.pow(1 - progress, 3);
+              // Constant slow spin that never speeds up, then softly glides to a stop
+              const k = 0.75; // 75% constant steady cruise, last 25% smooth brake to a stop
+              const maxFactor = k + (1 - k) / 2;
+              let ease;
+              if (progress <= k) {
+                // Constant velocity: zero acceleration, never speeds up
+                ease = progress / maxFactor;
+              } else {
+                // Soft quadratic deceleration to a complete halt
+                const u = (progress - k) / (1 - k);
+                const remaining = 1 - u;
+                ease = 1 - (remaining * remaining * (1 - k) / 2) / maxFactor;
+              }
+
               const nextY = wrapAngleSigned(startY + totalSpinDeg * ease);
               rotationRef.current.y = nextY;
               applyTransform(rotationRef.current.x, nextY);
 
               if (progress < 1) {
                 spinRaf = requestAnimationFrame(spinStep);
+              } else {
+                isSpinningEntranceRef.current = false;
               }
             };
 
@@ -308,15 +330,84 @@ export default function DomeGallery({
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     observer.observe(root);
     return () => {
       observer.disconnect();
       if (spinRaf) cancelAnimationFrame(spinRaf);
+      isSpinningEntranceRef.current = false;
     };
-  }, [spinOnFirstScroll, spinDuration]);
+  }, [spinOnFirstScroll, spinDuration, spinDegrees]);
+
+  // Continuous smooth slow auto-rotation
+  useEffect(() => {
+    if (!autoRotate) return;
+    const root = rootRef.current;
+    if (!root) return;
+
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    let autoRaf = null;
+    let lastTs = null;
+    let isVisible = false;
+
+    // Convert speed (deg per frame @ 60fps) to deg per millisecond
+    const degPerMs = (autoRotateSpeed || 0.08) * 0.06;
+
+    const step = ts => {
+      if (!isVisible) {
+        autoRaf = null;
+        return;
+      }
+
+      if (lastTs === null) lastTs = ts;
+      const delta = Math.min(ts - lastTs, 64);
+      lastTs = ts;
+
+      // Rotate continuously only when user is not dragging, no image is open,
+      // not running the initial entrance spin, and not decaying from drag inertia
+      if (
+        !draggingRef.current &&
+        !focusedElRef.current &&
+        !isSpinningEntranceRef.current &&
+        !inertiaRAF.current
+      ) {
+        const nextY = wrapAngleSigned(rotationRef.current.y + degPerMs * delta);
+        rotationRef.current.y = nextY;
+        applyTransform(rotationRef.current.x, nextY);
+      }
+
+      autoRaf = requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          isVisible = entry.isIntersecting;
+          if (isVisible && !autoRaf) {
+            lastTs = null;
+            autoRaf = requestAnimationFrame(step);
+          } else if (!isVisible && autoRaf) {
+            cancelAnimationFrame(autoRaf);
+            autoRaf = null;
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(root);
+
+    return () => {
+      observer.disconnect();
+      if (autoRaf) cancelAnimationFrame(autoRaf);
+    };
+  }, [autoRotate, autoRotateSpeed]);
 
   const stopInertia = useCallback(() => {
     if (inertiaRAF.current) {

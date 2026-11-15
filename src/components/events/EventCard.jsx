@@ -1,15 +1,12 @@
-import { motion } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import CountdownTimer from "../CountdownTimer";
 import { useAuth } from "../../context/AuthContext";
 import { absoluteMediaSrc } from "../../utils/mediaUtils";
-import SpotlightCard from "../reactbits/SpotlightCard";
-import { IoCalendarOutline, IoLocationOutline, IoTrophyOutline, IoFlame } from "react-icons/io5";
+import { IoCalendarOutline, IoLocationOutline, IoTrophyOutline, IoChevronForward } from "react-icons/io5";
 
 const EventCard = ({ event, onRegister, className = "" }) => {
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
   const { user } = useAuth();
 
   const progress =
@@ -91,29 +88,12 @@ const EventCard = ({ event, onRegister, className = "" }) => {
     : "TBA";
 
   return (
-    <SpotlightCard
-      className={`group cursor-pointer bg-white border-2 border-neutral-200/80 rounded-3xl overflow-hidden flex flex-col h-full transition-all duration-500 hover:-translate-y-2 ${className}`}
-      spotlightColor="rgba(254, 87, 35, 0.14)"
-      borderColor="rgba(254, 87, 35, 0.60)"
-      defaultBorder="rgba(0, 0, 0, 0.09)"
-      glowRadius={420}
+    <div
       onClick={handleCardClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`group cursor-pointer bg-white border border-neutral-200 rounded-xl overflow-hidden flex flex-col h-full hover:border-secondary-500/50 hover:shadow-md transition-all duration-150 ${className}`}
     >
-      {/* Orange top-edge accent bar */}
-      <div
-        className="absolute top-0 left-0 right-0 h-1 z-30 rounded-t-3xl"
-        style={{
-          background: isHovered
-            ? "linear-gradient(90deg, #fe5723 0%, #ff9a56 50%, #fe5723 100%)"
-            : "linear-gradient(90deg, transparent, rgba(254,87,35,0.3), transparent)",
-          transition: "background 0.4s ease",
-        }}
-      />
-
-      {/* ── Image & Sport Badges ── */}
-      <div className="relative h-56 sm:h-64 overflow-hidden bg-neutral-100 flex-shrink-0">
+      {/* ── Image & Badges ── */}
+      <div className="relative h-52 sm:h-56 overflow-hidden bg-neutral-100 flex-shrink-0">
         <img
           src={
             absoluteMediaSrc(event.image) ||
@@ -121,149 +101,82 @@ const EventCard = ({ event, onRegister, className = "" }) => {
             "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1200&auto=format&fit=crop"
           }
           alt={event.title}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
         />
 
-        {/* Cinematic gradient for badge readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35" />
-        {/* Orange tinted hover glow */}
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{ background: "linear-gradient(135deg, rgba(254,87,35,0.25) 0%, transparent 60%)" }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
         {/* Top Badges Row */}
-        <div className="absolute top-4 inset-x-4 flex items-center justify-between gap-2 z-10">
-          {/* Status Badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 border border-neutral-200/80 backdrop-blur-md shadow-md">
+        <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2 z-10">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/95 text-xs font-medium text-neutral-800 shadow-xs">
             {derivedStatus === "live" ? (
               <>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-red-600">
-                  LIVE MATCH
-                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                <span className="text-red-600 font-semibold text-[11px]">Live match</span>
               </>
             ) : derivedStatus === "upcoming" ? (
               <>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500" />
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-secondary-600">
-                  UPCOMING
-                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-secondary-500" />
+                <span className="text-neutral-800 font-semibold text-[11px]">Upcoming</span>
               </>
             ) : (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-                FINAL SCORE
-              </span>
+              <span className="text-neutral-500 text-[11px]">Completed</span>
             )}
           </div>
 
-          {/* Price / Entry Fee Pill — full orange gradient */}
-          <div
-            className="px-3 py-1.5 rounded-full font-black text-xs tracking-wider uppercase text-white"
-            style={{
-              background: "linear-gradient(135deg, #fe5723 0%, #ff7a40 100%)",
-              boxShadow: "0 4px 14px rgba(254,87,35,0.45)",
-            }}
-          >
-            {event.price > 0 ? `$${event.price}` : "FREE ENTRY"}
+          <div className="px-3 py-1 rounded-md text-xs font-bold bg-secondary-500 text-white shadow-xs tabular-nums">
+            {event.price > 0 ? `$${event.price}` : "Free Entry"}
           </div>
         </div>
 
-        {/* Floating Tournament Format Tag — orange accent border */}
-        <div className="absolute bottom-3 left-4 z-10 flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/95 border border-secondary-300/70 backdrop-blur-md shadow-sm">
-          <IoFlame className="w-3.5 h-3.5 text-secondary-500" />
-          <span className="text-[11px] font-black uppercase tracking-wider text-neutral-900">
-            {event.tournamentType
-              ? `${event.tournamentType === "both" ? "Team & Solo" : event.tournamentType} Division`
-              : "Street Soccer"}
-          </span>
+        {/* Format Tag */}
+        <div className="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-md bg-neutral-950/85 border border-secondary-500/30 text-secondary-400 text-[11px] font-semibold backdrop-blur-xs">
+          {event.tournamentType
+            ? `${event.tournamentType === "both" ? "Team & Solo" : event.tournamentType} Division`
+            : "Street Soccer"}
         </div>
-
-        {/* Decorative orange corner triangle */}
-        <div className="absolute bottom-0 right-0 w-0 h-0 border-r-[48px] border-b-[48px] border-r-secondary-500/40 border-b-secondary-500/40 border-l-transparent border-t-transparent z-10 pointer-events-none" />
       </div>
 
       {/* ── Card Content ── */}
-      <div className="p-5 sm:p-6 flex flex-col flex-grow justify-between">
+      <div className="p-5 flex flex-col flex-grow justify-between">
         <div>
-          {/* Category tag */}
-          <div className="flex items-start gap-2 mb-2 mt-1">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-secondary-600 bg-secondary-50 border border-secondary-200/70 px-2.5 py-1 rounded-full whitespace-nowrap">
-              ⚽ Arena FC
-            </span>
-          </div>
-
-          {/* Event Title */}
-          <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-neutral-950 leading-tight mb-2 group-hover:text-secondary-600 transition-colors duration-300">
+          <h3 className="text-base sm:text-lg font-bold text-neutral-900 leading-snug mb-1.5 group-hover:text-secondary-500 transition-colors">
             {event.title}
           </h3>
 
-          {/* Description */}
           {event.description && (
-            <p className="text-neutral-600 text-xs sm:text-sm line-clamp-2 leading-relaxed mb-4 font-normal">
+            <p className="text-neutral-500 text-xs line-clamp-2 leading-relaxed mb-4">
               {event.description}
             </p>
           )}
 
-          {/* Sports Meta Details */}
-          <div className="space-y-2 py-3 border-y-2 border-dashed border-secondary-100 mb-4">
-            {/* Date */}
-            <div className="flex items-center gap-2.5 text-xs text-neutral-800">
-              <span
-                className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-white shadow-sm"
-                style={{ background: "linear-gradient(135deg, #fe5723, #ff7a40)" }}
-              >
-                <IoCalendarOutline className="w-3.5 h-3.5" />
-              </span>
-              <span className="font-bold">{formattedDate}</span>
+          {/* Meta Details with brand orange accent icons */}
+          <div className="space-y-2 py-3 border-y border-neutral-100 mb-4 text-xs text-neutral-700">
+            <div className="flex items-center gap-2">
+              <IoCalendarOutline className="w-4 h-4 text-secondary-500 flex-shrink-0" />
+              <span className="font-medium">{formattedDate}</span>
             </div>
 
-            {/* Location / Pitch */}
-            <div className="flex items-center gap-2.5 text-xs text-neutral-800">
-              <span
-                className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-white shadow-sm"
-                style={{ background: "linear-gradient(135deg, #fe5723, #ff7a40)" }}
-              >
-                <IoLocationOutline className="w-3.5 h-3.5" />
-              </span>
-              <span className="font-bold truncate">
-                {event.location || "Addis Ababa, Ethiopia"}
-              </span>
+            <div className="flex items-center gap-2">
+              <IoLocationOutline className="w-4 h-4 text-secondary-500 flex-shrink-0" />
+              <span className="font-medium truncate">{event.location || "Addis Ababa Mini-Stadium"}</span>
             </div>
 
-            {/* Division Limit */}
             {event.maxParticipants > 0 && (
-              <div className="flex items-center gap-2.5 text-xs text-neutral-800">
-                <span
-                  className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-white shadow-sm"
-                  style={{ background: "linear-gradient(135deg, #fe5723, #ff7a40)" }}
-                >
-                  <IoTrophyOutline className="w-3.5 h-3.5" />
-                </span>
-                <span className="font-bold">
-                  Max {event.maxParticipants} {event.tournamentType === "individual" ? "Players" : "Teams"}
+              <div className="flex items-center gap-2">
+                <IoTrophyOutline className="w-4 h-4 text-secondary-500 flex-shrink-0" />
+                <span className="font-medium">
+                  Max {event.maxParticipants} {event.tournamentType === "individual" ? "players" : "teams"}
                 </span>
               </div>
             )}
           </div>
 
-          {/* Sports Countdown Widget (Upcoming only) */}
+          {/* Countdown (Upcoming only) */}
           {derivedStatus === "upcoming" && countdownTarget && (
             <div className="mb-4">
-              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest mb-2">
-                <span className="text-neutral-500">KICKOFF IN</span>
-                <span
-                  className="font-black px-2.5 py-0.5 rounded-full text-white text-[9px]"
-                  style={{ background: "linear-gradient(90deg, #fe5723, #ff7a40)" }}
-                >
-                  COUNTDOWN
-                </span>
+              <div className="flex items-center justify-between text-[11px] text-neutral-500 mb-1.5 font-medium">
+                <span>Kickoff Countdown</span>
               </div>
               <CountdownTimer
                 targetDate={countdownTarget}
@@ -273,47 +186,37 @@ const EventCard = ({ event, onRegister, className = "" }) => {
             </div>
           )}
 
-          {/* Registration Capacity Progress Bar */}
+          {/* Capacity Progress Bar */}
           {derivedStatus !== "completed" && event.maxParticipants > 0 && (
-            <div className="mb-5">
-              <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider mb-2">
-                <span className="text-neutral-500">ROSTER CAPACITY</span>
-                <span className="text-secondary-600 font-black">
-                  {event.participants} / {event.maxParticipants} SLOTS
+            <div className="mb-4">
+              <div className="flex justify-between items-center text-xs mb-1.5">
+                <span className="text-neutral-500 font-medium">Roster Capacity</span>
+                <span className="text-secondary-600 font-bold tabular-nums">
+                  {event.participants} / {event.maxParticipants} slots
                 </span>
               </div>
-              <div className="w-full bg-secondary-50 border border-secondary-100 rounded-full h-2.5 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{
-                    background: "linear-gradient(90deg, #fe5723 0%, #ff9a56 100%)",
-                    boxShadow: "0 0 10px rgba(254,87,35,0.5)",
-                    width: `${progress}%`,
-                  }}
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${progress}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
+              <div className="w-full bg-neutral-100 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="h-full bg-secondary-500 rounded-full"
+                  style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
           )}
         </div>
 
-        {/* ── Action Buttons Footer ── */}
-        <div className="pt-4 border-t-2 border-dashed border-secondary-100 flex items-center justify-between gap-3 mt-auto">
-          {/* Details link */}
-          <span className="text-xs font-black uppercase tracking-widest text-secondary-500 group-hover:text-secondary-600 transition-colors flex items-center gap-1.5">
-            Details
-            <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+        {/* ── Footer ── */}
+        <div className="pt-3 border-t border-neutral-100 flex items-center justify-between gap-3 mt-auto">
+          <span className="text-xs font-semibold text-neutral-700 group-hover:text-secondary-500 transition-colors inline-flex items-center gap-1">
+            <span>View Details</span>
+            <IoChevronForward className="w-3.5 h-3.5 text-secondary-500" />
           </span>
 
-          {/* Registration Button or Status */}
           {event.type === "tournament" && (
             <div>
               {isAlreadyRegistered ? (
-                <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-emerald-300 bg-emerald-50 text-emerald-700 text-xs font-black uppercase tracking-wider">
-                  <span>✓</span> Registered
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-semibold">
+                  ✓ Registered
                 </span>
               ) : showRegisterButton ? (
                 <button
@@ -326,24 +229,18 @@ const EventCard = ({ event, onRegister, className = "" }) => {
                       navigate(`/events/tournament/${event.id}`);
                     }
                   }}
-                  className="relative px-5 py-2.5 rounded-full font-black text-xs uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 active:scale-95"
-                  style={{
-                    background: "linear-gradient(135deg, #fe5723 0%, #ff7a40 100%)",
-                    boxShadow: "0 4px 14px rgba(254,87,35,0.40)",
-                  }}
+                  className="h-8 px-4 rounded-lg font-semibold text-xs text-white bg-secondary-500 hover:bg-secondary-600 transition-colors shadow-xs"
                 >
-                  Enter Event
+                  Register
                 </button>
               ) : (
-                <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                  View Results
-                </span>
+                <span className="text-xs text-neutral-400 font-medium">Closed</span>
               )}
             </div>
           )}
         </div>
       </div>
-    </SpotlightCard>
+    </div>
   );
 };
 

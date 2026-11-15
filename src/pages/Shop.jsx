@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/shop/ProductCard";
 import ShopFilters from "../components/shop/ShopFilters";
@@ -52,29 +51,29 @@ const ProductSkeleton = ({ viewMode }) => {
 const trustPerks = [
   {
     icon: IoCarOutline,
-    title: "Regional delivery",
+    title: "Regional Delivery",
     desc: "Speedy dispatch in Addis Ababa & Hawassa",
   },
   {
     icon: IoFlashOutline,
-    title: "Official matchwear",
+    title: "Official Matchwear",
     desc: "Authentic Arena Gunners tournament kits",
   },
   {
     icon: IoShieldCheckmarkOutline,
-    title: "Secure checkout",
+    title: "Secure Checkout",
     desc: "Protected payment & order encryption",
   },
   {
     icon: IoRefreshOutline,
-    title: "Hassle-free exchange",
+    title: "Hassle-Free Exchange",
     desc: "Easy size swaps for apparel orders",
   },
 ];
 
 const categoryPills = [
-  { value: "all", label: "All products" },
-  { value: "apparel", label: "Apparel & kits" },
+  { value: "all", label: "All Products" },
+  { value: "apparel", label: "Apparel & Kits" },
   { value: "accessories", label: "Accessories" },
   { value: "equipment", label: "Equipment" },
 ];
@@ -288,8 +287,8 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
-      {/* ─── Grounded Hero Header ─── */}
-      <section className="relative w-full bg-[#0e0f12] text-white pt-28 sm:pt-36 pb-16 sm:pb-20 overflow-hidden">
+      {/* ─── Grounded Hero Header with Brand Orange ─── */}
+      <section className="relative w-full bg-[#0e0f12] text-white pt-28 sm:pt-36 pb-16 sm:pb-20 overflow-hidden border-b border-neutral-800">
         {/* Background Atmosphere */}
         <div className="absolute inset-0 z-0 opacity-40">
           <img
@@ -303,23 +302,23 @@ const Shop = () => {
         {/* Content */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-700 bg-neutral-900/80 text-xs text-neutral-300 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary-500" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-secondary-500/30 bg-secondary-500/10 text-xs font-semibold text-secondary-400 mb-4 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-secondary-500" />
               <span>Official Store · The Arena</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">
-              Arena Kits & Gear
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-3 uppercase">
+              Arena <span className="text-secondary-500">Gear</span> & Kits
             </h1>
 
-            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed mb-6">
+            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed mb-6 font-normal">
               Official tournament matchwear, training apparel, and equipment engineered for Ethiopian street football.
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
               <a
                 href="#shop-catalog"
-                className="inline-flex items-center gap-2 h-10 px-5 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-xs font-semibold uppercase tracking-wider transition-colors duration-150"
+                className="inline-flex items-center gap-2 h-10 px-6 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-xs font-bold uppercase tracking-wider transition-colors duration-150 shadow-xs"
               >
                 <span>Explore catalog</span>
                 <IoArrowDown className="text-xs" />
@@ -328,12 +327,12 @@ const Shop = () => {
               <button
                 type="button"
                 onClick={() => navigate("/cart")}
-                className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 text-xs font-medium uppercase tracking-wider transition-colors duration-150"
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-lg border border-secondary-500/40 bg-secondary-500/10 hover:bg-secondary-500/20 text-secondary-300 text-xs font-semibold uppercase tracking-wider transition-colors duration-150"
               >
-                <IoCart className="text-sm" />
+                <IoCart className="text-sm text-secondary-400" />
                 <span>View cart</span>
                 {cartItemCount > 0 && (
-                  <span className="min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-semibold rounded-full flex items-center justify-center tabular-nums">
+                  <span className="min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center tabular-nums">
                     {cartItemCount}
                   </span>
                 )}
@@ -351,11 +350,11 @@ const Shop = () => {
               const Icon = perk.icon;
               return (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 text-secondary-500 flex items-center justify-center text-base flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-secondary-500/30 text-secondary-500 flex items-center justify-center text-base flex-shrink-0 shadow-xs">
                     <Icon />
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-neutral-900 leading-tight">
+                    <h4 className="text-xs font-bold text-neutral-900 leading-tight">
                       {perk.title}
                     </h4>
                     <p className="text-[11px] text-neutral-500 leading-tight mt-0.5 hidden sm:block">
@@ -382,10 +381,10 @@ const Shop = () => {
                     key={pill.value}
                     type="button"
                     onClick={() => handleFilterChange({ category: pill.value })}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
                       isActive
-                        ? "bg-white text-neutral-900 shadow-xs"
-                        : "text-neutral-600 hover:text-neutral-900"
+                        ? "bg-secondary-500 text-white shadow-xs"
+                        : "text-neutral-600 hover:text-neutral-950"
                     }`}
                   >
                     {pill.label}
@@ -394,7 +393,7 @@ const Shop = () => {
               })}
             </div>
 
-            <span className="text-xs text-neutral-500 tabular-nums">
+            <span className="text-xs font-semibold text-neutral-500 tabular-nums">
               {loading
                 ? "Loading products..."
                 : `${pagination.total} ${pagination.total === 1 ? "product" : "products"}`}
@@ -412,7 +411,7 @@ const Shop = () => {
                 placeholder="Search jerseys, hoodies, balls..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-9 pr-9 rounded-lg border border-neutral-300 focus:border-neutral-900 focus:ring-0 outline-none text-xs bg-white text-neutral-900 transition-colors placeholder-neutral-400"
+                className="w-full h-10 pl-9 pr-9 rounded-lg border border-neutral-300 focus:border-secondary-500 focus:ring-0 outline-none text-xs bg-white text-neutral-900 transition-colors placeholder-neutral-400"
               />
               {searchQuery && (
                 <button
@@ -431,12 +430,12 @@ const Shop = () => {
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="lg:hidden h-10 inline-flex items-center gap-1.5 px-3 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 transition-colors"
+                className="lg:hidden h-10 inline-flex items-center gap-1.5 px-3 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-800 transition-colors"
               >
-                <IoFilter className="text-xs" />
+                <IoFilter className="text-xs text-secondary-500" />
                 <span>Filters</span>
                 {hasActiveFilters && (
-                  <span className="w-4 h-4 rounded-full bg-secondary-500 text-white text-[10px] flex items-center justify-center font-semibold">
+                  <span className="w-4 h-4 rounded-full bg-secondary-500 text-white text-[10px] flex items-center justify-center font-bold">
                     {activeFilterChips.length}
                   </span>
                 )}
@@ -462,7 +461,7 @@ const Shop = () => {
                     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                     resetToFirstPage();
                   }}
-                  className="p-1 rounded text-neutral-600 hover:text-neutral-950 transition-colors text-xs font-semibold"
+                  className="p-1 rounded text-neutral-600 hover:text-secondary-600 transition-colors text-xs font-semibold"
                   aria-label={
                     sortOrder === "asc" ? "Sort descending" : "Sort ascending"
                   }
@@ -478,7 +477,7 @@ const Shop = () => {
                   onClick={() => setViewMode("grid")}
                   className={`w-8 h-8 rounded-md flex items-center justify-center text-xs transition-colors ${
                     viewMode === "grid"
-                      ? "bg-neutral-100 text-neutral-900"
+                      ? "bg-secondary-500 text-white shadow-xs"
                       : "text-neutral-400 hover:text-neutral-700"
                   }`}
                   aria-label="Grid view"
@@ -490,7 +489,7 @@ const Shop = () => {
                   onClick={() => setViewMode("list")}
                   className={`w-8 h-8 rounded-md flex items-center justify-center text-xs transition-colors ${
                     viewMode === "list"
-                      ? "bg-neutral-100 text-neutral-900"
+                      ? "bg-secondary-500 text-white shadow-xs"
                       : "text-neutral-400 hover:text-neutral-700"
                   }`}
                   aria-label="List view"
@@ -514,7 +513,7 @@ const Shop = () => {
                       ? clearSearch()
                       : clearSingleFilter(chip.key)
                   }
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200 hover:border-neutral-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-medium bg-secondary-50 text-secondary-700 border border-secondary-200 hover:border-secondary-400 transition-colors"
                 >
                   <span>{chip.label}</span>
                   <IoClose className="text-xs" />
@@ -523,7 +522,7 @@ const Shop = () => {
               <button
                 type="button"
                 onClick={clearAllFilters}
-                className="text-xs text-neutral-500 hover:text-neutral-900 ml-1 transition-colors"
+                className="text-xs text-secondary-600 hover:text-secondary-700 underline underline-offset-2 ml-1 transition-colors font-medium"
               >
                 Clear all
               </button>
@@ -584,11 +583,11 @@ const Shop = () => {
                         window.scrollTo({ top: 350, behavior: "smooth" });
                       }}
                       disabled={pagination.page === 1}
-                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
-                    <span className="text-xs text-neutral-500 px-3 tabular-nums">
+                    <span className="text-xs font-semibold text-neutral-500 px-3 tabular-nums">
                       Page {pagination.page} of {pagination.pages}
                     </span>
                     <button
@@ -601,7 +600,7 @@ const Shop = () => {
                         window.scrollTo({ top: 350, behavior: "smooth" });
                       }}
                       disabled={pagination.page >= pagination.pages}
-                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="h-9 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
