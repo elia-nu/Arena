@@ -95,6 +95,8 @@
   --color-accent-950: #422006;
 
   --font-family-sans: "Poppins", system-ui, sans-serif;
+  --font-family-stencil: "Saira Stencil One", "Allerta Stencil", sans-serif;
+  --font-family-stencil-sub: "Big Shoulders Stencil Display", "Big Shoulders Stencil Text", sans-serif;
 
   --animate-marquee: marquee 30s linear infinite;
   --animate-marquee-reverse: marquee-reverse 35s linear infinite;

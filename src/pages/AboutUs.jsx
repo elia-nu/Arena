@@ -345,7 +345,7 @@ const AboutUs = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              We're passionate about bringing communities together through exciting tournaments and unforgettable experiences.
+              Rooted in Ethiopian street soccer culture across Addis Ababa and Hawassa, uniting players, youth, and families through authentic competition.
             </motion.p>
 
             {/* Dual CTA Buttons */}

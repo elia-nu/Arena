@@ -1,6 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { IoMenu, IoClose, IoCart, IoLogOutOutline } from "react-icons/io5";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  IoCart,
+  IoLogOutOutline,
+  IoFlame,
+  IoChevronForward,
+} from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import NotificationBell from "./NotificationBell";
@@ -13,57 +19,51 @@ const Navbar = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [socialPageEnabled, setSocialPageEnabled] = useState(true);
   const [shopPageEnabled, setShopPageEnabled] = useState(true);
-  const navRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { getCartItemCount } = useCart();
-  const navigate = useNavigate();
   const cartItemCount = getCartItemCount();
 
+  // Scroll detection with threshold
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
-
-    // Check initial scroll position
     handleScroll();
-
-    // Add scroll event listener
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Load public settings so we can toggle Social and Shop links
+  // Fetch dynamic page toggles
   useEffect(() => {
+    let isMounted = true;
     const loadSettings = async () => {
       try {
         const data = await contactAPI.getInfo();
+        if (!isMounted) return;
         const socialEnabled = data?.contactInfo?.socialPageEnabled;
         const shopEnabled = data?.contactInfo?.shopPageEnabled;
-        if (typeof socialEnabled === "boolean") {
-          setSocialPageEnabled(socialEnabled);
-        } else {
-          setSocialPageEnabled(true);
-        }
-        if (typeof shopEnabled === "boolean") {
-          setShopPageEnabled(shopEnabled);
-        } else {
-          setShopPageEnabled(true);
-        }
+        setSocialPageEnabled(typeof socialEnabled === "boolean" ? socialEnabled : true);
+        setShopPageEnabled(typeof shopEnabled === "boolean" ? shopEnabled : true);
       } catch (error) {
         console.error("Error loading site settings:", error);
-        setSocialPageEnabled(true);
-        setShopPageEnabled(true);
+        if (isMounted) {
+          setSocialPageEnabled(true);
+          setShopPageEnabled(true);
+        }
       }
     };
-
     loadSettings();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Close mobile menu on route change
   useEffect(() => {
     setIsMenuOpen(false);
-  }, [location]);
+  }, [location.pathname]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -72,21 +72,19 @@ const Navbar = () => {
     } else {
       document.body.style.overflow = "unset";
     }
-
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isMenuOpen]);
 
   const baseNavItems = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about-us" },
-    { label: "Events", href: "/events" },
-    { label: "Community Impact", href: "/community-impact" },
-    { label: "Shop", href: "/shop" },
-    { label: "Gallery", href: "/gallery" },
-    { label: "Social", href: "/social" },
-    { label: "Contact", href: "/contact" },
+    { label: "Home", href: "/", badge: null, tag: "01" },
+    { label: "About", href: "/about-us", badge: null, tag: "02" },
+    { label: "Events", href: "/events", badge: "LIVE", tag: "03" },
+    { label: "Shop", href: "/shop", badge: null, tag: "04" },
+    { label: "Gallery", href: "/gallery", badge: null, tag: "05" },
+    { label: "Social", href: "/social", badge: null, tag: "06" },
+    { label: "Contact", href: "/contact", badge: null, tag: "07" },
   ];
 
   const navItems = baseNavItems.filter((item) => {
@@ -96,368 +94,482 @@ const Navbar = () => {
   });
 
   const isActive = (href) => {
-    return location.pathname === href;
+    if (href === "/") return location.pathname === "/";
+    return location.pathname.startsWith(href);
   };
+
+  // User display helper
+  const userInitials =
+    user?.username?.slice(0, 2).toUpperCase() ||
+    user?.email?.slice(0, 2).toUpperCase() ||
+    "AR";
+
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case "admin":
+        return { title: "ADMIN", color: "bg-amber-500/20 text-amber-400 border-amber-500/30" };
+      case "team_leader":
+        return { title: "CAPTAIN", color: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
+      case "player":
+        return { title: "BALLER", color: "bg-orange-500/20 text-orange-400 border-orange-500/30" };
+      default:
+        return { title: "MEMBER", color: "bg-white/10 text-white/70 border-white/20" };
+    }
+  };
+
+  const roleMeta = getRoleLabel(user?.role);
 
   return (
     <>
-      <nav
-        ref={navRef}
-        className={`fixed top-3 left-3 right-3 sm:top-4 sm:left-6 sm:right-6 md:top-5 md:left-10 md:right-10 z-50 rounded-2xl md:rounded-full transition-all duration-500 ${
-          isScrolled
-            ? "bg-neutral-950/85 backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)]"
-            : "bg-black/45 backdrop-blur-xl border border-white/12 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+      {/* ── Main Floating Island Navbar (Clean, Flat, No Glow, No Gradient) ── */}
+      <header
+        className={`fixed top-2 sm:top-4 inset-x-2 sm:inset-x-5 md:inset-x-8 max-w-7xl mx-auto z-50 transition-all duration-300 ${
+          isScrolled ? "translate-y-0" : "translate-y-0.5"
         }`}
       >
-        {/* Animated gradient background on hover */}
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="flex items-center justify-between h-14 sm:h-15 md:h-22">
-            {/* Logo */}
-            <a
-              href="/"
-              className="flex items-center gap-2.5 sm:gap-3 group relative py-1 select-none"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            >
-              {/* Badge mark — mirrors the circular logo */}
-              <div className="relative flex-shrink-0">
-                {/* Hover glow */}
-                <div className="absolute -inset-1.5 rounded-full bg-secondary-500/25 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                {/* Outer orange ring */}
-                <div
-                  className="relative flex items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-105"
-                  style={{
-                    width: 52,
-                    height: 52,
-                    background: "linear-gradient(135deg, #fe5723 0%, #ff8b42 50%, #fe5723 100%)",
-                    padding: 2.5,
-                  }}
+        <div
+          className={`relative rounded-2xl md:rounded-full transition-all duration-300 ${
+            isScrolled
+              ? "bg-neutral-950/95 backdrop-blur-md border border-white/10 shadow-lg"
+              : "bg-neutral-950/85 backdrop-blur-md border border-white/10 shadow-md"
+          }`}
+        >
+          <div className="px-3 sm:px-5 md:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-15 sm:h-16 md:h-20">
+              {/* ── Left: Logo & Wordmark & Matchday Beacon ── */}
+              <div className="flex items-center gap-3 md:gap-5">
+                <Link
+                  to="/"
+                  className="flex items-center gap-2.5 sm:gap-3 group select-none relative py-1"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 >
-                  {/* Inner dark circle */}
-                  <div
-                    className="w-full h-full rounded-full flex flex-col items-center justify-center overflow-hidden"
-                    style={{ background: "#1a1a1a" }}
-                  >
-                    {/* Actual logo image inside the dark circle */}
-                    <img
-                      src={logo}
-                      alt="The Arena"
-                      className="w-full h-full object-cover rounded-full"
+                  {/* Circular Dual-Cannon Badge */}
+                  <div className="relative flex-shrink-0">
+                    <div
+                      className="relative flex items-center justify-center rounded-full bg-secondary-500 transition-transform duration-300 group-hover:scale-105"
+                      style={{
+                        width: 44,
+                        height: 44,
+                        padding: 2,
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-full flex items-center justify-center overflow-hidden bg-[#111113]"
+                      >
+                        <img
+                          src={logo}
+                          alt="The Arena"
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Revolving tactical dashed ring */}
+                    <div
+                      className="absolute -inset-1 rounded-full border border-dashed border-secondary-500/40 pointer-events-none"
+                      style={{ animation: "spin-slow 14s linear infinite" }}
                     />
                   </div>
-                </div>
 
-                {/* Spinning ring on hover */}
-                <div
-                  className="absolute inset-0 rounded-full border-2 border-dashed border-secondary-500/0 group-hover:border-secondary-500/40 transition-all duration-700"
-                  style={{ animation: "spin-slow 8s linear infinite" }}
-                />
-              </div>
-
-              {/* Wordmark — text version of the logo for desktop */}
-              <div className="hidden sm:flex flex-col leading-none">
-                <span
-                  className="font-black uppercase tracking-tight text-white transition-colors duration-300"
-                  style={{ fontSize: 15, letterSpacing: "-0.02em" }}
-                >
-                  THE{" "}
-                  <span
-                    style={{
-                      background: "linear-gradient(135deg, #fe5723, #ff8b42)",
-                      WebkitBackgroundClip: "text",
-                      backgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    ARENA
-                  </span>
-                </span>
-                <span
-                  className="font-bold uppercase tracking-widest text-secondary-400 transition-colors duration-300 group-hover:text-secondary-300"
-                  style={{ fontSize: 7.5, letterSpacing: "0.22em" }}
-                >
-                  LETS RUMBLE
-                </span>
-              </div>
-            </a>
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onMouseEnter={() => setHoveredItem(item.label)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  className={`relative px-3 md:px-3 xl:px-4 py-2.5 text-sm transition-all duration-300 rounded-lg group ${
-                    isActive(item.href)
-                      ? "text-secondary-400 font-bold"
-                      : "text-white/80 hover:text-white font-medium"
-                  }`}
-                >
-                  <span className="relative z-10">{item.label}</span>
-
-                  {/* Orange underline animation - expands from center */}
-                  <div
-                    className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-500 ease-out w-[80%] bg-secondary-500 ${
-                      hoveredItem === item.label || isActive(item.href)
-                        ? "w-full opacity-100 shadow-[0_0_8px_#fe5723]"
-                        : "w-0 opacity-0"
-                    }`}
-                  />
-                </a>
-              ))}
-
-              {/* Cart Icon */}
-              {shopPageEnabled && (
-                <a
-                  href="/cart"
-                  className={`relative p-2.5 transition-all duration-300 rounded-lg group ${
-                    isActive("/cart")
-                      ? "text-secondary-400 font-semibold"
-                      : "text-white/80 hover:text-white"
-                  }`}
-                >
-                  <IoCart className="w-5 h-5 xl:w-6 xl:h-6" />
-                  {/* Cart Badge */}
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-secondary-500/50">
-                      {cartItemCount}
+                  {/* Brand Wordmark (Geometric Stencil display) */}
+                  <div className="flex flex-col leading-none">
+                    <span
+                      className="text-sm sm:text-base uppercase tracking-wider text-white"
+                      style={{
+                        fontFamily: '"Saira Stencil One", "Allerta Stencil", sans-serif',
+                      }}
+                    >
+                      THE{" "}
+                      <span className="text-secondary-500">
+                        ARENA
+                      </span>
                     </span>
-                  )}
-                </a>
-              )}
+                    <span
+                      className="uppercase text-[9px] text-secondary-400 mt-0.5 tracking-[0.24em]"
+                      style={{
+                        fontFamily: '"Big Shoulders Stencil Display", "Big Shoulders Stencil Text", sans-serif',
+                        fontWeight: 800,
+                      }}
+                    >
+                      LETS RUMBLE
+                    </span>
+                  </div>
+                </Link>
 
-              {/* Elegant Divider */}
-              <div className="w-px h-6 bg-white/15 mx-2 xl:mx-3" />
-
-              {/* Auth Buttons */}
-              {isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <NotificationBell />
-                  <span
-                    className={`text-xs xl:text-sm font-medium text-white/90 max-w-[80px] xl:max-w-none truncate`}
-                  >
-                    {user?.username || user?.email}
+                {/* Matchday / Season Active Badge (Desktop) */}
+                <div className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-secondary-500/30 bg-secondary-500/10">
+                  <span className="w-2 h-2 rounded-full bg-secondary-500" />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-secondary-400">
+                    SEASON 2026
                   </span>
-                  {user?.role === "admin" && (
-                    <a
-                      href="/admin"
-                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
-                    >
-                      Dashboard
-                    </a>
-                  )}
-                  {user?.role === "team_leader" && (
-                    <a
-                      href="/team-leader"
-                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
-                    >
-                      Dashboard
-                    </a>
-                  )}
-                  {user?.role === "player" && (
-                    <a
-                      href="/player"
-                      className="px-3 xl:px-4 py-1.5 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 text-secondary-400 hover:text-white hover:bg-white/10"
-                    >
-                      Dashboard
-                    </a>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
-                    aria-label="Logout"
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs xl:text-sm border border-secondary-500/50 text-secondary-400 font-semibold rounded-lg transition-all duration-300 hover:bg-secondary-500 hover:text-white"
-                  >
-                    <IoLogOutOutline className="w-4 h-4" />
-                    <span>Logout</span>
-                  </button>
                 </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <a
-                    href="/login"
-                    className={`px-3 xl:px-4 py-2 text-xs xl:text-sm font-semibold rounded-lg transition-all duration-300 ${
-                      isActive("/login")
-                        ? "text-secondary-400"
-                        : "text-white/80 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    Login
-                  </a>
-                  <a
-                    href="/register"
-                    className="relative px-4 xl:px-6 py-2 xl:py-2.5 font-bold text-xs xl:text-sm text-white rounded-full overflow-hidden group transition-all duration-300 hover:scale-105"
-                    style={{
-                      background: "linear-gradient(135deg, #fe5723 0%, #ff7a40 100%)",
-                      boxShadow: "0 0 20px rgba(254,87,35,0.4)",
-                    }}
-                  >
-                    <span className="relative z-10 flex items-center gap-1.5">
-                      Register
-                      <svg
-                        className="w-3 h-3 xl:w-4 xl:h-4 transition-transform duration-300 group-hover:translate-x-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+              </div>
+
+              {/* ── Center: Flat Fluid Desktop Navigation ── */}
+              <nav
+                className="hidden lg:flex items-center gap-1 p-1.5 rounded-full bg-white/[0.04] border border-white/10"
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                {navItems.map((item) => {
+                  const active = isActive(item.href);
+                  const isHovered = hoveredItem === item.label;
+
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onMouseEnter={() => setHoveredItem(item.label)}
+                      className={`relative px-3.5 xl:px-4 py-2 text-xs xl:text-sm font-semibold rounded-full transition-colors duration-150 select-none group flex items-center gap-1.5 ${
+                        active
+                          ? "text-white"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      {/* Clean flat pill indicator */}
+                      {(isHovered || (active && !hoveredItem)) && (
+                        <motion.span
+                          layoutId="activeNavPill"
+                          className="absolute inset-0 rounded-full bg-secondary-500/20 border border-secondary-500/40"
+                          transition={{
+                            type: "spring",
+                            stiffness: 420,
+                            damping: 32,
+                          }}
                         />
-                      </svg>
-                    </span>
-                    {/* Shine effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  </a>
-                </div>
-              )}
-            </div>
+                      )}
 
-            {/* Mobile/Tablet Menu Button */}
-            <button
-              className="lg:hidden p-2 sm:p-2.5 transition-all duration-300 rounded-lg relative group text-white hover:bg-white/10"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <div className="relative w-5 h-5 sm:w-6 sm:h-6">
-                <span
-                  className={`absolute top-0 left-0 w-full h-0.5 bg-current transition-all duration-300 ${
-                    isMenuOpen ? "rotate-45 top-2 sm:top-2.5" : ""
-                  }`}
-                />
-                <span
-                  className={`absolute top-2 sm:top-2.5 left-0 w-full h-0.5 bg-current transition-all duration-300 ${
-                    isMenuOpen ? "opacity-0" : "opacity-100"
-                  }`}
-                />
-                <span
-                  className={`absolute bottom-0 left-0 w-full h-0.5 bg-current transition-all duration-300 ${
-                    isMenuOpen ? "-rotate-45 bottom-2 sm:bottom-2.5" : ""
-                  }`}
-                />
+                      <span className="relative z-10">{item.label}</span>
+
+                      {/* Micro tag for Events */}
+                      {item.badge && (
+                        <span className="relative z-10 px-1.5 py-0.2 text-[9px] font-black uppercase rounded-full bg-secondary-500 text-white">
+                          {item.badge}
+                        </span>
+                      )}
+
+                      {/* Active tiny dot */}
+                      {active && (
+                        <motion.span
+                          layoutId="activeDot"
+                          className="relative z-10 w-1 h-1 rounded-full bg-secondary-400"
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* ── Right: Tactical Hub (Cart, Profile / Auth, Mobile Toggle) ── */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Cart Action Pill */}
+                {shopPageEnabled && (
+                  <Link
+                    to="/cart"
+                    className={`relative p-2 sm:p-2.5 rounded-full border transition-all duration-200 group flex items-center justify-center ${
+                      isActive("/cart")
+                        ? "border-secondary-500 bg-secondary-500/20 text-secondary-400"
+                        : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white/80 hover:text-white"
+                    }`}
+                    aria-label="View Shopping Cart"
+                  >
+                    <IoCart className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:scale-105" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 bg-secondary-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
+                {/* Notifications */}
+                {isAuthenticated && (
+                  <div className="hidden sm:block">
+                    <NotificationBell />
+                  </div>
+                )}
+
+                {/* Divider on desktop */}
+                <div className="hidden sm:block w-px h-6 bg-white/15 mx-1" />
+
+                {/* User Auth Section (Desktop) */}
+                {isAuthenticated ? (
+                  <div className="hidden sm:flex items-center gap-2">
+                    {/* User Capsule */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                      <div className="w-6 h-6 rounded-full bg-secondary-500 text-white font-black text-[10px] flex items-center justify-center">
+                        {userInitials}
+                      </div>
+                      <span className="text-xs font-semibold text-white/90 max-w-[90px] xl:max-w-[130px] truncate">
+                        {user?.username || user?.email}
+                      </span>
+                      <span
+                        className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full border ${roleMeta.color}`}
+                      >
+                        {roleMeta.title}
+                      </span>
+                    </div>
+
+                    {/* Role Dashboard Quick Link */}
+                    {user?.role === "admin" && (
+                      <Link
+                        to="/admin"
+                        className="px-3 py-1.5 text-xs font-bold rounded-full border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200"
+                      >
+                        Admin
+                      </Link>
+                    )}
+                    {user?.role === "team_leader" && (
+                      <Link
+                        to="/team-leader"
+                        className="px-3 py-1.5 text-xs font-bold rounded-full border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200"
+                      >
+                        Captain
+                      </Link>
+                    )}
+                    {user?.role === "player" && (
+                      <Link
+                        to="/player"
+                        className="px-3 py-1.5 text-xs font-bold rounded-full border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors duration-200"
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+
+                    {/* Logout Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                      }}
+                      title="Log Out"
+                      aria-label="Logout"
+                      className="p-2 rounded-full border border-white/10 hover:border-red-500/50 bg-white/5 hover:bg-red-500/10 text-white/70 hover:text-red-400 transition-colors duration-200"
+                    >
+                      <IoLogOutOutline className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Link
+                      to="/login"
+                      className={`px-3.5 py-2 text-xs xl:text-sm font-semibold rounded-full transition-colors duration-200 ${
+                        isActive("/login")
+                          ? "text-secondary-400 bg-secondary-500/10"
+                          : "text-white/80 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      Login
+                    </Link>
+
+                    {/* Flat Solid "Join Arena" CTA Button */}
+                    <Link
+                      to="/register"
+                      className="relative px-4 xl:px-5 py-2 xl:py-2.5 font-black text-xs uppercase tracking-wider text-white rounded-full bg-secondary-500 hover:bg-secondary-600 transition-colors duration-200 flex items-center gap-1.5"
+                    >
+                      <IoFlame className="w-3.5 h-3.5 text-white" />
+                      Join Arena
+                      <IoChevronForward className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                )}
+
+                {/* ── Mobile/Tablet Toggle Button ── */}
+                <button
+                  type="button"
+                  className="lg:hidden p-2 sm:p-2.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-colors duration-200 focus:outline-none"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle Navigation Menu"
+                  aria-expanded={isMenuOpen}
+                >
+                  <div className="relative w-5 h-5 flex flex-col items-center justify-center gap-1">
+                    <span
+                      className={`h-0.5 w-4 bg-current rounded-full transition-all duration-300 ${
+                        isMenuOpen ? "rotate-45 translate-y-1.5 w-4.5 bg-secondary-400" : ""
+                      }`}
+                    />
+                    <span
+                      className={`h-0.5 w-4 bg-current rounded-full transition-all duration-300 ${
+                        isMenuOpen ? "opacity-0 -translate-x-2" : ""
+                      }`}
+                    />
+                    <span
+                      className={`h-0.5 w-4 bg-current rounded-full transition-all duration-300 ${
+                        isMenuOpen ? "-rotate-45 -translate-y-1.5 w-4.5 bg-secondary-400" : ""
+                      }`}
+                    />
+                  </div>
+                </button>
               </div>
-            </button>
+            </div>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* Premium Mobile/Tablet Menu */}
-      {isMenuOpen && (
-        <>
-          {/* Backdrop with blur */}
-          <div
-            className="fixed inset-0 bg-primary-950/70 backdrop-blur-md z-40 lg:hidden"
-            onClick={() => setIsMenuOpen(false)}
-            style={{
-              animation: "fadeIn 0.3s ease-out",
-            }}
-          />
+      {/* ── Mobile & Tablet Drawer (Flat, No Glows) ── */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/85 z-40 lg:hidden"
+              onClick={() => setIsMenuOpen(false)}
+            />
 
-          {/* Menu Panel */}
-          <div
-            className="fixed top-20 sm:top-22 md:top-24 left-3 right-3 sm:left-6 sm:right-6 md:left-auto md:right-10 md:w-96 bg-neutral-950/95 backdrop-blur-2xl z-50 lg:hidden rounded-2xl shadow-2xl border border-white/12 overflow-hidden max-h-[calc(100vh-6rem)] overflow-y-auto"
-            style={{
-              animation: "slideDown 0.4s ease-out",
-            }}
-          >
-            <div className="px-4 sm:px-6 py-6 sm:py-8 space-y-2">
-              {navItems.map((item, index) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className={`block py-3 sm:py-4 px-4 sm:px-5 text-sm sm:text-base font-medium rounded-xl transition-all duration-300 ${
-                    isActive(item.href)
-                      ? "font-bold text-secondary-400 bg-secondary-500/10 border-l-2 border-secondary-500"
-                      : "text-white/80 hover:text-white hover:bg-white/5"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{
-                    animation: `fadeInUp 0.3s ease-out ${index * 0.1}s both`,
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{item.label}</span>
-                  </div>
-                </a>
-              ))}
-
-              {/* Cart Link in Mobile */}
-              {shopPageEnabled && (
-              <a
-                href="/cart"
-                className={`flex items-center justify-between py-3 sm:py-4 px-4 sm:px-5 text-sm sm:text-base font-medium rounded-xl transition-all duration-300 ${
-                  isActive("/cart")
-                    ? "font-bold text-secondary-400 bg-secondary-500/10 border-l-2 border-secondary-500"
-                    : "text-white/80 hover:text-white hover:bg-white/5"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-                style={{
-                  animation: `fadeInUp 0.3s ease-out ${
-                    navItems.length * 0.1
-                  }s both`,
-                }}
-              >
-                <span className="flex items-center gap-1.5">
-                  <IoCart className="w-5 h-5 text-secondary-400" />
-                  <span>Shopping Cart</span>
-                </span>
-                {cartItemCount > 0 && (
-                  <span className="w-6 h-6 bg-secondary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg shadow-secondary-500/50">
-                    {cartItemCount}
+            {/* Menu Drawer */}
+            <motion.div
+              initial={{ opacity: 0, y: -16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              className="fixed top-20 sm:top-24 left-3 right-3 sm:left-6 sm:right-6 md:left-auto md:right-8 md:w-[420px] bg-neutral-950 z-50 lg:hidden rounded-2xl shadow-xl border border-white/10 overflow-hidden max-h-[calc(100vh-6.5rem)] flex flex-col"
+            >
+              {/* Tactical Header Strip */}
+              <div className="px-5 py-3 border-b border-white/10 bg-white/[0.02] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-secondary-500" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
+                    THE ARENA HUD NAVIGATION
                   </span>
-                )}
-              </a>
-              )}
+                </div>
+                <span className="text-[10px] font-bold text-secondary-400 tracking-wider">
+                  2026 TOUR
+                </span>
+              </div>
 
-              {/* Mobile/Tablet Auth */}
-              <div className="pt-4 sm:pt-6 mt-3 sm:mt-4 border-t border-white/10 space-y-2">
+              {/* Navigation Links */}
+              <div className="p-4 sm:p-5 overflow-y-auto space-y-1.5 flex-1">
+                {navItems.map((item, index) => {
+                  const active = isActive(item.href);
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                    >
+                      <Link
+                        to={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center justify-between px-4 py-3 sm:py-3.5 rounded-xl text-sm font-bold transition-colors duration-150 border ${
+                          active
+                            ? "bg-secondary-500/15 border-secondary-500/50 text-secondary-400"
+                            : "bg-white/[0.03] border-white/5 text-white/80 hover:bg-white/[0.07] hover:text-white"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-[11px] font-mono text-white/30 font-light">
+                            {item.tag}
+                          </span>
+                          <span className="tracking-wide">{item.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {item.badge && (
+                            <span className="px-2 py-0.5 text-[9px] font-black uppercase rounded-full bg-secondary-500 text-white">
+                              {item.badge}
+                            </span>
+                          )}
+                          <IoChevronForward
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              active ? "text-secondary-400" : "text-white/20"
+                            }`}
+                          />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+
+                {/* Cart link in mobile */}
+                {shopPageEnabled && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: navItems.length * 0.03 }}
+                  >
+                    <Link
+                      to="/cart"
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold transition-colors duration-150 border ${
+                        isActive("/cart")
+                          ? "bg-secondary-500/15 border-secondary-500/50 text-secondary-400"
+                          : "bg-white/[0.03] border-white/5 text-white/80 hover:bg-white/[0.07] hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IoCart className="w-4 h-4 text-secondary-400" />
+                        <span>Shopping Cart</span>
+                      </div>
+                      {cartItemCount > 0 ? (
+                        <span className="px-2 py-0.5 bg-secondary-500 text-white text-xs font-black rounded-full">
+                          {cartItemCount} item{cartItemCount > 1 ? "s" : ""}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-white/40">Empty</span>
+                      )}
+                    </Link>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Mobile Auth & Action Footer */}
+              <div className="p-4 sm:p-5 border-t border-white/10 bg-neutral-950 space-y-2.5">
                 {isAuthenticated ? (
-                  <>
-                    <div className="px-4 sm:px-5 py-2 sm:py-3 text-white text-xs sm:text-sm">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold truncate flex-1 text-white/90">
-                          {user?.username || user?.email}
-                        </p>
-                        <div onClick={() => setIsMenuOpen(false)}>
-                          <NotificationBell />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-secondary-500 text-white font-black text-xs flex items-center justify-center flex-shrink-0">
+                          {userInitials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-white truncate">
+                            {user?.username || user?.email}
+                          </p>
+                          <span
+                            className={`inline-block text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full border mt-0.5 ${roleMeta.color}`}
+                          >
+                            {roleMeta.title}
+                          </span>
                         </div>
                       </div>
-                      {user?.role === "admin" && (
-                        <a
-                          href="/admin"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Dashboard
-                        </a>
-                      )}
-                      {user?.role === "team_leader" && (
-                        <a
-                          href="/team-leader"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Dashboard
-                        </a>
-                      )}
-                      {user?.role === "player" && (
-                        <a
-                          href="/player"
-                          className="block mt-2 px-4 sm:px-5 py-2 rounded-lg bg-secondary-500/15 text-secondary-400 hover:bg-secondary-500/25 transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Dashboard
-                        </a>
-                      )}
+                      <div onClick={() => setIsMenuOpen(false)}>
+                        <NotificationBell />
+                      </div>
                     </div>
+
+                    {/* Role Dashboards */}
+                    {user?.role === "admin" && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block w-full py-2.5 text-center text-xs font-black uppercase tracking-wider rounded-xl bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
+                      >
+                        Open Admin Dashboard
+                      </Link>
+                    )}
+                    {user?.role === "team_leader" && (
+                      <Link
+                        to="/team-leader"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block w-full py-2.5 text-center text-xs font-black uppercase tracking-wider rounded-xl bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
+                      >
+                        Open Captain Dashboard
+                      </Link>
+                    )}
+                    {user?.role === "player" && (
+                      <Link
+                        to="/player"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block w-full py-2.5 text-center text-xs font-black uppercase tracking-wider rounded-xl bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
+                      >
+                        Open Baller Dashboard
+                      </Link>
+                    )}
+
                     <button
                       type="button"
                       onClick={() => {
@@ -465,71 +577,41 @@ const Navbar = () => {
                         setIsMenuOpen(false);
                         navigate("/");
                       }}
-                      aria-label="Logout"
-                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 text-white text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 hover:bg-white/15"
+                      className="w-full py-2.5 text-xs font-bold rounded-xl border border-white/10 hover:border-red-500/40 text-white/70 hover:text-red-400 bg-white/5 transition-colors flex items-center justify-center gap-1.5"
                     >
-                      Logout
+                      <IoLogOutOutline className="w-4 h-4" />
+                      Sign Out
                     </button>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <a
-                      href="/login"
-                      className={`block w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/10 text-sm sm:text-base font-semibold rounded-xl text-center transition-all duration-300 active:scale-95 hover:bg-white/10 ${
-                        isActive("/login")
-                          ? "text-secondary-400 border-secondary-500/40"
-                          : "text-white"
-                      }`}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      to="/login"
                       onClick={() => setIsMenuOpen(false)}
+                      className="py-3 text-center text-xs font-bold rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors"
                     >
-                      Login
-                    </a>
-                    <a
-                      href="/register"
-                      className="block w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white text-sm sm:text-base font-bold rounded-xl text-center transition-all duration-300 active:scale-95 shadow-lg shadow-secondary-500/30"
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/register"
                       onClick={() => setIsMenuOpen(false)}
+                      className="py-3 text-center text-xs font-black uppercase tracking-wider rounded-xl text-white bg-secondary-500 hover:bg-secondary-600 transition-colors flex items-center justify-center gap-1"
                     >
-                      Register Now
-                    </a>
-                  </>
+                      <IoFlame className="w-3.5 h-3.5" />
+                      Join Now
+                    </Link>
+                  </div>
                 )}
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <style>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slideDown {
-          from { 
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to { 
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeInUp {
-          from { 
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to { 
-            opacity: 1;
-            transform: translateY(0);
-          }
         }
       `}</style>
     </>

@@ -127,7 +127,8 @@ export default function DomeGallery({
   imageBorderRadius = '24px',
   openedImageBorderRadius = '24px',
   grayscale = false,
-  spinOnFirstScroll = true
+  spinOnFirstScroll = true,
+  spinDuration = 7500
 }) {
   const rootRef = useRef(null);
   const mainRef = useRef(null);
@@ -282,7 +283,7 @@ export default function DomeGallery({
             observer.disconnect();
 
             let startTs = null;
-            const duration = 2400; // 2.4s smooth rotation
+            const duration = spinDuration; // Smooth, relaxed rotation speed
             const totalSpinDeg = 360; // 360 degree spin around Y axis
             const startY = rotationRef.current.y;
 
@@ -315,7 +316,7 @@ export default function DomeGallery({
       observer.disconnect();
       if (spinRaf) cancelAnimationFrame(spinRaf);
     };
-  }, [spinOnFirstScroll]);
+  }, [spinOnFirstScroll, spinDuration]);
 
   const stopInertia = useCallback(() => {
     if (inertiaRAF.current) {

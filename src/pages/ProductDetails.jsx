@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { shopAPI, contactAPI } from "../services/api";
 import { useCart } from "../context/CartContext";
 import { useNotification } from "../components/NotificationProvider";
-import { IoArrowBack, IoCart, IoCheckmarkCircle, IoClose } from "react-icons/io5";
+import ProductCard from "../components/shop/ProductCard";
+import {
+  IoArrowBack,
+  IoCart,
+  IoCheckmark,
+  IoShieldCheckmarkOutline,
+  IoCarOutline,
+  IoRefreshOutline,
+  IoSparklesOutline,
+  IoFlameOutline,
+  IoLayersOutline,
+} from "react-icons/io5";
 import { absoluteMediaSrc } from "../utils/mediaUtils";
 import EmptyState from "../components/EmptyState";
 
@@ -13,12 +24,15 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const { addToCart, getItemQuantity } = useCart();
   const { showSuccess, showError } = useNotification();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shopPageEnabled, setShopPageEnabled] = useState(true);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -50,12 +64,6 @@ const ProductDetails = () => {
     }
   }, [settingsLoaded, shopPageEnabled]);
 
-  const stockLimit = Number(product?.stock);
-  const maxQuantity =
-    Number.isFinite(stockLimit) && stockLimit > 0
-      ? Math.min(99, Math.floor(stockLimit))
-      : 99;
-
   const fetchProduct = async () => {
     try {
       setLoading(true);
@@ -63,6 +71,23 @@ const ProductDetails = () => {
       setProduct(response);
       setSelectedImageIndex(0);
       setQuantity(1);
+
+      // Fetch related products from the same category or general catalog
+      try {
+        const relatedRes = await shopAPI.getProducts({
+          limit: 8,
+          status: "active",
+        });
+        const items = relatedRes.products || relatedRes.data || relatedRes || [];
+        const filtered = Array.isArray(items)
+          ? items.filter(
+              (item) => (item._id || item.id) !== (response._id || response.id)
+            ).slice(0, 4)
+          : [];
+        setRelatedProducts(filtered);
+      } catch (err) {
+        console.error("Error fetching related products:", err);
+      }
     } catch (error) {
       console.error("Error fetching product:", error);
       showError("Failed to load product. Please try again.");
@@ -72,8 +97,14 @@ const ProductDetails = () => {
     }
   };
 
+  const stockLimit = Number(product?.stock);
+  const maxQuantity =
+    Number.isFinite(stockLimit) && stockLimit > 0
+      ? Math.min(99, Math.floor(stockLimit))
+      : 99;
+
   const handleAddToCart = () => {
-    if (!product.inStock || Number(product.stock) <= 0) {
+    if (!product || !product.inStock || Number(product.stock) <= 0) {
       showError("This product is out of stock");
       return;
     }
@@ -85,14 +116,16 @@ const ProductDetails = () => {
       },
       cappedQty
     );
+    setJustAdded(true);
     showSuccess(
       `${cappedQty} ${cappedQty === 1 ? "item" : "items"} added to cart!`
     );
+    window.setTimeout(() => setJustAdded(false), 2000);
   };
 
   if (settingsLoaded && !shopPageEnabled) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-primary-50/30 to-white pt-24 sm:pt-28 pb-16">
+      <div className="min-h-screen bg-black pt-32 pb-20">
         <EmptyState
           variant="shop"
           title="Shop is offline"
@@ -106,20 +139,23 @@ const ProductDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-primary-50 pt-24 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 pt-32 flex flex-col items-center justify-center text-white">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         >
-          <div className="w-12 h-12 border-4 border-secondary-200 border-t-secondary-500 rounded-full" />
+          <div className="w-12 h-12 border-4 border-secondary-500/20 border-t-secondary-500 rounded-full" />
         </motion.div>
+        <p className="text-xs uppercase tracking-widest text-neutral-400 font-bold mt-4">
+          Loading merchandise details...
+        </p>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-primary-50 pt-24 pb-16">
+      <div className="min-h-screen bg-neutral-950 pt-32 pb-20 text-white">
         <EmptyState
           variant="shop"
           title="Product not found"
@@ -131,8 +167,8 @@ const ProductDetails = () => {
     );
   }
 
-  const finalPrice = product.finalPrice || product.price;
-  const originalPrice = product.originalPrice || product.price;
+  const finalPrice = Number(product.finalPrice || product.price || 0);
+  const originalPrice = Number(product.originalPrice || product.price || 0);
   const hasDiscount = originalPrice > finalPrice;
   const discountPercentage = hasDiscount
     ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
@@ -142,306 +178,419 @@ const ProductDetails = () => {
     product.promotion?.active &&
     (!product.promotion.startDate ||
       new Date() >= new Date(product.promotion.startDate)) &&
-    (!product.promotion.endDate || new Date() <= new Date(product.promotion.endDate));
+    (!product.promotion.endDate ||
+      new Date() <= new Date(product.promotion.endDate));
 
   const images = (product.images || []).map(
-    (img) => absoluteMediaSrc(img) || img,
+    (img) => absoluteMediaSrc(img) || img
   );
   const mainImage = images[selectedImageIndex] || "/placeholder-product.jpg";
+  const cartQty = getItemQuantity(product._id || product.id);
 
   return (
-    <div className="min-h-screen bg-primary-50 pt-24 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-[0.02]">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, ${
-              getComputedStyle(document.documentElement).getPropertyValue(
-                "--color-primary-950"
-              ) || "#000000"
-            } 1px, transparent 0)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
-      </div>
+    <div className="min-h-screen bg-neutral-50 selection:bg-secondary-500 selection:text-white">
+      {/* ─── FULL-BLEED TOP STADIUM HEADER (ELIMINATES MURKY NAVBAR GAP) ─── */}
+      <section className="relative w-full bg-black overflow-hidden pt-24 sm:pt-28 pb-8 sm:pb-10 border-b border-neutral-800">
+        {/* Background stadium image with dark vignette */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="/ebc-stadium-hero.webp"
+            alt="The Arena Stadium Atmosphere"
+            className="w-full h-full object-cover object-center opacity-30 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/85 to-black/75" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60" />
+          {/* Subtle Orange Glow */}
+          <div
+            className="absolute top-0 right-1/4 w-[500px] h-[300px] rounded-full blur-[140px] pointer-events-none opacity-20"
+            style={{
+              background:
+                "radial-gradient(circle, #fe5723 0%, transparent 70%)",
+            }}
+          />
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16 relative z-10">
-        {/* Back Button */}
-        <motion.button
-          onClick={() => navigate("/shop")}
-          className="flex items-center gap-2 text-primary-600 hover:text-primary-950 mb-8 transition-colors group"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <IoArrowBack className="text-lg group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm uppercase tracking-wider">Back to Shop</span>
-        </motion.button>
+        {/* Content Container */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center gap-2 text-xs font-semibold text-neutral-400 flex-wrap">
+              <Link
+                to="/"
+                className="hover:text-white transition-colors uppercase tracking-wider"
+              >
+                Home
+              </Link>
+              <span className="text-neutral-600">/</span>
+              <Link
+                to="/shop"
+                className="hover:text-white transition-colors uppercase tracking-wider"
+              >
+                Shop
+              </Link>
+              {product.category && (
+                <>
+                  <span className="text-neutral-600">/</span>
+                  <span className="uppercase tracking-wider text-secondary-400 font-bold">
+                    {product.category}
+                  </span>
+                </>
+              )}
+              <span className="text-neutral-600">/</span>
+              <span className="text-white font-bold capitalize truncate max-w-[220px] sm:max-w-none">
+                {product.name}
+              </span>
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Image Gallery */}
+            {/* Back to Shop Pill Button */}
+            <button
+              onClick={() => navigate("/shop")}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/15 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-md transition-all shadow-md group self-start sm:self-auto hover:border-secondary-500/50"
+            >
+              <IoArrowBack className="text-sm group-hover:-translate-x-1 transition-transform" />
+              <span>Back to Shop</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tagline Watermark */}
+        <div className="hidden lg:block absolute bottom-4 right-8 text-right pointer-events-none select-none z-10">
+          <span className="text-[9px] tracking-[0.25em] text-secondary-500 font-bold uppercase">
+            THE ARENA • OFFICIAL STORE
+          </span>
+        </div>
+      </section>
+
+      {/* ─── MAIN PRODUCT DETAILS CONTENT ─── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          {/* ─── LEFT COLUMN: STUDIO PRODUCT IMAGE SHOWCASE ─── */}
           <motion.div
-            className="space-y-4"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            className="lg:col-span-6 space-y-4"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            {/* Main Image */}
-            <div className="relative aspect-square overflow-hidden bg-primary-50 border border-secondary-200">
-              <motion.img
-                key={selectedImageIndex}
-                src={mainImage}
-                alt={product.name}
-                className="w-full h-full object-contain"
-                initial={{ opacity: 0, scale: 1.1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
+            {/* Primary Image Showcase Container */}
+            <div className="relative aspect-square w-full rounded-[28px] overflow-hidden bg-neutral-950 border border-neutral-200/80 shadow-[0_20px_50px_rgba(0,0,0,0.12)] flex items-center justify-center p-6 sm:p-10 group">
+              {/* Radial Studio Spotlight Backdrop */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-40"
+                style={{
+                  background:
+                    "radial-gradient(circle at center, #2e3340 0%, #0d0f14 75%)",
+                }}
               />
-              
-              {/* Discount Badge */}
+
+              {/* Product Image */}
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={selectedImageIndex}
+                  src={mainImage}
+                  alt={product.name}
+                  className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-105"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                />
+              </AnimatePresence>
+
+              {/* Discount Badge (Pill in top-right corner matching card aesthetic) */}
               {hasDiscount && (
-                <motion.div
-                  className="absolute top-4 right-4 z-20"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <span className="text-sm text-primary-950 bg-secondary-500 px-4 py-2 font-medium uppercase tracking-wider shadow-lg">
-                    -{discountPercentage}%
+                <div className="absolute top-4 right-4 z-20">
+                  <span className="bg-secondary-500 text-white font-black text-xs sm:text-sm px-3.5 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+                    -{discountPercentage}% OFF
                   </span>
-                </motion.div>
+                </div>
               )}
 
-              {/* Promotion Badge */}
+              {/* Special Promotion Badge */}
               {promotionActive && !hasDiscount && (
-                <motion.div
-                  className="absolute top-4 right-4 z-20"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <span className="text-sm text-primary-950 bg-secondary-500 px-4 py-2 font-medium uppercase tracking-wider shadow-lg">
-                    {product.promotion.discountType === "percentage"
-                      ? `${product.promotion.discountValue}% OFF`
-                      : `$${product.promotion.discountValue} OFF`}
+                <div className="absolute top-4 right-4 z-20">
+                  <span className="bg-secondary-500 text-white font-black text-xs sm:text-sm px-3.5 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+                    Special Promotion
                   </span>
-                </motion.div>
+                </div>
               )}
 
-              {/* Stock Overlay */}
+              {/* In Cart Indicator */}
+              {cartQty > 0 && product.inStock && (
+                <div className="absolute top-4 left-4 z-20">
+                  <span className="text-xs font-bold uppercase tracking-wider bg-black/85 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-md border border-white/10 flex items-center gap-1.5">
+                    <IoCheckmark className="text-secondary-400 text-sm" />
+                    {cartQty} in cart
+                  </span>
+                </div>
+              )}
+
+              {/* Out of Stock Overlay */}
               {!product.inStock && (
-                <div className="absolute inset-0 bg-secondary-50/95 flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-lg text-primary-500 uppercase tracking-wider font-medium">
-                    Out of Stock
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center z-30">
+                  <span className="px-5 py-2.5 rounded-full bg-neutral-900 border border-neutral-700 text-neutral-300 text-sm font-black uppercase tracking-wider shadow-xl">
+                    Currently Out of Stock
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Thumbnail Gallery */}
+            {/* Thumbnail Navigation Row */}
             {images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto pb-2 pt-1">
                 {images.map((image, index) => (
-                  <motion.button
+                  <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 overflow-hidden border-2 transition-all ${
+                    className={`flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 p-1.5 bg-neutral-950 transition-all ${
                       selectedImageIndex === index
-                        ? "border-secondary-500 bg-secondary-50"
-                        : "border-primary-200 hover:border-secondary-300"
+                        ? "border-secondary-500 ring-2 ring-secondary-500/30 shadow-md scale-105"
+                        : "border-neutral-200/80 hover:border-secondary-300 opacity-70 hover:opacity-100"
                     }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                   >
                     <img
                       src={image}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-contain"
                     />
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             )}
           </motion.div>
 
-          {/* Product Info */}
+          {/* ─── RIGHT COLUMN: PRODUCT DETAILS & PURCHASE CARD ─── */}
           <motion.div
-            className="space-y-8"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-6 space-y-6"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
-            {/* Category Badge */}
-            {product.category && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 border border-secondary-200 bg-secondary-50">
-                <span className="text-xs text-primary-600 uppercase tracking-wider">
+            {/* Top Badges Row */}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-600 text-xs font-bold uppercase tracking-wider">
+                <IoFlameOutline className="text-sm" /> Official Arena Merch
+              </span>
+
+              {product.category && (
+                <span className="px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-700 text-xs font-bold uppercase tracking-wider">
                   {product.category}
                 </span>
-              </div>
-            )}
+              )}
 
-            {/* Title */}
-            <h1 className="text-5xl md:text-6xl font-light text-primary-950 leading-tight">
+              {product.inStock ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  In Stock &amp; Ready to Ship
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-1 rounded-full uppercase tracking-wider">
+                  Out of Stock
+                </span>
+              )}
+            </div>
+
+            {/* Product Title */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-950 tracking-tight leading-tight capitalize">
               {product.name}
             </h1>
 
+            {/* Price Box */}
+            <div className="p-6 rounded-3xl bg-white border border-neutral-200/80 shadow-xs flex items-baseline gap-4 flex-wrap">
+              <span className="text-4xl sm:text-5xl font-black text-neutral-950">
+                ${finalPrice.toFixed(2)}
+              </span>
+
+              {hasDiscount && (
+                <>
+                  <span className="text-xl text-neutral-400 line-through font-normal">
+                    ${originalPrice.toFixed(2)}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full uppercase tracking-wider">
+                    You Save ${(originalPrice - finalPrice).toFixed(2)} (-{discountPercentage}%)
+                  </span>
+                </>
+              )}
+            </div>
+
             {/* Description */}
             {product.description && (
-              <p className="text-lg text-primary-600 font-light leading-relaxed">
+              <p className="text-base text-neutral-600 leading-relaxed font-normal">
                 {product.description}
               </p>
             )}
 
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider mr-1">
+                  Tags:
+                </span>
                 {product.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="text-xs text-primary-600 border border-secondary-200 bg-secondary-50 px-3 py-1.5 uppercase tracking-wider"
+                    className="text-xs font-medium text-neutral-700 bg-neutral-100 border border-neutral-200 px-3 py-1 rounded-full"
                   >
-                    {tag}
+                    #{tag}
                   </span>
                 ))}
               </div>
             )}
 
-            {/* Price */}
-            <div className="flex items-baseline gap-4 pt-6 border-t border-secondary-200">
-              <span className="text-5xl font-light text-primary-950">
-                ${finalPrice.toFixed(2)}
-              </span>
-              {hasDiscount && (
-                <>
-                  <span className="text-xl text-primary-400 line-through font-light">
-                    ${originalPrice.toFixed(2)}
-                  </span>
-                  <span className="text-sm text-secondary-700 bg-secondary-200 px-3 py-1 uppercase tracking-wider">
-                    Save ${(originalPrice - finalPrice).toFixed(2)}
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Stock Status */}
-            <div className="flex items-center gap-2">
-              {product.inStock ? (
-                <>
-                  <IoCheckmarkCircle className="text-secondary-500 text-xl" />
-                  <span className="text-sm text-primary-600 uppercase tracking-wider">
-                    In Stock
-                  </span>
-                </>
-              ) : (
-                <>
-                  <IoClose className="text-primary-400 text-xl" />
-                  <span className="text-sm text-primary-500 uppercase tracking-wider">
-                    Out of Stock
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Quantity Selector */}
+            {/* Quantity Selector & Purchase Actions */}
             {product.inStock && (
-              <div className="flex items-center gap-4">
-                <label className="text-sm text-primary-700 uppercase tracking-wider">
-                  Quantity:
-                </label>
-                <div className="flex items-center border border-secondary-200 bg-secondary-50">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 text-primary-700 hover:bg-secondary-100 transition-colors"
-                  >
-                    −
-                  </button>
-                  <span className="px-6 py-2 text-primary-950 font-medium min-w-[60px] text-center">
-                    {quantity}
+              <div className="space-y-4 pt-4 border-t border-neutral-200">
+                <div className="flex items-center gap-4">
+                  <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
+                    Quantity:
+                  </label>
+                  <div className="inline-flex items-center rounded-xl border border-neutral-300 bg-white p-1 shadow-xs">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-neutral-100 font-bold transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="w-12 text-center text-sm font-black text-neutral-950">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setQuantity(Math.min(maxQuantity, quantity + 1))
+                      }
+                      disabled={quantity >= maxQuantity}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-700 hover:bg-neutral-100 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-xs text-neutral-400 font-medium">
+                    Max: {maxQuantity} per order
                   </span>
-                  <button
-                    onClick={() =>
-                      setQuantity(Math.min(maxQuantity, quantity + 1))
-                    }
-                    disabled={quantity >= maxQuantity}
-                    className="px-4 py-2 text-primary-700 hover:bg-secondary-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                </div>
+
+                {/* Primary Add to Cart Action */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <motion.button
+                    onClick={handleAddToCart}
+                    disabled={!product.inStock}
+                    className={`flex-1 py-4 px-8 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg ${
+                      justAdded
+                        ? "bg-emerald-600 text-white shadow-emerald-600/30"
+                        : "bg-secondary-500 hover:bg-secondary-600 text-white shadow-secondary-500/30 hover:scale-[1.01]"
+                    }`}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    +
+                    {justAdded ? (
+                      <>
+                        <IoCheckmark className="text-lg" />
+                        ADDED TO CART!
+                      </>
+                    ) : (
+                      <>
+                        <IoCart className="text-lg" />
+                        ADD TO CART • ${(finalPrice * quantity).toFixed(2)}
+                      </>
+                    )}
+                  </motion.button>
+
+                  <button
+                    onClick={() => navigate("/cart")}
+                    className="py-4 px-6 rounded-2xl border border-neutral-300 hover:border-secondary-500 bg-white hover:bg-neutral-50 text-xs font-bold uppercase tracking-wider text-neutral-900 transition-all flex items-center justify-center gap-2 shadow-xs"
+                  >
+                    <span>View Cart</span>
+                    {cartQty > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-secondary-500 text-white text-[10px] flex items-center justify-center font-bold">
+                        {cartQty}
+                      </span>
+                    )}
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Add to Cart Button */}
-            <div className="space-y-3">
-              <motion.button
-                onClick={handleAddToCart}
-                disabled={!product.inStock}
-                className={`w-full py-4 text-sm font-medium uppercase tracking-wider transition-all relative overflow-hidden group ${
-                  product.inStock
-                    ? "bg-primary-950 text-secondary-500 hover:bg-primary-900"
-                    : "bg-primary-100 text-primary-400 cursor-not-allowed"
-                }`}
-                whileHover={product.inStock ? { scale: 1.02 } : {}}
-                whileTap={product.inStock ? { scale: 0.98 } : {}}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <IoCart className="text-lg" />
-                  {product.inStock ? "Add to Cart" : "Out of Stock"}
-                </span>
-                {product.inStock && (
-                  <motion.div
-                    className="absolute inset-0 bg-secondary-500 text-primary-950 flex items-center justify-center gap-2"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "0%" }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <IoCart className="text-lg" />
-                    Add to Cart
-                  </motion.div>
-                )}
-              </motion.button>
-              {getItemQuantity(product._id) > 0 && (
-                <button
-                  onClick={() => navigate("/cart")}
-                  className="w-full py-3 text-sm border border-secondary-300 text-primary-700 hover:border-secondary-500 hover:text-primary-950 transition-colors"
-                >
-                  View cart ({getItemQuantity(product._id)} in cart)
-                </button>
-              )}
+            {/* Value & Delivery Perks Box */}
+            <div className="p-5 rounded-3xl bg-white border border-neutral-200/80 shadow-xs space-y-3.5">
+              <div className="flex items-center gap-3 text-xs text-neutral-800 font-semibold">
+                <IoCarOutline className="text-lg text-secondary-500 flex-shrink-0" />
+                <span>Priority regional shipping across Addis Ababa &amp; Hawassa</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-neutral-800 font-semibold">
+                <IoShieldCheckmarkOutline className="text-lg text-secondary-500 flex-shrink-0" />
+                <span>100% Authentic official tournament merchandise</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-neutral-800 font-semibold">
+                <IoRefreshOutline className="text-lg text-secondary-500 flex-shrink-0" />
+                <span>Hassle-free size exchange on unworn tournament gear</span>
+              </div>
             </div>
 
-            {/* Additional Info */}
-            <div className="pt-8 border-t border-secondary-200 space-y-4">
-              <div className="text-sm text-primary-600 space-y-2">
+            {/* Product Specifications */}
+            {(product.sku || product.weight || product.dimensions) && (
+              <div className="p-5 rounded-3xl bg-neutral-100/70 border border-neutral-200/80 space-y-2 text-xs">
+                <div className="font-bold uppercase tracking-wider text-neutral-700 mb-1 flex items-center gap-1.5">
+                  <IoLayersOutline className="text-sm text-secondary-500" />
+                  Product Specifications
+                </div>
                 {product.sku && (
-                  <div>
-                    <span className="font-medium text-primary-700">SKU:</span>{" "}
-                    {product.sku}
+                  <div className="flex justify-between text-neutral-600">
+                    <span>SKU Code:</span>
+                    <span className="font-mono font-bold text-neutral-900">{product.sku}</span>
                   </div>
                 )}
                 {product.weight && (
-                  <div>
-                    <span className="font-medium text-primary-700">Weight:</span>{" "}
-                    {product.weight}
+                  <div className="flex justify-between text-neutral-600">
+                    <span>Item Weight:</span>
+                    <span className="font-bold text-neutral-900">{product.weight}</span>
                   </div>
                 )}
                 {product.dimensions && (
-                  <div>
-                    <span className="font-medium text-primary-700">
-                      Dimensions:
-                    </span>{" "}
-                    {product.dimensions}
+                  <div className="flex justify-between text-neutral-600">
+                    <span>Dimensions:</span>
+                    <span className="font-bold text-neutral-900">{product.dimensions}</span>
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </motion.div>
         </div>
+
+        {/* ─── RELATED MERCHANDISE SECTION ─── */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-20 pt-12 border-t border-neutral-200">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <span className="text-xs font-bold text-secondary-600 uppercase tracking-widest block mb-1">
+                  Complete Your Look
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-neutral-950 tracking-tight">
+                  MORE FROM THE ARENA
+                </h2>
+              </div>
+              <Link
+                to="/shop"
+                className="text-xs font-bold uppercase tracking-wider text-secondary-600 hover:text-secondary-700 transition-colors"
+              >
+                View All Merchandise →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relProduct) => (
+                <ProductCard
+                  key={relProduct._id || relProduct.id}
+                  product={relProduct}
+                  onAddToCart={(p) => addToCart(p, 1)}
+                  viewMode="grid"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ProductDetails;
-

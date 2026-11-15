@@ -197,6 +197,7 @@ const DomeGallerySection = () => {
             imageBorderRadius="22px"
             openedImageBorderRadius="24px"
             spinOnFirstScroll={true}
+            spinDuration={7500}
           />
         )}
 
