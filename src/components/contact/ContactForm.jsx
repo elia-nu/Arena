@@ -156,7 +156,7 @@ const ContactForm = () => {
             Send us a <span className="text-secondary-500">Message</span>
           </h2>
           <p className="text-neutral-500 text-sm mt-1">
-            Fill in your details below and our Seattle operations desk will follow up directly.
+            Fill in your details below and our operations desk in Addis Ababa & Hawassa will follow up directly.
           </p>
         </div>
 
@@ -222,7 +222,7 @@ const ContactForm = () => {
                 Message Transmitted Successfully
               </p>
               <p className="text-xs text-neutral-600 mt-0.5">
-                Our Seattle desk has received your note and will review it promptly.
+                Our operations desk in Addis Ababa & Hawassa has received your note and will review it promptly.
               </p>
             </div>
           </motion.div>

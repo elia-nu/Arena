@@ -19,7 +19,8 @@ import DecryptedText from "../components/reactbits/DecryptedText";
 
 const TICKER_ITEMS = [
   "Street Soccer",
-  "Seattle",
+  "Addis Ababa",
+  "Hawassa",
   "The Arena",
   "Direct Desk",
   "Matchday Support",
@@ -61,9 +62,9 @@ const Contact = () => {
       sub: "Rapid Operations",
     },
     {
-      value: "Seattle",
+      value: "Addis Ababa",
       label: "Headquarters",
-      sub: "Pacific Northwest",
+      sub: "Hawassa Hub",
     },
     {
       value: "Live Desk",
@@ -116,7 +117,7 @@ const Contact = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500" />
             </span>
             <DecryptedText
-              text="THE ARENA // SEATTLE COMMUNICATIONS"
+              text="THE ARENA // ETHIOPIA COMMUNICATIONS"
               speed={35}
               maxIterations={14}
               className="text-xs font-mono font-bold tracking-widest text-neutral-900 uppercase"
@@ -154,7 +155,7 @@ const Contact = () => {
             transition={{ duration: 0.6, delay: 0.25 }}
           >
             Have questions about tournament registration, squad check-in, community grants,
-            or brand sponsorships? Transmit your note directly to our Seattle crew.
+            or brand sponsorships? Transmit your note directly to our Addis Ababa & Hawassa crew.
           </motion.p>
 
           {/* 4 Stat Badges (Directly Matching HeroSection StatPills) */}
@@ -239,10 +240,10 @@ const Contact = () => {
                 </h3>
                 <p className="text-white/60 text-sm mt-2 leading-relaxed font-light">
                   During live weekend tournaments, skip the email queue and connect directly with
-                  the Seattle operations field desk or visit the match coordination tent.
+                  the operations field desk in Addis Ababa & Hawassa or visit the match coordination tent.
                 </p>
                 <div className="mt-3 text-xs font-mono text-white/40">
-                  COORDINATES: 47.6062 N, 122.3321 W · GREATER SEATTLE REGION
+                  COORDINATES: 9.0192 N, 38.7525 E · ADDIS ABABA & HAWASSA, ETHIOPIA
                 </div>
               </div>
 
@@ -251,7 +252,7 @@ const Contact = () => {
                   href={
                     contactInfo.phone
                       ? `tel:${contactInfo.phone.replace(/\s/g, "")}`
-                      : "tel:12066786644"
+                      : "tel:+251911234567"
                   }
                   className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white font-bold text-xs tracking-widest uppercase flex items-center justify-center gap-2 shadow-xl shadow-secondary-500/30 hover:scale-105 active:scale-95 transition-all duration-200"
                 >

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ThemeColorPicker from "./dashboard/ThemeColorPicker";
 import {
   IoLogOutOutline,
   IoPersonCircleOutline,
@@ -75,6 +76,9 @@ const DashboardHeader = ({ title }) => {
             <IoHomeOutline className="w-4 h-4" />
             <span>Public Site</span>
           </Link>
+
+          {/* Color Switcher */}
+          <ThemeColorPicker />
 
           {/* User Profile Pill */}
           <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200/60 dark:border-primary-800/60">

@@ -71,7 +71,7 @@ const DEFAULT_HIGHLIGHTS = [
     category: "events",
     type: "image",
     url: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=1000&fit=crop&q=80",
-    location: "Seattle Pitch",
+    location: "Addis Ababa Pitch",
     description: "Electric atmosphere, packed sidelines, and relentless rhythm.",
   },
   {

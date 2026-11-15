@@ -54,6 +54,7 @@ import {
   IoShirtOutline,
   IoSettingsOutline,
   IoTrophyOutline,
+  IoColorPaletteOutline,
 } from "react-icons/io5";
 import { adminAPI, userAPI, tournamentAPI } from "../services/api";
 
@@ -150,6 +151,7 @@ const AdminDashboard = () => {
     { id: "users", label: "User Management", icon: IoPersonOutline, group: "People" },
     { id: "teams", label: "Team Management", icon: IoShirtOutline, group: "People" },
     // System
+    { id: "branding", label: "Theme & Colors", icon: IoColorPaletteOutline, group: "System" },
     { id: "settings", label: "Settings", icon: IoSettingsOutline, group: "System" },
   ];
 
@@ -157,6 +159,7 @@ const AdminDashboard = () => {
     { label: "+ New Event", icon: IoCalendarOutline, onClick: () => setActiveTab("events") },
     { label: "+ Add Product", icon: IoBagOutline, onClick: () => setActiveTab("products") },
     { label: "+ Post Announcement", icon: IoMegaphoneOutline, onClick: () => setActiveTab("announcements") },
+    { label: "Change Colors", icon: IoColorPaletteOutline, onClick: () => setActiveTab("branding") },
     { label: "Assign Players", icon: IoShirtOutline, onClick: () => setActiveTab("teams") },
     { label: "Check Orders", icon: IoCubeOutline, onClick: () => setActiveTab("orders") },
     { label: "Live System", icon: IoPulseOutline, onClick: () => setActiveTab("monitoring") },
@@ -435,6 +438,9 @@ const AdminDashboard = () => {
           {activeTab === "contact-messages" && <ContactMessagesManagement />}
           {activeTab === "announcements" && <ManagementAnnouncements />}
           {activeTab === "reports" && <Reports />}
+          {activeTab === "branding" && (
+            <BrandingSettings onSave={handleSavePaymentSettings} />
+          )}
           {activeTab === "settings" && (
             <div className="space-y-6">
               <div className="flex gap-4 border-b border-primary-200 dark:border-primary-800">

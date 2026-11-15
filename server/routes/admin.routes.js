@@ -896,18 +896,22 @@ router.get(
   authorize("admin"),
   async (req, res) => {
     try {
-      // In a real app, store this in a Settings model or config file
-      const branding = {
-        siteName: process.env.SITE_NAME || "The Arena",
-        logo: "",
-        primaryColor: "#1a1a2e",
-        secondaryColor: "#16213e",
-        tertiaryColor: "#0f3460",
-        favicon: "",
-        tagline: "",
-      };
+      let settings = await Settings.findOne({ type: "branding" });
+      if (!settings || !settings.data) {
+        const defaultBranding = {
+          siteName: process.env.SITE_NAME || "The Arena",
+          logo: "",
+          primaryColor: "#000000",
+          secondaryColor: "#fe5723",
+          tertiaryColor: "#fb6f00",
+          colorPreset: "orange",
+          favicon: "",
+          tagline: "Unleash Your Inner Champion",
+        };
+        return res.json({ branding: defaultBranding });
+      }
 
-      res.json({ branding });
+      res.json({ branding: settings.data });
     } catch (error) {
       res.status(500).json({
         message: "Server error fetching branding",
@@ -926,11 +930,28 @@ router.post(
   authorize("admin"),
   async (req, res) => {
     try {
-      // In a real app, save to Settings model or config file
-      // For now, just return success
+      const brandingData = req.body;
+      let settings = await Settings.findOne({ type: "branding" });
+
+      if (settings) {
+        settings.data = {
+          ...settings.data,
+          ...brandingData,
+        };
+        settings.updatedBy = req.user._id;
+        await settings.save();
+      } else {
+        settings = new Settings({
+          type: "branding",
+          data: brandingData,
+          updatedBy: req.user._id,
+        });
+        await settings.save();
+      }
+
       res.json({
         message: "Branding settings saved successfully",
-        branding: req.body,
+        branding: settings.data,
       });
     } catch (error) {
       res.status(500).json({

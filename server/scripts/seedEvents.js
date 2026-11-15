@@ -27,7 +27,7 @@ const TEAM_NAMES = [
   "Queen Anne Quake",
   "SoDo Storm",
   "U-District United",
-  "West Seattle Wolves",
+  "Arada Ballers",
 ];
 
 const FIRST_NAMES = [
@@ -130,11 +130,11 @@ const LAST_NAMES = [
 
 const EVENT_DEFS = [
   {
-    name: "Seattle Street Cup 2026",
+    name: "Addis Ababa Street Cup 2026",
     description:
-      "Open street soccer tournament bringing neighborhood teams together for knockout competition across Seattle.",
-    location: "Seattle, WA",
-    venue: "Garfield Playfield",
+      "Open street soccer tournament bringing neighborhood teams together for knockout competition across Addis Ababa.",
+    location: "Addis Ababa, Ethiopia",
+    venue: "Jan Meda Sports Ground",
     format: "knockout",
     status: "open",
     isPromoted: true,
@@ -145,11 +145,11 @@ const EVENT_DEFS = [
     regDeadlineOffsetDays: 14,
   },
   {
-    name: "Emerald City Invitational",
+    name: "Hawassa Lakeview Invitational",
     description:
       "Invite-only group-stage event for established clubs, featuring round-robin pools and a final day of knockouts.",
-    location: "Seattle, WA",
-    venue: "Lower Woodland Park",
+    location: "Hawassa, Ethiopia",
+    venue: "Hawassa Stadium & Lakefront",
     format: "group-stage",
     status: "open",
     isPromoted: true,
@@ -160,11 +160,11 @@ const EVENT_DEFS = [
     regDeadlineOffsetDays: 30,
   },
   {
-    name: "Summer Kickoff Classic",
+    name: "Sheger Kickoff Classic",
     description:
       "Season-opening mixed-format tournament for new and returning teams looking to compete and connect.",
-    location: "Seattle, WA",
-    venue: "Jefferson Playfield",
+    location: "Addis Ababa, Ethiopia",
+    venue: "Abebe Bikila Stadium",
     format: "mixed",
     status: "in_progress",
     isPromoted: false,

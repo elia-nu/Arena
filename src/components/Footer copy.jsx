@@ -20,7 +20,8 @@ import { contactAPI } from "../services/api";
 
 const MARQUEE_WORDS = [
   "Street Soccer",
-  "Seattle",
+  "Addis Ababa",
+  "Hawassa",
   "Community",
   "Tournaments",
   "Youth Development",
@@ -250,14 +251,14 @@ const Footer = () => {
                   The Arena
                 </span>
                 <span className="block text-xs text-primary-400 tracking-wide">
-                  Seattle community soccer
+                  Ethiopian community soccer
                 </span>
               </div>
             </Link>
 
             <p className="text-primary-400 text-sm leading-relaxed max-w-sm">
               Competitive street soccer, youth development, and community impact
-              across Greater Seattle — built on the pitch, for the people.
+              across Addis Ababa & Hawassa, Ethiopia — built on the pitch, for the people.
             </p>
 
             <ul className="space-y-3 text-sm">

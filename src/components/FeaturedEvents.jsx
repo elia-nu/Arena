@@ -88,7 +88,7 @@ const FeaturedEvents = () => {
             date: tournament.startDate,
             countdownDate: tournament.startDate,
             registrationDeadline: tournament.registrationDeadline,
-            location: tournament.location || tournament.venue || "Seattle, WA",
+            location: tournament.location || tournament.venue || "Addis Ababa, Ethiopia",
             participants: totalRegistrations,
             maxParticipants: tournament.maxTeams || 0,
             minTeamMembers: tournament.minTeamMembers || 2,
@@ -102,7 +102,7 @@ const FeaturedEvents = () => {
             registrationOpen: registrationOpen,
             description:
               tournament.description ||
-              "Compete for glory and dominate the pitch in this Seattle street soccer showdown.",
+              "Compete for glory and dominate the pitch in this Ethiopian street soccer showdown.",
             image:
               absoluteMediaSrc(tournament.image) ||
               "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1200&auto=format&fit=crop",
@@ -244,8 +244,8 @@ const FeaturedEvents = () => {
 
           <p className="text-neutral-600 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
             {isPastEventsView
-              ? "Relive recent tournaments, team brackets, and champions from our Seattle street soccer competitions."
-              : "High-intensity street soccer tournaments across Greater Seattle. Bring your squad, dominate the pitch, and claim the championship trophy."}
+              ? "Relive recent tournaments, team brackets, and champions from our Addis Ababa and Hawassa street soccer competitions."
+              : "High-intensity street soccer tournaments across Addis Ababa and Hawassa. Bring your squad, dominate the pitch, and claim the championship trophy."}
           </p>
 
           {/* Orange stats bar below headline */}

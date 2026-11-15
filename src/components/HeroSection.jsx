@@ -7,23 +7,36 @@ import SwarmCursor from "./reactbits/SwarmCursor";
 import GridMotion from "./reactbits/GridMotion";
 
 const GRID_MOTION_ITEMS = [
-  "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=600&fit=crop",
-  "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",
+  // Row 1 — action / street play & 1,000 mini-stadiums
+  "https://ebc.et/admin/news/2025/10/29/34ed59e2-0b51-403b-814b-d94b7695b4e0.jpg",   // Addis Ababa 1,000 Mini-Stadiums (EBC)
+  "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?w=800&h=600&fit=crop",   // ball kick close-up
   "THE ARENA",
-  "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&h=600&fit=crop",   // indoor futsal
   "STREET SOCCER",
-  "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=600&fit=crop",
-  "SEATTLE",
-  "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=600&fit=crop",   // stadium night
+  "ADDIS ABABA",
+  // Row 2 — tournament / competition
+  "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&h=600&fit=crop",   // players dribbling
   "LETS RUMBLE",
-  "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&h=600&fit=crop",   // goalkeeper dive
   "CHAMPIONS",
-  "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=800&h=600&fit=crop",   // jersey close-up
+  // Row 3 — youth / community
+  "https://images.unsplash.com/photo-1565106430482-8f6e74349ca1?w=800&h=600&fit=crop",   // youth training session
   "YOUTH SOCCER",
-  "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1521731978332-9e9e714bdd20?w=800&h=600&fit=crop",   // kids with ball
   "COMMUNITY IMPACT",
-  "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=2831&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1600&auto=format&fit=crop",   // aerial pitch
+  // Row 4 — energy / celebration
+  "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop",   // team huddle
+  "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&h=600&fit=crop",   // goal celebration
+  "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=600&fit=crop",   // crowd energy
+  "REGISTER NOW",
+  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",   // sprint duel
+  "https://images.unsplash.com/photo-1540747913346-19212a4b423e?w=800&h=600&fit=crop",   // boots on turf
+  "https://images.unsplash.com/photo-1626248801379-51a0748a5f96?w=800&h=600&fit=crop",   // street football cage
+  "https://images.unsplash.com/photo-1587253030000-e2b4e1b18e5b?w=800&h=600&fit=crop",   // vibrant stadium lights
+  "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&h=600&fit=crop",   // referee & players
 ];
 
 /* ─────────────────────────────────────────────
@@ -416,7 +429,7 @@ const HeroSection = () => {
   };
 
   const tickerItems = [
-    "Street Soccer", "Seattle", "Youth Development", "Community Impact",
+    "Street Soccer", "Addis Ababa", "Hawassa", "Youth Development", "Community Impact",
     "Tournaments", "Champions", "Register Now", "The Arena",
   ];
 
@@ -441,13 +454,13 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
         <GridMotion
           items={GRID_MOTION_ITEMS}
-          rows={4}
+          rows={5}
           aspectRatio={1.5}
-          gap={18}
+          gap={16}
           radius={16}
           angle={-10}
           tilt={12}
-          speed={20}
+          speed={22}
           direction="alternate"
           parallax={0.4}
           spotlight={0.65}
@@ -540,7 +553,7 @@ const HeroSection = () => {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500 shadow-[0_0_8px_#fe5723]" />
             </span>
             <DecryptedText
-              text="SEATTLE'S PREMIER STREET SOCCER & TOURNAMENTS"
+              text="ETHIOPIA'S PREMIER STREET SOCCER & TOURNAMENTS"
               speed={28}
               maxIterations={12}
               delay={300}
@@ -573,7 +586,7 @@ const HeroSection = () => {
             transform: heroMounted ? "translateY(0)" : "translateY(10px)",
           }}
         >
-          Experience the thrill of competitive street soccer tournaments, youth development, and community impact across Greater Seattle.
+          Experience the thrill of competitive street soccer tournaments, youth development, and community impact across Addis Ababa, Hawassa, and beyond.
         </p>
 
         {/* CTA Buttons */}
@@ -673,7 +686,7 @@ const HeroSection = () => {
               </div>
               <div className="hidden md:block h-8 w-px bg-white/10" />
               <p className="text-white/40 text-xs sm:text-sm max-w-sm">
-                7 community partnerships completed, over 500 youth players engaged, and championship moments celebrated across Seattle.
+                7 community partnerships completed, over 500 youth players engaged, and championship moments celebrated across Addis Ababa and Hawassa.
               </p>
               <Link
                 to="/community-impact"

@@ -24,7 +24,7 @@ import TiltedCard from "../reactbits/TiltedCard";
 const FAQ_ITEMS = [
   {
     q: "How quickly will our team receive a response?",
-    a: "Our Seattle operations desk reviews submissions continuously and responds within 24 business hours. During weekend tournaments, live matchday communications take top priority.",
+    a: "Our operations desk in Addis Ababa and Hawassa reviews submissions continuously and responds within 24 business hours. During weekend tournaments, live matchday communications take top priority.",
   },
   {
     q: "Can I register as a free agent without a full squad?",
@@ -32,7 +32,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Where do street soccer matches and tournaments take place?",
-    a: "Our matches are held across curated turf grounds, community centers, and pop-up asphalt pitches throughout Greater Seattle, WA. Venue directions are published with each fixture schedule.",
+    a: "Our matches are held across curated turf grounds, community centers, and pop-up asphalt pitches throughout Addis Ababa and Hawassa, Ethiopia. Venue directions are published with each fixture schedule.",
   },
   {
     q: "How can brands or community non-profits partner with Arena?",
@@ -42,15 +42,15 @@ const FAQ_ITEMS = [
 
 const ContactInfo = () => {
   const [contactInfo, setContactInfo] = useState({
-    address: "Seattle, WA",
+    address: "Addis Ababa & Hawassa, Ethiopia",
     phone: "",
     email: "",
-    city: "Seattle",
-    state: "WA",
+    city: "Addis Ababa",
+    state: "Addis Ababa",
     zipCode: "",
-    country: "USA",
+    country: "Ethiopia",
     hours: {
-      weekdays: "Monday - Friday: 9:00 AM - 6:00 PM PST",
+      weekdays: "Monday - Friday: 9:00 AM - 6:00 PM EAT",
       saturday: "Saturday: Match & Tournament Operations",
       sunday: "Sunday: Championship Rounds & Youth Clinics",
     },
@@ -66,23 +66,23 @@ const ContactInfo = () => {
 
   const [copiedItem, setCopiedItem] = useState(null);
   const [expandedFaq, setExpandedFaq] = useState(null);
-  const [seattleTime, setSeattleTime] = useState("");
+  const [ethiopiaTime, setEthiopiaTime] = useState("");
 
-  // Live Seattle clock
+  // Live Ethiopia clock (East Africa Time - EAT)
   useEffect(() => {
     const updateTime = () => {
       try {
         const now = new Date();
         const timeStr = now.toLocaleTimeString("en-US", {
-          timeZone: "America/Los_Angeles",
+          timeZone: "Africa/Addis_Ababa",
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
           hour12: true,
         });
-        setSeattleTime(timeStr);
+        setEthiopiaTime(timeStr);
       } catch (err) {
-        setSeattleTime("");
+        setEthiopiaTime("");
       }
     };
 
@@ -97,18 +97,19 @@ const ContactInfo = () => {
         const data = await contactAPI.getInfo();
         if (data.contactInfo) {
           const rawAddress = data.contactInfo.address || "";
-          const city = data.contactInfo.city || "Seattle";
-          const state = data.contactInfo.state || "WA";
+          const city = data.contactInfo.city && data.contactInfo.city !== "Seattle" ? data.contactInfo.city : "Addis Ababa";
+          const state = data.contactInfo.state && data.contactInfo.state !== "WA" ? data.contactInfo.state : "Addis Ababa";
 
           let displayAddress = "";
           if (
             rawAddress &&
             rawAddress !== "United States" &&
-            rawAddress !== "United States America"
+            rawAddress !== "United States America" &&
+            rawAddress !== "Seattle, WA"
           ) {
             displayAddress = rawAddress;
           } else {
-            displayAddress = `${city}, ${state} · United States`;
+            displayAddress = `${city} & Hawassa, Ethiopia`;
           }
 
           setContactInfo({
@@ -118,9 +119,9 @@ const ContactInfo = () => {
             city: city,
             state: state,
             zipCode: data.contactInfo.zipCode || "",
-            country: data.contactInfo.country || "USA",
+            country: data.contactInfo.country && data.contactInfo.country !== "USA" && data.contactInfo.country !== "United States" ? data.contactInfo.country : "Ethiopia",
             hours: {
-              weekdays: "Monday - Friday: 9:00 AM - 6:00 PM PST",
+              weekdays: "Monday - Friday: 9:00 AM - 6:00 PM EAT",
               saturday: "Saturday: Match & Tournament Operations",
               sunday: "Sunday: Championship Rounds & Youth Clinics",
             },
@@ -170,24 +171,24 @@ const ContactInfo = () => {
       icon: IoCallOutline,
       tag: "OPERATIONS HOTLINE",
       title: "Direct Phone",
-      value: contactInfo.phone || "+1 (206) 678-6644",
+      value: contactInfo.phone || "+251 91 123 4567",
       actionLabel: "Call Desk",
       actionHref: contactInfo.phone
         ? `tel:${contactInfo.phone.replace(/\s/g, "")}`
-        : "tel:12066786644",
-      copyText: contactInfo.phone || "+1 (206) 678-6644",
+        : "tel:+251911234567",
+      copyText: contactInfo.phone || "+251 91 123 4567",
     },
     {
       id: "address",
       icon: IoLocationOutline,
       tag: "MATCH HEADQUARTERS",
-      title: "Greater Seattle Area",
-      value: contactInfo.address || "Seattle, WA · United States",
+      title: "Addis Ababa & Hawassa Hub",
+      value: contactInfo.address || "Addis Ababa & Hawassa, Ethiopia",
       actionLabel: "Directions",
       actionHref: `https://maps.google.com/?q=${encodeURIComponent(
-        contactInfo.address || "Seattle, WA"
+        contactInfo.address || "Addis Ababa, Ethiopia"
       )}`,
-      copyText: contactInfo.address || "Seattle, WA, United States",
+      copyText: contactInfo.address || "Addis Ababa & Hawassa, Ethiopia",
       external: true,
     },
   ];
@@ -198,7 +199,7 @@ const ContactInfo = () => {
       label: "Instagram",
       icon: IoLogoInstagram,
       href: contactInfo.socialMedia.instagram,
-      tag: "@arena_seattle",
+      tag: "@arena_ethiopia",
       color: "hover:border-[#E1306C] hover:text-[#E1306C]",
     },
     {
@@ -252,7 +253,7 @@ const ContactInfo = () => {
             label: "Instagram",
             icon: IoLogoInstagram,
             href: "https://instagram.com",
-            tag: "@arena_seattle",
+            tag: "@arena_ethiopia",
             color: "hover:border-[#E1306C] hover:text-[#E1306C]",
           },
           {
@@ -347,7 +348,7 @@ const ContactInfo = () => {
         })}
       </div>
 
-      {/* Program Schedule & Seattle Real-Time Clock */}
+      {/* Program Schedule & Ethiopia Real-Time Clock */}
       <SpotlightCard
         className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(254,87,35,0.08)] hover:border-secondary-500/50 transition-all duration-300"
         spotlightColor="rgba(254, 87, 35, 0.08)"
@@ -362,19 +363,19 @@ const ContactInfo = () => {
                 Operational &amp; Support Hours
               </h3>
               <p className="text-neutral-500 text-xs font-mono">
-                Pacific Standard Time (Seattle, WA)
+                East Africa Time (Addis Ababa, EAT - UTC+3)
               </p>
             </div>
           </div>
 
-          {/* Live Seattle Clock */}
-          {seattleTime && (
+          {/* Live Ethiopia Clock */}
+          {ethiopiaTime && (
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-50 border border-secondary-200 text-secondary-700 text-xs font-mono">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500" />
               </span>
-              <span className="tabular-nums font-bold">Seattle: {seattleTime}</span>
+              <span className="tabular-nums font-bold">Addis Ababa: {ethiopiaTime}</span>
             </div>
           )}
         </div>

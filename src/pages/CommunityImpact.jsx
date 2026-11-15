@@ -152,7 +152,7 @@ const CommunityImpact = () => {
             transition={{ delay: 0.35, duration: 0.8 }}
           >
             Street soccer clinics, youth mentorship, and partner programs
-            building stronger neighborhoods across Greater Seattle.
+            building stronger communities across Addis Ababa and Hawassa, Ethiopia.
           </motion.p>
         </motion.div>
 

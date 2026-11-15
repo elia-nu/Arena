@@ -1302,7 +1302,7 @@ const Register = () => {
                                     value={formData.guardianPhone}
                                     onChange={handleChange}
                                     className={inputClass(errors.guardianPhone)}
-                                    placeholder="+1 (555) 000-0000"
+                                    placeholder="+251 91 123 4567"
                                   />
                                   {errors.guardianPhone && (
                                     <p className="mt-1 text-xs text-red-300">

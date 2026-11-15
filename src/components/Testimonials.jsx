@@ -5,64 +5,64 @@ import { testimonialAPI } from "../services/api";
 const DEFAULT_TESTIMONIALS = [
   {
     _id: "def-1",
-    name: "Marcus K.",
-    role: "Team Captain · Seattle",
+    name: "Dawit T.",
+    role: "Team Captain · Addis Ababa",
     quote:
       "The street soccer tournament brought the entire community together. Smooth registration, professional refs, and unreal energy on the pitch from start to finish.",
     rating: 5,
   },
   {
     _id: "def-2",
-    name: "Sarah L.",
-    role: "Parent · Shoreline",
+    name: "Bethlehem A.",
+    role: "Parent · Hawassa",
     quote:
       "Seeing youth players get a real tournament stage with live commentary, music, and community pride was unforgettable. Our kids are already counting down to next season.",
     rating: 5,
   },
   {
     _id: "def-3",
-    name: "David M.",
-    role: "Player · Tacoma",
+    name: "Yohannes G.",
+    role: "Player · Addis Ababa (Bole)",
     quote:
-      "From bracket updates to match schedules, everything ran like clockwork. Hands down the premier competitive street soccer event in the Pacific Northwest.",
+      "From bracket updates to match schedules, everything ran like clockwork. Hands down the premier competitive street soccer event in Ethiopia.",
     rating: 5,
   },
   {
     _id: "def-4",
-    name: "Elena R.",
-    role: "Community Partner · Bellevue",
+    name: "Selamawit K.",
+    role: "Community Partner · Hawassa",
     quote:
       "The community impact is genuine. Competing while empowering local youth sports programs creates an environment and purpose you won't find anywhere else.",
     rating: 5,
   },
   {
     _id: "def-5",
-    name: "Jamal W.",
-    role: "Team Leader · Renton",
+    name: "Henok B.",
+    role: "Team Leader · Addis Ababa (Piassa)",
     quote:
       "Our squad has competed in three cups now. The competition is fierce, sportsmanship is celebrated, and the overall organization is top tier.",
     rating: 5,
   },
   {
     _id: "def-6",
-    name: "Christian T.",
-    role: "Forward · Everett",
+    name: "Natnael M.",
+    role: "Forward · Hawassa",
     quote:
       "Fast-paced games, energetic crowds, and high-level officiating. The Arena has set a new standard for what a community soccer tournament should feel like.",
     rating: 5,
   },
   {
     _id: "def-7",
-    name: "Maya S.",
-    role: "Youth Coach · Seattle",
+    name: "Rahel D.",
+    role: "Youth Coach · Addis Ababa",
     quote:
       "A safe, electric, and inspiring space for players of all backgrounds. It fosters authentic grit, sportsmanship, and true love for the game.",
     rating: 5,
   },
   {
     _id: "def-8",
-    name: "Andre P.",
-    role: "Team Captain · Kent",
+    name: "Ermias Z.",
+    role: "Team Captain · Hawassa",
     quote:
       "The live match updates kept all our supporters hyped throughout the day. Lifting the championship trophy with the squad was the highlight of our summer.",
     rating: 5,

@@ -6,16 +6,19 @@ import User from "../models/User.js";
 import CommunityImpactEntry from "../models/CommunityImpactEntry.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, "../..");
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
-dotenv.config({ path: path.join(projectRoot, ".env") });
-dotenv.config({ path: path.join(projectRoot, "server", ".env") });
-
-/** WebP Unsplash covers (fm=webp) + soccer / community photography */
 const webp = (photoId, w = 1400, h = 900) =>
   `https://images.unsplash.com/${photoId}?w=${w}&h=${h}&fit=crop&fm=webp&q=80`;
 
 const SEED_TITLES = [
+  "Addis Ababa Youth Community Cup",
+  "Hawassa Lakefront Youth Mentorship Clinics",
+  "Bole Open Play Sundays",
+  "Jan Meda Gear Drive & Skills Day",
+  "Hawassa Lake Street Soccer Night",
+  "Sheger Girls Kickstart Football Camp",
+  // Legacy titles for clean deletion
   "Seattle Parks & Recreation Community Cup",
   "Rainier Beach Youth Mentorship Clinics",
   "Capitol Hill Open Play Sundays",
@@ -26,17 +29,17 @@ const SEED_TITLES = [
 
 const ENTRIES = [
   {
-    title: "Seattle Parks & Recreation Community Cup",
-    description: `A collaborative summer street soccer showcase at Garfield Playfield, uniting over 120 youth and neighborhood teams for competitive play, mentorship, and community celebration.
+    title: "Addis Ababa Youth Community Cup",
+    description: `A collaborative street soccer showcase at Jan Meda Sports Ground, uniting over 120 youth and neighborhood teams for competitive play, mentorship, and community celebration.
 
 Volunteers ran skill stations, family zones, and a closing awards circle that highlighted sportsmanship as much as goals scored.`,
-    place: "Garfield Playfield, Seattle, WA",
+    place: "Jan Meda Sports Ground, Addis Ababa, Ethiopia",
     date: new Date("2025-08-16T17:00:00.000Z"),
     isFeatured: true,
     sponsor: {
-      name: "Seattle Parks and Recreation",
+      name: "Addis Ababa Youth Sports Commission",
       logo: webp("photo-1574629810360-7efbbe195018", 400, 400),
-      website: "https://www.seattle.gov/parks",
+      website: "https://leskickit.com",
     },
     images: [
       webp("photo-1574629810360-7efbbe195018"),
@@ -52,16 +55,16 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     ],
   },
   {
-    title: "Rainier Beach Youth Mentorship Clinics",
+    title: "Hawassa Lakefront Youth Mentorship Clinics",
     description:
-      "Weekly evening clinics pairing high-school mentors with middle-school players. Sessions mix technical drills, small-sided games, and conversations about school, confidence, and teamwork.",
-    place: "Rainier Beach Playfield, Seattle, WA",
+      "Weekly evening clinics pairing senior players with grassroots youth in Hawassa. Sessions mix technical street soccer drills, small-sided cage matches, and mentorship conversations about confidence, school, and sportsmanship.",
+    place: "Lakefront Promenade, Hawassa, Ethiopia",
     date: new Date("2025-06-12T01:00:00.000Z"),
     isFeatured: true,
     sponsor: {
-      name: "Rainier Beach Community Center",
+      name: "Hawassa City Youth & Sports Bureau",
       logo: webp("photo-1489944440615-453fc71ff43a", 400, 400),
-      website: "https://www.seattle.gov/parks",
+      website: "https://leskickit.com",
     },
     images: [
       webp("photo-1489944440615-453fc71ff43a"),
@@ -80,16 +83,16 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     ],
   },
   {
-    title: "Capitol Hill Open Play Sundays",
+    title: "Bole Open Play Sundays",
     description:
-      "Free open-play mornings for families and first-time players. No registration wall — just cones, balls, and coaches who keep the vibe welcoming for every skill level.",
-    place: "Cal Anderson Park, Seattle, WA",
+      "Free open-play mornings for families and first-time players in Bole. No registration barriers — just cones, balls, and coaches who keep the vibe welcoming for every skill level.",
+    place: "Bole Medhanialem Community Pitch, Addis Ababa, Ethiopia",
     date: new Date("2025-09-07T18:30:00.000Z"),
     isFeatured: false,
     sponsor: {
-      name: "Capitol Hill Community Council",
+      name: "Bole Community Sports Council",
       logo: webp("photo-1517649763962-0c623066013b", 400, 400),
-      website: "https://www.capitolhillcommunitycouncil.org/",
+      website: "https://leskickit.com",
     },
     images: [
       webp("photo-1517649763962-0c623066013b"),
@@ -104,14 +107,14 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     ],
   },
   {
-    title: "South Park Gear Drive & Skills Day",
+    title: "Jan Meda Gear Drive & Skills Day",
     description:
-      "Neighbors donated cleats, shin guards, and balls so every kid could step onto the pitch ready to play. Afternoon skills circuits ended with mixed-age scrimmages and a shared meal.",
-    place: "South Park Community Center, Seattle, WA",
+      "Community members donated boots, shin guards, and footballs so every young player could step onto the pitch fully equipped. Afternoon technical skill circuits finished with mixed-age matches.",
+    place: "Jan Meda Youth Center, Addis Ababa, Ethiopia",
     date: new Date("2025-04-19T19:00:00.000Z"),
     isFeatured: false,
     sponsor: {
-      name: "South Park Neighborhood Association",
+      name: "Addis Grassroots Football Alliance",
       logo: webp("photo-1461896836934-ffe607ba6851", 400, 400),
     },
     images: [
@@ -127,16 +130,16 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     ],
   },
   {
-    title: "Ballard Waterfront Street Soccer Night",
+    title: "Hawassa Lake Street Soccer Night",
     description:
-      "An evening of 3v3 under the lights along the Ballard waterfront — music, food trucks, and fast-paced street soccer that drew players from across Northwest Seattle.",
-    place: "Ballard Commons Park, Seattle, WA",
+      "An electric evening of 3v3 under floodlights along the Hawassa lakefront — music, food, and high-intensity street football that brought players from across the region.",
+    place: "Hawassa Waterfront Pitch, Hawassa, Ethiopia",
     date: new Date("2025-07-26T02:00:00.000Z"),
     isFeatured: true,
     sponsor: {
-      name: "Ballard Chamber of Commerce",
+      name: "Hawassa Youth Community Club",
       logo: webp("photo-1529900748604-07564a03e7a6", 400, 400),
-      website: "https://www.ballardchamber.com/",
+      website: "https://leskickit.com",
     },
     images: [
       webp("photo-1529900748604-07564a03e7a6"),
@@ -156,14 +159,14 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     ],
   },
   {
-    title: "West Seattle Girls Kickstart Camp",
+    title: "Sheger Girls Kickstart Football Camp",
     description:
-      "A three-day intro camp for girls ages 8–14 focused on first touch, confidence, and finding a team home. Coaches from local clubs volunteered sessions and Q&A with parents.",
-    place: "Hiawatha Community Center, Seattle, WA",
+      "A three-day development camp for young female athletes focused on first touch, game awareness, agility, and team building. Local certified coaches led inspiring skill clinics.",
+    place: "Abebe Bikila Stadium Field, Addis Ababa, Ethiopia",
     date: new Date("2025-05-03T17:00:00.000Z"),
     isFeatured: false,
     sponsor: {
-      name: "West Seattle Soccer Club",
+      name: "Sheger Youth Athletics Initiative",
       logo: webp("photo-1606925797300-0b35e9d1793f", 400, 400),
     },
     images: [

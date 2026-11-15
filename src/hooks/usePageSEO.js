@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-const DEFAULT_TITLE = "The Arena | Seattle Community Soccer Tournaments";
+const DEFAULT_TITLE = "The Arena | Ethiopian Community Soccer Tournaments";
 const DEFAULT_DESC =
-  "The Arena brings competitive street soccer tournaments, youth development, and community impact events to Greater Seattle.";
+  "The Arena brings competitive street soccer tournaments, youth development, and community impact events across Ethiopia (Addis Ababa & Hawassa).";
 
 export const usePageSEO = (title, description) => {
   useEffect(() => {

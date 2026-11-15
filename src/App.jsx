@@ -35,6 +35,7 @@ import SuspensionNotice from "./components/SuspensionNotice";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { NotificationProvider } from "./components/NotificationProvider";
+import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { SocialAnalyticsProvider } from "./context/SocialAnalyticsContext";
@@ -128,17 +129,19 @@ function AppContent() {
 
 function App() {
   return (
-    <NotificationProvider>
-      <AuthProvider>
-        <CartProvider>
-          <SocialAnalyticsProvider>
-            <Router>
-              <AppContent />
-            </Router>
-          </SocialAnalyticsProvider>
-        </CartProvider>
-      </AuthProvider>
-    </NotificationProvider>
+    <ThemeProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <CartProvider>
+            <SocialAnalyticsProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </SocialAnalyticsProvider>
+          </CartProvider>
+        </AuthProvider>
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }
 

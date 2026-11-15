@@ -38,49 +38,50 @@ const cleanTestData = async () => {
     });
     console.log(`Deleted ${deletedTournaments.deletedCount} test tournaments.`);
 
-    // 4. Correct Seattle Parks & Rec Community Impact entry
+    // 4. Correct Community Impact entry for Ethiopia
     const sprUpdate = await CommunityImpactEntry.updateMany(
       {
         $or: [
           { title: /seattle parks/i },
           { "sponsor.name": /seattle parks/i },
+          { place: /seattle/i },
         ],
       },
       {
         $set: {
-          title: "Seattle Parks & Recreation Community Cup",
-          place: "Garfield Playfield, Seattle, WA",
-          "sponsor.name": "Seattle Parks and Recreation",
+          title: "Addis Ababa Youth Community Cup",
+          place: "Jan Meda Sports Ground, Addis Ababa, Ethiopia",
+          "sponsor.name": "Addis Ababa Youth Sports Commission",
           date: new Date("2025-08-16T10:00:00.000Z"),
           description:
-            "A collaborative summer street soccer showcase hosted at Garfield Playfield, uniting over 120 youth and neighborhood teams for competitive play and community celebration.",
+            "A collaborative street soccer showcase hosted at Jan Meda Sports Ground, uniting over 120 youth and neighborhood teams for competitive play and community celebration.",
         },
       }
     );
-    console.log(`Updated ${sprUpdate.modifiedCount} Seattle Parks & Rec impact entries.`);
+    console.log(`Updated ${sprUpdate.modifiedCount} impact entries to Ethiopian locations.`);
 
     // 5. Seed real partner & family testimonials if needed
     const remainingCount = await Testimonial.countDocuments({ status: "published" });
     if (remainingCount < 2) {
-      const admin = await User.findOne({ role: "admin" }) || (await User.findOne());
+      const admin = (await User.findOne({ role: "admin" })) || (await User.findOne());
       const adminId = admin ? admin._id : new mongoose.Types.ObjectId();
 
       await Testimonial.create([
         {
-          name: "Marcus Sterling",
-          role: "Youth Coach & Parent",
+          name: "Dawit Tadesse",
+          role: "Youth Coach & Parent · Addis Ababa",
           quote:
-            "The Arena brings the Seattle soccer community together like no other organization. The tournaments provide real competition in a positive, empowering environment for our players.",
+            "The Arena brings the Ethiopian street soccer community together like no other organization. The tournaments provide real competition in a positive, empowering environment for our players.",
           rating: 5,
           status: "published",
           displayOrder: 1,
           createdBy: adminId,
         },
         {
-          name: "Downtown Seattle Association",
-          role: "Community Partner",
+          name: "Hawassa Youth Sports Association",
+          role: "Community Partner · Hawassa",
           quote:
-            "Partnering with The Arena brought extraordinary energy, street soccer culture, and community engagement to downtown public spaces throughout the summer.",
+            "Partnering with The Arena brought extraordinary energy, street soccer culture, and community engagement to public pitches in Hawassa throughout the season.",
           rating: 5,
           status: "published",
           displayOrder: 2,
@@ -93,7 +94,7 @@ const cleanTestData = async () => {
     console.log("\n✅ Test content clean-up complete!");
     process.exit(0);
   } catch (err) {
-    console.error("Error during test content clean-up:", err);
+    console.error("Cleanup error:", err);
     process.exit(1);
   }
 };

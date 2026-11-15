@@ -266,7 +266,7 @@ const ShippingForm = ({ user, orderData, initialShipping, onContinue, onCancel }
               type="text"
               value={formData.country}
               onChange={(e) => handleChange("country", e.target.value)}
-              placeholder="United States"
+              placeholder="Ethiopia"
               autoComplete="country-name"
               className={inputClass}
               required

@@ -233,7 +233,7 @@ const EventCard = ({ event, onRegister, className = "" }) => {
                 <IoLocationOutline className="w-3.5 h-3.5" />
               </span>
               <span className="font-bold truncate">
-                {event.location || "Seattle, WA"}
+                {event.location || "Addis Ababa, Ethiopia"}
               </span>
             </div>
 

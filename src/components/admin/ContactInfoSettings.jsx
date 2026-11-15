@@ -204,7 +204,7 @@ const ContactInfoSettings = ({ onSave }) => {
             onChange={(e) =>
               setContactInfo({ ...contactInfo, country: e.target.value })
             }
-            placeholder="United States"
+            placeholder="Ethiopia"
             className="w-full px-4 py-3 border-2 border-primary-200 rounded-lg focus:border-tertiary-500 outline-none"
           />
         </div>

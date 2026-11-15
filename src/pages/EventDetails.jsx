@@ -725,7 +725,7 @@ const EventDetails = () => {
                 <p className="text-xs text-white/50 mt-0.5 line-clamp-1 font-medium">
                   {event.location.includes(",")
                     ? event.location.split(",").slice(1).join(",").trim()
-                    : "Seattle, WA"}
+                    : "Addis Ababa, Ethiopia"}
                 </p>
               </SpotlightCard>
 
@@ -1045,7 +1045,7 @@ const EventDetails = () => {
                       Region
                     </p>
                     <p className="text-sm font-bold text-white">
-                      Pacific Northwest / Seattle
+                      Ethiopia (Addis Ababa & Hawassa)
                     </p>
                   </div>
                 </div>

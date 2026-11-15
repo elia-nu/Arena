@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { IoArrowForward, IoArrowDown } from "react-icons/io5";
 import EventCard from "../components/events/EventCard";
 import EventFilters from "../components/events/EventFilters";
 import RegistrationModal from "../components/events/RegistrationModal";
@@ -194,74 +195,152 @@ const Events = () => {
     setSelectedEvent(event);
   };
 
+  const ebcHeroWebp =
+    "https://ebc.et/admin/uploads/2025/10/29/403e17fa-b697-42b5-b1ff-911b9833369b.webp";
+  const ebcHeroFallback = "/ebc-stadium-hero.webp";
+
   return (
-    <div className="min-h-screen bg-[#07080a] text-white pt-28 sm:pt-32 relative overflow-hidden">
-      {/* Background Stadium Grid & Atmosphere */}
-      <div className="absolute inset-0 pointer-events-none">
-        <svg
-          className="absolute inset-0 w-full h-full opacity-20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="events-page-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
-              <circle cx="0" cy="0" r="1.2" fill="rgba(254, 87, 35, 0.3)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#events-page-grid)" />
-        </svg>
+    <div className="min-h-screen bg-[#07080a] text-white overflow-x-hidden selection:bg-secondary-500 selection:text-white">
+      {/* ─── FULL-BLEED HERO BANNER (MATCHING COMMUNITY STADIUM DESIGN) ─── */}
+      <section className="relative w-full min-h-[580px] sm:min-h-[660px] md:min-h-[740px] flex items-center pt-32 sm:pt-40 pb-20 md:pb-28 overflow-hidden bg-neutral-950">
+        {/* Full-bleed Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={ebcHeroWebp}
+            onError={(e) => {
+              e.currentTarget.src = ebcHeroFallback;
+            }}
+            alt="The Arena Tournaments & Street Soccer Events"
+            className="w-full h-full object-cover object-center scale-102"
+          />
+          {/* Cinematic Vignette Overlay - dark on left for text contrast, translucent on right for players */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/92 via-black/65 to-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07080a] via-black/40 to-black/25" />
+        </div>
 
-        {/* Ambient Orange Stadium Blooms */}
-        <div
-          className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
-          style={{ background: "radial-gradient(circle, #fe5723 0%, transparent 70%)" }}
-        />
-        <div
-          className="absolute top-1/2 -left-40 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-15"
-          style={{ background: "radial-gradient(circle, #ff8b42 0%, transparent 70%)" }}
-        />
-      </div>
+        {/* Hero Content */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full relative z-10">
+          <div className="max-w-2xl text-left">
+            {/* Top movement pill */}
+            <motion.div
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white/90 text-xs font-semibold tracking-wide uppercase mb-6"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="w-2 h-2 rounded-full bg-secondary-500 animate-pulse" />
+              <span>Arena Tournament Calendar • Addis Ababa &amp; Hawassa</span>
+            </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
-        {/* Header Section */}
-        <motion.div
-          className="text-center mb-10 md:mb-14 flex flex-col items-center"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          {/* Tactical Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-secondary-500/30 bg-secondary-500/10 backdrop-blur-md mb-4 shadow-[0_0_20px_rgba(254,87,35,0.15)]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500 shadow-[0_0_8px_#fe5723]" />
-            </span>
-            <span className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">
-              ARENA TOURNAMENT CALENDAR
-            </span>
+            {/* Massive Bold Heading */}
+            <motion.h1
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[0.98] mb-6 uppercase"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+            >
+              ARENA <span className="text-secondary-500">EVENTS</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              className="text-base sm:text-lg md:text-xl text-white/90 font-light max-w-xl leading-relaxed mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              We're passionate about bringing communities together through exciting tournaments and unforgettable experiences.
+            </motion.p>
+
+            {/* Dual CTA Buttons */}
+            <motion.div
+              className="flex flex-wrap items-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <a
+                href="#events-list"
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg hover:shadow-secondary-500/30 transition-all duration-200 hover:-translate-y-0.5"
+              >
+                EXPLORE FIXTURES <IoArrowDown className="text-sm" />
+              </a>
+              <Link
+                to="/about-us"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-black/40 hover:bg-black/60 text-white font-bold text-xs uppercase tracking-widest rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5"
+              >
+                OUR STORY <IoArrowForward className="text-sm" />
+              </Link>
+            </motion.div>
           </div>
+        </div>
 
-          <motion.h1
-            className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-          >
-            THE ARENA{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-400 via-secondary-500 to-secondary-400">
-              SHOWDOWNS
-            </span>
-          </motion.h1>
-
-          <motion.p
-            className="text-sm md:text-base text-white/60 max-w-2xl mx-auto font-light leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            Browse competitive tournaments, cage matches, and championship brackets. Register your squad and claim your place in Seattle street soccer history.
-          </motion.p>
+        {/* Bottom Right Tagline Watermark (Official Arena Gunner Motto) */}
+        <motion.div
+          className="absolute bottom-8 right-8 sm:bottom-12 sm:right-12 text-right select-none pointer-events-none z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          <div className="text-[10px] tracking-[0.25em] text-secondary-500 font-bold uppercase mb-0.5">
+            THE ARENA
+          </div>
+          <div className="text-base sm:text-lg font-black text-white tracking-wider uppercase">
+            LET'S RUMBLE.
+          </div>
         </motion.div>
+      </section>
+
+      {/* ─── EVENTS LIST & TOURNAMENT CALENDAR ─── */}
+      <div id="events-list" className="relative scroll-mt-20">
+        {/* Background Stadium Grid & Atmosphere */}
+        <div className="absolute inset-0 pointer-events-none">
+          <svg
+            className="absolute inset-0 w-full h-full opacity-20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern id="events-page-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
+                <circle cx="0" cy="0" r="1.2" fill="rgba(254, 87, 35, 0.3)" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#events-page-grid)" />
+          </svg>
+
+          {/* Ambient Orange Stadium Blooms */}
+          <div
+            className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
+            style={{ background: "radial-gradient(circle, #fe5723 0%, transparent 70%)" }}
+          />
+          <div
+            className="absolute top-1/2 -left-40 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-15"
+            style={{ background: "radial-gradient(circle, #ff8b42 0%, transparent 70%)" }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
+          {/* Tactical Sub-Heading */}
+          <motion.div
+            className="text-center mb-10 flex flex-col items-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-secondary-500/30 bg-secondary-500/10 backdrop-blur-md mb-3 shadow-[0_0_20px_rgba(254,87,35,0.15)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary-500 shadow-[0_0_8px_#fe5723]" />
+              </span>
+              <span className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">
+                ACTIVE SHOWDOWNS &amp; BRACKETS
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+              SELECT YOUR <span className="text-secondary-500">TOURNAMENT</span>
+            </h2>
+          </motion.div>
 
         {/* Filters */}
         <motion.div
@@ -442,6 +521,7 @@ const Events = () => {
 
           </div>
         )}
+      </div>
       </div>
 
       {selectedEvent && (

@@ -131,6 +131,34 @@ app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/tiktok", tiktokRoutes);
 app.use("/api/announcements", announcementRoutes);
 
+// Public Branding endpoint
+app.get("/api/branding", async (req, res) => {
+  try {
+    const Settings = (await import("./models/Settings.js")).default;
+    const settings = await Settings.findOne({ type: "branding" });
+    if (!settings || !settings.data) {
+      return res.json({
+        branding: {
+          siteName: process.env.SITE_NAME || "The Arena",
+          logo: "",
+          primaryColor: "#000000",
+          secondaryColor: "#fe5723",
+          tertiaryColor: "#fb6f00",
+          colorPreset: "orange",
+          favicon: "",
+          tagline: "Unleash Your Inner Champion",
+        },
+      });
+    }
+    res.json({ branding: settings.data });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error fetching branding",
+      error: error.message,
+    });
+  }
+});
+
 // Health check route
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
