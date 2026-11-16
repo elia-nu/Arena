@@ -146,6 +146,7 @@ export const detectVideoPlatform = (url) => {
     return "tiktok";
   } else if (
     lower.startsWith("/uploads/") ||
+    (lower.includes("cloudinary.com") && lower.includes("/video/")) ||
     /\.(mp4|webm|mov|m4v|ogg)(\?.*)?$/i.test(lower)
   ) {
     return "direct";
@@ -245,14 +246,37 @@ export const getOptimizedImageSrc = (rawUrl, { width, quality = 70 } = {}) => {
     return `${rawUrl}${separator}${widthParam}q=${quality}&auto=format&fit=crop`;
   }
 
+  if (rawUrl.includes("res.cloudinary.com") && rawUrl.includes("/image/upload/")) {
+    // Avoid double-transforming if already transformed
+    if (!rawUrl.includes("/image/upload/f_") && !rawUrl.includes("/image/upload/w_") && !rawUrl.includes("/image/upload/q_")) {
+      const transforms = [];
+      if (width) transforms.push(`w_${width},c_limit`);
+      transforms.push("f_auto,q_auto");
+      const transformStr = transforms.join(",");
+      return rawUrl.replace("/image/upload/", `/image/upload/${transformStr}/`);
+    }
+  }
+
   return rawUrl;
 };
 
 /** True if URL points to a file that cannot be used as an <img> src (e.g. uploaded MP4). */
 export const isDirectVideoFileUrl = (url) => {
   if (!url || typeof url !== "string") return false;
-  const base = url.split("?")[0].split("#")[0];
-  return /\.(mp4|webm|mov|m4v|ogg)$/i.test(base);
+  const base = url.split("?")[0].split("#")[0].toLowerCase();
+  return (
+    /\.(mp4|webm|mov|m4v|ogg)$/i.test(base) ||
+    (base.includes("res.cloudinary.com") && base.includes("/video/upload/"))
+  );
+};
+
+/** Get Cloudinary video frame thumbnail (JPEG) */
+export const getCloudinaryVideoThumbnail = (url) => {
+  if (!url || typeof url !== "string") return url;
+  if (url.includes("res.cloudinary.com") && url.includes("/video/upload/")) {
+    return url.replace(/\.[a-zA-Z0-9]+$/, ".jpg");
+  }
+  return url;
 };
 
 /**

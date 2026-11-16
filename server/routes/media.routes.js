@@ -7,6 +7,11 @@ import MediaTheme from "../models/MediaTheme.js";
 import MediaCategory from "../models/MediaCategory.js";
 import { protect, adminOnly } from "../middleware/auth.middleware.js";
 import { mediaUploadDir } from "../utils/uploadPaths.js";
+import {
+  isCloudinaryConfigured,
+  uploadFileToCloudinary,
+  deleteFromCloudinary,
+} from "../config/cloudinary.js";
 
 const router = express.Router();
 
@@ -512,14 +517,48 @@ router.post(
       next();
     });
   },
-  (req, res) => {
+  async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const url = `/uploads/media/${req.file.filename}`;
       const isVideo = req.file.mimetype.startsWith("video/");
+
+      // If Cloudinary is configured, upload to Cloudinary and clean up the temporary disk file
+      if (isCloudinaryConfigured()) {
+        try {
+          const cloudResult = await uploadFileToCloudinary(req.file.path, {
+            resource_type: "auto",
+            folder: "arena",
+          });
+
+          // Clean up local temp file after successful cloud upload
+          fs.unlink(req.file.path, () => {});
+
+          return res.status(201).json({
+            url: cloudResult.secure_url,
+            publicId: cloudResult.public_id,
+            filename: cloudResult.public_id,
+            originalName: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: cloudResult.bytes || req.file.size,
+            mediaType:
+              cloudResult.resource_type || (isVideo ? "video" : "image"),
+            width: cloudResult.width,
+            height: cloudResult.height,
+            duration: cloudResult.duration,
+          });
+        } catch (cloudError) {
+          console.error(
+            "Cloudinary upload failed, falling back to local file:",
+            cloudError
+          );
+          // Keep file on disk and fall through to local storage
+        }
+      }
+
+      const url = `/uploads/media/${req.file.filename}`;
 
       res.status(201).json({
         url,
@@ -547,6 +586,7 @@ router.post("/", protect, adminOnly, async (req, res) => {
       type,
       platform,
       url,
+      publicId,
       thumbnail,
       category,
       event,
@@ -578,6 +618,7 @@ router.post("/", protect, adminOnly, async (req, res) => {
           resolvedPlatform = "tiktok";
         } else if (
           lowerUrl.startsWith("/uploads/") ||
+          lowerUrl.includes("cloudinary.com") ||
           /\.(mp4|webm|mov|m4v|ogg)(\?.*)?$/i.test(lowerUrl)
         ) {
           resolvedPlatform = "direct";
@@ -594,6 +635,8 @@ router.post("/", protect, adminOnly, async (req, res) => {
       if (match && match[1]) {
         resolvedThumbnail = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
       }
+    } else if (type === "video" && url.includes("res.cloudinary.com") && !resolvedThumbnail) {
+      resolvedThumbnail = url.replace(/\.[a-zA-Z0-9]+$/, ".jpg");
     } else if (type === "image" && !resolvedThumbnail) {
       resolvedThumbnail = url;
     }
@@ -603,6 +646,7 @@ router.post("/", protect, adminOnly, async (req, res) => {
       type,
       platform: resolvedPlatform,
       url,
+      publicId: publicId || null,
       thumbnail: resolvedThumbnail || null,
       category: category || "events",
       event,
@@ -676,10 +720,15 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
         media.platform = "tiktok";
       } else if (
         lowerUrl.startsWith("/uploads/") ||
+        lowerUrl.includes("cloudinary.com") ||
         /\.(mp4|webm|mov|m4v|ogg)(\?.*)?$/i.test(lowerUrl)
       ) {
         media.platform = "direct";
       }
+    }
+
+    if (req.body.publicId !== undefined) {
+      media.publicId = req.body.publicId;
     }
 
     // Thumbnail update
@@ -692,6 +741,8 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
       if (match && match[1]) {
         media.thumbnail = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
       }
+    } else if (media.type === "video" && media.url.includes("res.cloudinary.com") && !media.thumbnail) {
+      media.thumbnail = media.url.replace(/\.[a-zA-Z0-9]+$/, ".jpg");
     } else if (media.type === "image" && !media.thumbnail) {
       media.thumbnail = media.url;
     }
@@ -732,6 +783,30 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
 
     if (!media) {
       return res.status(404).json({ message: "Media not found" });
+    }
+
+    // Clean up from Cloudinary if publicId exists
+    if (media.publicId && isCloudinaryConfigured()) {
+      try {
+        await deleteFromCloudinary(
+          media.publicId,
+          media.type === "video" ? "video" : "image"
+        );
+      } catch (cErr) {
+        console.error("Failed to delete from Cloudinary:", cErr);
+      }
+    }
+
+    // Clean up from local disk if it was stored locally
+    if (media.url && media.url.startsWith("/uploads/media/")) {
+      const localFile = path.join(mediaUploadDir, path.basename(media.url));
+      if (fs.existsSync(localFile)) {
+        try {
+          fs.unlinkSync(localFile);
+        } catch (fErr) {
+          console.error("Failed to delete local file:", fErr);
+        }
+      }
     }
 
     await media.deleteOne();

@@ -16,6 +16,10 @@ const mediaSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    publicId: {
+      type: String,
+      default: null,
+    },
     thumbnail: {
       type: String,
       default: null,

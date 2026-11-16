@@ -272,11 +272,12 @@ const EventMediaManagement = () => {
           showError(`Skipped (too large): ${file.name}`);
           continue;
         }
-        const { url } = await mediaAPI.uploadImage(file);
+        const { url, publicId } = await mediaAPI.uploadImage(file);
         await mediaAPI.create({
           type: "image",
           platform: null,
           url,
+          publicId: publicId || null,
           thumbnail: url,
           category: "events",
           event: selectedId,
@@ -363,12 +364,17 @@ const EventMediaManagement = () => {
 
     try {
       setUploadingVideo(true);
-      const { url } = await mediaAPI.uploadImage(file);
+      const { url, publicId } = await mediaAPI.uploadFile(file);
+      let thumbnail = url;
+      if (url.includes("res.cloudinary.com") && url.includes("/video/upload/")) {
+        thumbnail = url.replace(/\.[a-zA-Z0-9]+$/, ".jpg");
+      }
       await mediaAPI.create({
         type: "video",
         platform: "direct",
         url,
-        thumbnail: url,
+        publicId: publicId || null,
+        thumbnail,
         category: "events",
         event: selectedId,
         visibility: "public",

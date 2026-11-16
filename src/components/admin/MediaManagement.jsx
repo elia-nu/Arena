@@ -405,6 +405,7 @@ const MediaManagement = () => {
 
     let finalMediaUrl = uploadForm.url.trim();
     let finalThumbnail = uploadForm.thumbnail.trim();
+    let finalPublicId = null;
     let platform = null;
 
     try {
@@ -429,6 +430,7 @@ const MediaManagement = () => {
           setUploadProgressText(`Uploading ${uploadType} file...`);
           const uploadRes = await mediaAPI.uploadFile(selectedFile);
           finalMediaUrl = uploadRes.url;
+          if (uploadRes.publicId) finalPublicId = uploadRes.publicId;
         }
       }
 
@@ -492,6 +494,7 @@ const MediaManagement = () => {
         type: uploadType,
         platform,
         url: finalMediaUrl,
+        publicId: finalPublicId,
         thumbnail: finalThumbnail || null,
         category: uploadForm.category || "events",
         event: uploadForm.event.trim(),
