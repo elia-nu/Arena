@@ -161,10 +161,10 @@ const ContactInfo = () => {
       icon: IoMailOutline,
       tag: "OFFICIAL DESK",
       title: "Direct Email",
-      value: contactInfo.email || "hello@leskickit.com",
+      value: contactInfo.email || "hello@arenaia.com",
       actionLabel: "Write Email",
-      actionHref: `mailto:${contactInfo.email || "hello@leskickit.com"}`,
-      copyText: contactInfo.email || "hello@leskickit.com",
+      actionHref: `mailto:${contactInfo.email || "hello@arenaia.com"}`,
+      copyText: contactInfo.email || "hello@arenaia.com",
     },
     {
       id: "phone",

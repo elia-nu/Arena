@@ -39,7 +39,7 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     sponsor: {
       name: "Addis Ababa Youth Sports Commission",
       logo: webp("photo-1574629810360-7efbbe195018", 400, 400),
-      website: "https://leskickit.com",
+      website: "https://arenaia.com",
     },
     images: [
       webp("photo-1574629810360-7efbbe195018"),
@@ -64,7 +64,7 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     sponsor: {
       name: "Hawassa City Youth & Sports Bureau",
       logo: webp("photo-1489944440615-453fc71ff43a", 400, 400),
-      website: "https://leskickit.com",
+      website: "https://arenaia.com",
     },
     images: [
       webp("photo-1489944440615-453fc71ff43a"),
@@ -92,7 +92,7 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     sponsor: {
       name: "Bole Community Sports Council",
       logo: webp("photo-1517649763962-0c623066013b", 400, 400),
-      website: "https://leskickit.com",
+      website: "https://arenaia.com",
     },
     images: [
       webp("photo-1517649763962-0c623066013b"),
@@ -139,7 +139,7 @@ Volunteers ran skill stations, family zones, and a closing awards circle that hi
     sponsor: {
       name: "Hawassa Youth Community Club",
       logo: webp("photo-1529900748604-07564a03e7a6", 400, 400),
-      website: "https://leskickit.com",
+      website: "https://arenaia.com",
     },
     images: [
       webp("photo-1529900748604-07564a03e7a6"),

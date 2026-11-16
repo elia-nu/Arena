@@ -166,7 +166,7 @@ const CreateAdmin = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border-2 border-primary-200 rounded-lg focus:border-tertiary-500 focus:ring-2 focus:ring-tertiary-500/20 outline-none transition-all duration-300"
-                  placeholder="admin@kickit.com"
+                  placeholder="admin@arenaia.com"
                 />
               </div>
 

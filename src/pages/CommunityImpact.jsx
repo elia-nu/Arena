@@ -15,6 +15,7 @@ import {
   getYouTubeThumbnail,
 } from "../utils/mediaUtils";
 import EmptyState from "../components/EmptyState";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=800&fit=crop&fm=webp&q=80";
@@ -47,6 +48,13 @@ const formatDate = (date) => {
 };
 
 const CommunityImpact = () => {
+  usePageSEO({
+    title: "Community Impact",
+    description:
+      "Grassroots youth soccer programs, coaching clinics, and community impact initiatives in urban Ethiopia organized by The Arena.",
+    path: "/community-impact",
+  });
+
   const navigate = useNavigate();
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);

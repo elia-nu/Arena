@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { contactAPI } from "../services/api";
 import EmptyState from "../components/EmptyState";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const Social = () => {
+  usePageSEO({
+    title: "Social Hub",
+    description:
+      "Follow The Arena's viral moments, highlights, and street soccer action on TikTok, Instagram, and YouTube.",
+    path: "/social",
+  });
+
   const [socialPageEnabled, setSocialPageEnabled] = useState(true);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 

@@ -147,7 +147,7 @@ class TikTokService {
       {
         id: 'showcase_1',
         title: '⚽ Amazing soccer skills compilation!',
-        description: 'Check out these incredible moves from our latest training session #soccer #skills #letskickit',
+        description: 'Check out these incredible moves from our latest training session #soccer #skills #thearena #arenaia',
         video_description: 'Amazing soccer skills compilation! ⚽',
         thumbnail_url: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=480&h=848&fit=crop',
         author_name: this.username,

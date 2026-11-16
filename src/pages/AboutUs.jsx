@@ -21,6 +21,7 @@ import {
 } from "react-icons/io5";
 import DriftWall from "../components/reactbits/DriftWall";
 import SpotlightCard from "../components/reactbits/SpotlightCard";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const stats = [
   { value: "1,000+", label: "Urban Mini-Stadiums", sublabel: "Addis Ababa municipal sports initiative" },
@@ -281,6 +282,13 @@ const partners = [
 ];
 
 const AboutUs = () => {
+  usePageSEO({
+    title: "About Us",
+    description:
+      "Learn about The Arena's mission, team, and urban street soccer movement across Addis Ababa and Hawassa, Ethiopia.",
+    path: "/about-us",
+  });
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activePhoto, setActivePhoto] = useState(null);
 

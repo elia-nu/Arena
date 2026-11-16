@@ -1674,7 +1674,7 @@ const MediaManagement = () => {
                       onChange={(e) =>
                         setUploadForm({ ...uploadForm, tags: e.target.value })
                       }
-                      placeholder="e.g. championship, kickit, highlights, finals"
+                      placeholder="e.g. championship, arenaia, highlights, finals"
                       className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
                     />
                   </div>

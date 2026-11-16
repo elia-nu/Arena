@@ -22,7 +22,7 @@ const createAdmin = async () => {
 
     // Get admin credentials from command line or use defaults
     const args = process.argv.slice(2);
-    const email = args[0] || "admin@kickit.com";
+    const email = args[0] || "admin@arenaia.com";
     const username = args[1] || "admin";
     const password = args[2] || "admin123";
     const firstName = args[3] || "Admin";

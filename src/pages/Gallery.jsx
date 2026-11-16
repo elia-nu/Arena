@@ -6,6 +6,7 @@ import LightboxViewer from "../components/gallery/LightboxViewer";
 import { mediaAPI } from "../services/api";
 import { isTournamentScopedMedia } from "../utils/mediaUtils";
 import EmptyState from "../components/EmptyState";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const DEFAULT_CATEGORIES = [
   "events",
@@ -24,6 +25,13 @@ const DEFAULT_THEMES = [
 ];
 
 const Gallery = () => {
+  usePageSEO({
+    title: "Media Gallery",
+    description:
+      "Explore high-energy match photography, tournament highlights, and community moments from The Arena in Addis Ababa and Hawassa.",
+    path: "/gallery",
+  });
+
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);

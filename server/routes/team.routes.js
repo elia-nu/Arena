@@ -20,7 +20,8 @@ const router = express.Router();
 const getFrontendBaseUrl = () => {
   return (
     process.env.SMS_FRONTEND_URL ||
-    "https://www.leskickit.com" ||
+    "https://www.arenaia.com" ||
+    "https://arenaia.com" ||
     "http://localhost:5173"
   );
 };

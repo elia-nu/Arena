@@ -10,8 +10,16 @@ import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../components/NotificationProvider";
 import { absoluteMediaSrc } from "../utils/mediaUtils";
 import EmptyState from "../components/EmptyState";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const Events = () => {
+  usePageSEO({
+    title: "Tournaments & Events",
+    description:
+      "Explore upcoming street soccer tournaments, matchdays, and youth clinics across Addis Ababa and Hawassa. Register your team today.",
+    path: "/events",
+  });
+
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [filter, setFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");

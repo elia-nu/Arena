@@ -19,7 +19,7 @@ const puppeteer = require('puppeteer');
     console.log('Current URL:', page.url());
 
     // Type credentials
-    await page.type('input[name="identifier"]', 'admin@kickit.com');
+    await page.type('input[name="identifier"]', 'admin@arenaia.com');
     await page.type('input[name="password"]', 'admin123');
 
     console.log('Submitting login form...');

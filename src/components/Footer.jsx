@@ -241,7 +241,7 @@ const Footer = () => {
                 <div className="absolute -inset-1 bg-secondary-500/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <img
                   src={logo2}
-                  alt="Logo"
+                  alt="The Arena Logo"
                   className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover shadow-2xl border-2 border-secondary-500/40 group-hover:border-secondary-500 transition-all duration-500 group-hover:scale-105"
                   style={{
                     filter: "drop-shadow(0 0 16px rgba(254,87,35,0.35))",

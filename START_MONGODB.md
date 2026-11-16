@@ -53,7 +53,7 @@ If you prefer not to run MongoDB locally:
 
 Once MongoDB is running, restart your server:
 ```powershell
-cd C:\Users\envy\Documents\GenShifter\LetsKickIt\kick_it\server
+cd server
 npm run server
 ```
 

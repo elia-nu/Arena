@@ -4,7 +4,7 @@ import { shopAPI, mediaAPI } from "../../services/api";
 import { useNotification } from "../NotificationProvider";
 import Pagination from "./Pagination";
 
-const PRODUCT_IMAGE_BASE = "https://api.leskickit.com";
+const PRODUCT_IMAGE_BASE = "https://api.arenaia.com";
 
 const resolveProductImageUrl = (url) => {
   if (!url || typeof url !== "string") return url;

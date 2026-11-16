@@ -14,7 +14,7 @@ npm run create-admin
 
 This will create an admin with default credentials:
 
-- **Email:** `admin@kickit.com`
+- **Email:** `admin@arenaia.com`
 - **Username:** `admin`
 - **Password:** `admin123`
 
@@ -47,7 +47,7 @@ Content-Type: application/json
 
 {
   "username": "admin",
-  "email": "admin@kickit.com",
+  "email": "admin@arenaia.com",
   "password": "admin123",
   "firstName": "Admin",
   "lastName": "User"
@@ -61,7 +61,7 @@ curl -X POST http://localhost:5000/api/admin/create-admin \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
-    "email": "admin@kickit.com",
+    "email": "admin@arenaia.com",
     "password": "admin123",
     "firstName": "Admin",
     "lastName": "User"

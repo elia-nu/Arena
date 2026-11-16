@@ -193,7 +193,7 @@ const buildPlayerDocs = () => {
     const n = String(i + 1).padStart(2, "0");
     players.push({
       username: `player${n}`,
-      email: `player${n}@seed.leskickit.com`,
+      email: `player${n}@seed.arenaia.com`,
       password: DEFAULT_PASSWORD,
       firstName,
       lastName,
@@ -224,7 +224,7 @@ const seed = async () => {
     console.log(`Using createdBy: ${admin.username} (${admin._id})`);
 
     // Remove prior seed data (tagged by email domain / team names / event names)
-    const seedEmails = { email: /@seed\.leskickit\.com$/i };
+    const seedEmails = { email: /@seed\.(arenaia|leskickit)\.com$/i };
     const seedUsers = await User.find(seedEmails).select("_id");
     const seedUserIds = seedUsers.map((u) => u._id);
 

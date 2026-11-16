@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /team-leader
 Disallow: /player
 
-Sitemap: https://leskickit.com/sitemap.xml
+Sitemap: https://arenaia.com/sitemap.xml

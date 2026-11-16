@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
     }
 
     // Get admin email from environment or use default
-    const adminEmail = process.env.CONTACT_EMAIL || process.env.EMAIL_USER || "info@example.com";
+    const adminEmail = process.env.CONTACT_EMAIL || process.env.EMAIL_USER || "admin@arenaia.com";
 
     // Create email content
     const emailHtml = `

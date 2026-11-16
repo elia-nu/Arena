@@ -19,6 +19,7 @@ import {
   IoCarOutline,
 } from "react-icons/io5";
 import EmptyState from "../components/EmptyState";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const ProductSkeleton = ({ viewMode }) => {
   if (viewMode === "list") {
@@ -79,6 +80,13 @@ const categoryPills = [
 ];
 
 const Shop = () => {
+  usePageSEO({
+    title: "Official Shop",
+    description:
+      "Shop official The Arena match jerseys, training kits, balls, and streetwear apparel.",
+    path: "/shop",
+  });
+
   const { addToCart, getCartItemCount } = useCart();
   const navigate = useNavigate();
   const { showError } = useNotification();

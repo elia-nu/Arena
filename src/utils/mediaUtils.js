@@ -221,7 +221,7 @@ export const absoluteMediaSrc = (path) => {
   if (path.startsWith("/")) {
     const apiBase =
       (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
-      "https://api.leskickit.com/api";
+      "https://kick-it-725p.onrender.com/api";
     const origin = String(apiBase).replace(/\/api\/?$/, "");
     return `${origin}${path}`;
   }

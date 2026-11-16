@@ -129,7 +129,7 @@ const DashboardSidebar = ({
         {/* Brand Header */}
         <div className="h-16 flex items-center px-6 border-b border-primary-100 dark:border-primary-800/80">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <img src={logo} alt="Logo" className="w-8 h-8 rounded-full shadow-2xs" />
+            <img src={logo} alt="The Arena Logo" className="w-8 h-8 rounded-full shadow-2xs" />
             <div className="flex flex-col">
               <span className="text-sm font-bold text-primary-950 dark:text-white group-hover:text-secondary-500 transition-colors tracking-tight">
                 The Arena
@@ -177,7 +177,7 @@ const DashboardSidebar = ({
             >
               <div className="h-16 flex items-center justify-between px-5 border-b border-primary-100 dark:border-primary-800">
                 <div className="flex items-center gap-2.5">
-                  <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
+                  <img src={logo} alt="The Arena Logo" className="w-8 h-8 rounded-full" />
                   <span className="text-sm font-bold text-primary-950 dark:text-white">
                     {title}
                   </span>

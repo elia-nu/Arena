@@ -94,7 +94,7 @@ function getMockVideos() {
     {
       id: '7340896964509691182',
       title: 'Amazing soccer skills compilation! ⚽',
-      description: 'Check out these incredible moves from our latest training session #soccer #skills #letskickit',
+      description: 'Check out these incredible moves from our latest training session #soccer #skills #thearena #arenaia',
       cover_image_url: 'https://via.placeholder.com/300x400/000000/FFFFFF?text=Video+1',
       video_description: 'Amazing soccer skills compilation! ⚽',
       duration: 45,

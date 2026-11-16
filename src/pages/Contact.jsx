@@ -16,6 +16,7 @@ import InteractiveGridBackground from "../components/reactbits/InteractiveGridBa
 import SpotlightCard from "../components/reactbits/SpotlightCard";
 import ShinyText from "../components/reactbits/ShinyText";
 import DecryptedText from "../components/reactbits/DecryptedText";
+import { usePageSEO } from "../hooks/usePageSEO";
 
 const TICKER_ITEMS = [
   "Street Soccer",
@@ -32,6 +33,13 @@ const TICKER_ITEMS = [
 ];
 
 const Contact = () => {
+  usePageSEO({
+    title: "Contact Us",
+    description:
+      "Get in touch with The Arena team. Have questions about tournaments, sponsorships, or community programs? Connect directly with us.",
+    path: "/contact",
+  });
+
   const [contactInfo, setContactInfo] = useState({
     phone: "",
     email: "",

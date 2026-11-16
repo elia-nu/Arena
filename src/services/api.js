@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://api.leskickit.com/api";
+  import.meta.env.VITE_API_URL || "https://kick-it-725p.onrender.com/api";
 
 // Helper function to get auth token from localStorage
 const getToken = () => {

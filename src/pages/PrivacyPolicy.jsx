@@ -1,4 +1,12 @@
+import { usePageSEO } from "../hooks/usePageSEO";
+
 const PrivacyPolicy = () => {
+  usePageSEO({
+    title: "Privacy Policy",
+    description: "Privacy policy and data handling practices of The Arena.",
+    path: "/privacy",
+  });
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 text-primary-900">
       <h1 className="text-3xl font-extrabold text-secondary-700 mb-6">
