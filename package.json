@@ -14,6 +14,7 @@
     "create-admin": "node server/scripts/createAdmin.js",
     "seed-events": "node server/scripts/seedEvents.js",
     "seed-community-impact": "node server/scripts/seedCommunityImpact.js",
+    "seed-shop": "node server/scripts/seedShop.js",
     "clean-test-data": "node server/scripts/cleanTestData.js",
     "fix-user-indexes": "node server/scripts/fixUserIndexes.js",
     "test-email": "node server/scripts/testEmailConnection.js"
