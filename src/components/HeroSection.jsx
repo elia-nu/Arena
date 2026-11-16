@@ -113,6 +113,7 @@ const PitchMarkings = () => (
 
 /* ─────────────────────────────────────────────
    GunnerHeroEmblem — Authentic Arena Insignia
+   Composed with live stencil typography + cannons
 ───────────────────────────────────────────── */
 const GunnerHeroEmblem = () => {
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
@@ -135,61 +136,89 @@ const GunnerHeroEmblem = () => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative select-none flex flex-col items-center justify-center my-4 sm:my-6 max-w-full"
+      className="relative select-none flex flex-col items-center justify-center my-3 sm:my-5 max-w-full"
       style={{
         perspective: 1200,
         transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
         transition: "transform 0.2s ease-out",
       }}
     >
-      <div className="relative z-10 flex items-center justify-center max-w-full px-2">
-        {/* Left Cannon */}
-        <div className="w-20 xs:w-28 sm:w-36 md:w-52 lg:w-64 flex-shrink-0 -mr-2 sm:-mr-4 md:-mr-6 z-0 pointer-events-none">
-          <img
-            src={cannonImg}
-            alt="The Arena Cannon"
-            className="w-full h-auto object-contain opacity-95"
-            draggable={false}
-          />
-        </div>
+      {/* Atmospheric Soft Orange Glow behind Emblem */}
+      <div
+        className="absolute w-[85%] h-[80%] rounded-full blur-[70px] sm:blur-[110px] pointer-events-none -z-10"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(254, 87, 35, 0.28) 0%, rgba(255, 107, 43, 0.08) 50%, transparent 75%)",
+        }}
+      />
 
-        {/* Center Live Wordmark */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-1">
+      <div className="relative flex flex-col items-center justify-center text-center px-4">
+        {/* Top: THE */}
+        <span
+          className="uppercase select-none text-secondary-500 font-black tracking-wider block"
+          style={{
+            fontFamily: '"Saira Stencil One", "Allerta Stencil", sans-serif',
+            fontSize: "clamp(2.2rem, 7vw, 5.8rem)",
+            lineHeight: 0.9,
+            letterSpacing: "0.06em",
+          }}
+        >
+          THE
+        </span>
+
+        {/* Center Row: ARENA + Left & Right Overlapping Cannons */}
+        <div className="relative flex items-center justify-center">
+          {/* Left Cannon (overlapping left 'A' & 'R') */}
+          <div
+            className="absolute left-0 top-1/2 -translate-y-[44%] -translate-x-[26%] sm:-translate-x-[30%] z-20 pointer-events-none w-[36%] sm:w-[38%] max-w-[340px]"
+          >
+            <img
+              src={cannonImg}
+              alt="The Arena Cannon"
+              className="w-full h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              draggable={false}
+            />
+          </div>
+
+          {/* Main "ARENA" Live Stencil Heading */}
           <h1
-            className="uppercase leading-none whitespace-nowrap"
+            className="relative z-10 uppercase text-secondary-500 font-black leading-none select-none px-6 sm:px-12 md:px-16 whitespace-nowrap"
             style={{
               fontFamily: '"Saira Stencil One", "Allerta Stencil", sans-serif',
-              fontSize: "clamp(2.5rem, 8vw, 6.5rem)",
-              lineHeight: 0.95,
+              fontSize: "clamp(4.2rem, 15vw, 11rem)",
+              lineHeight: 0.88,
               letterSpacing: "0.02em",
             }}
           >
-            <span className="text-neutral-100">THE</span>{" "}
-            <span className="text-secondary-500">ARENA</span>
+            ARENA
           </h1>
 
-          <div className="flex items-center justify-center gap-3 w-full mt-2 sm:mt-3">
-            <span className="h-px w-8 sm:w-16 bg-neutral-800" />
-            <span
-              className="text-xs sm:text-base font-semibold text-neutral-400 uppercase tracking-widest"
-              style={{ letterSpacing: "0.2em" }}
-            >
-              Let&apos;s Rumble
-            </span>
-            <span className="h-px w-8 sm:w-16 bg-neutral-800" />
+          {/* Right Cannon (Mirrored, overlapping right 'A' & 'N') */}
+          <div
+            className="absolute right-0 top-1/2 -translate-y-[44%] translate-x-[26%] sm:translate-x-[30%] z-20 pointer-events-none w-[36%] sm:w-[38%] max-w-[340px]"
+          >
+            <img
+              src={cannonImg}
+              alt="The Arena Cannon"
+              style={{ transform: "scaleX(-1)" }}
+              className="w-full h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              draggable={false}
+            />
           </div>
         </div>
 
-        {/* Right Cannon (Mirrored) */}
-        <div className="w-20 xs:w-28 sm:w-36 md:w-52 lg:w-64 flex-shrink-0 -ml-2 sm:-ml-4 md:-ml-6 z-0 pointer-events-none">
-          <img
-            src={cannonImg}
-            alt="The Arena Cannon"
-            style={{ transform: "scaleX(-1)" }}
-            className="w-full h-auto object-contain opacity-95"
-            draggable={false}
-          />
-        </div>
+        {/* Bottom: LETS RUMBLE */}
+        <span
+          className="uppercase select-none text-secondary-500 font-black tracking-widest mt-1 sm:mt-2 block"
+          style={{
+            fontFamily: '"Saira Stencil One", "Allerta Stencil", sans-serif',
+            fontSize: "clamp(1.1rem, 3.8vw, 2.75rem)",
+            letterSpacing: "0.22em",
+            lineHeight: 1,
+          }}
+        >
+          LETS RUMBLE
+        </span>
       </div>
     </div>
   );
@@ -298,7 +327,7 @@ const HeroSection = () => {
     >
       <section className="relative w-full min-h-screen flex flex-col justify-between bg-[#0e0f12] text-neutral-200 overflow-hidden selection:bg-secondary-500 selection:text-white">
         {/* Layer 0: GridMotion Kinetic Grid */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-35">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
           <GridMotion
             items={GRID_MOTION_ITEMS}
             rows={5}
@@ -310,9 +339,9 @@ const HeroSection = () => {
             speed={18}
             direction="alternate"
             parallax={0.3}
-            spotlight={0.5}
-            dim={0.45}
-            fade={0.65}
+            spotlight={0.65}
+            dim={0.25}
+            fade={0.45}
             theme="dark"
             tileColor="#131215"
             textColor="#fe5723"
@@ -320,9 +349,9 @@ const HeroSection = () => {
         </div>
 
         {/* Layer 1: Contrast Vignette Backdrops */}
-        <div className="absolute inset-0 z-[1] pointer-events-none bg-black/60">
-          <div className="absolute inset-x-0 top-0 h-40 bg-black/80" />
-          <div className="absolute inset-x-0 bottom-0 h-64 bg-black/85" />
+        <div className="absolute inset-0 z-[1] pointer-events-none bg-black/40">
+          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/85 via-black/40 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
         </div>
 
         {/* Layer 2: Pitch Markings */}
@@ -342,7 +371,7 @@ const HeroSection = () => {
           <GunnerHeroEmblem />
 
           {/* Clear Proposition */}
-          <p className="text-xs sm:text-sm font-medium text-neutral-400 uppercase tracking-widest mt-1 mb-4">
+          <p className="text-sm sm:text-base font-semibold text-neutral-300 uppercase tracking-widest mt-1 mb-4">
             Ethiopia&apos;s Street Soccer & Futsal Circuit
           </p>
 

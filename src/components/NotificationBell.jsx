@@ -109,18 +109,19 @@ const NotificationBell = () => {
             fetchNotifications();
           }
         }}
-        className="relative p-2 text-primary-700 hover:text-primary-950 transition-colors"
+        aria-label="View notifications"
+        className="relative flex items-center justify-center w-9 h-9 rounded-lg border border-neutral-800 bg-neutral-900/80 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
       >
         {unreadCount > 0 ? (
-          <IoNotifications className="text-2xl" />
+          <IoNotifications className="w-4 h-4 text-secondary-400" />
         ) : (
-          <IoNotificationsOutline className="text-2xl" />
+          <IoNotificationsOutline className="w-4 h-4" />
         )}
         {unreadCount > 0 && (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+            className="absolute -top-1 -right-1 bg-secondary-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center tabular-nums"
           >
             {unreadCount > 9 ? "9+" : unreadCount}
           </motion.span>
@@ -130,79 +131,82 @@ const NotificationBell = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute right-0 mt-2 w-80 md:w-96 bg-secondary-50 border-2 border-primary-200 rounded-2xl shadow-2xl z-50 max-h-[500px] overflow-hidden flex flex-col"
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 mt-2 w-80 md:w-96 bg-[#111215] border border-neutral-800 rounded-xl shadow-2xl z-50 max-h-[480px] overflow-hidden flex flex-col"
           >
-            <div className="p-4 border-b-2 border-primary-200 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-secondary-600">
+            <div className="px-4 py-3 border-b border-neutral-800 bg-neutral-900/50 flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-300">
                 Notifications
               </h3>
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-sm text-tertiary-600 hover:text-tertiary-700 font-semibold"
+                  className="text-xs text-secondary-400 hover:text-secondary-300 font-medium transition-colors"
                 >
                   Mark all as read
                 </button>
               )}
             </div>
 
-            <div className="overflow-y-auto flex-1">
+            <div className="overflow-y-auto flex-1 divide-y divide-neutral-800/60">
               {loading ? (
-                <div className="p-8 text-center text-primary-600">
+                <div className="p-8 text-center text-xs text-neutral-500">
                   Loading notifications...
                 </div>
               ) : notifications.length === 0 ? (
-                <div className="p-8 text-center text-primary-600">
+                <div className="p-8 text-center text-xs text-neutral-500">
                   No notifications
                 </div>
               ) : (
-                <div className="divide-y divide-primary-200">
-                  {notifications.map((notification) => (
-                    <motion.div
-                      key={notification._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className={`p-4 hover:bg-primary-50 transition-colors ${
-                        !notification.isRead ? "bg-blue-50" : ""
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div
-                          className="flex-1 cursor-pointer"
-                          onClick={() => {
-                            if (!notification.isRead) {
-                              handleMarkAsRead(notification._id);
-                            }
-                          }}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-secondary-600">
-                              {notification.title}
-                            </h4>
-                            {!notification.isRead && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                            )}
-                          </div>
-                          <p className="text-sm text-primary-600">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-primary-500 mt-1">
-                            {new Date(notification.createdAt).toLocaleString()}
-                          </p>
+                notifications.map((notification) => (
+                  <div
+                    key={notification._id}
+                    className={`p-3.5 hover:bg-neutral-800/40 transition-colors ${
+                      !notification.isRead ? "bg-secondary-500/5" : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div
+                        className="flex-1 cursor-pointer"
+                        onClick={() => {
+                          if (!notification.isRead) {
+                            handleMarkAsRead(notification._id);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="text-xs font-semibold text-neutral-200">
+                            {notification.title}
+                          </h4>
+                          {!notification.isRead && (
+                            <span className="w-1.5 h-1.5 bg-secondary-500 rounded-full"></span>
+                          )}
                         </div>
-                        <button
-                          onClick={() => handleDelete(notification._id)}
-                          className="p-1 text-primary-400 hover:text-red-500 transition-colors"
-                        >
-                          <IoClose />
-                        </button>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          {notification.message}
+                        </p>
+                        <p className="text-[10px] text-neutral-500 mt-1">
+                          {new Date(notification.createdAt).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      <button
+                        onClick={() => handleDelete(notification._id)}
+                        className="p-1 text-neutral-500 hover:text-red-400 transition-colors"
+                        title="Dismiss notification"
+                      >
+                        <IoClose className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </motion.div>

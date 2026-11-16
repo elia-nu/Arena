@@ -102,20 +102,36 @@ const Navbar = () => {
     user?.email?.slice(0, 2).toUpperCase() ||
     "AR";
 
-  const getRoleLabel = (role) => {
+  const getRoleMeta = (role) => {
     switch (role) {
       case "admin":
-        return { title: "Admin", color: "bg-amber-500/10 text-amber-400 border-amber-500/30" };
+        return {
+          title: "Admin",
+          badgeClass: "bg-secondary-500/10 text-secondary-400 border-secondary-500/20",
+          dashboardPath: "/admin",
+        };
       case "team_leader":
-        return { title: "Captain", color: "bg-sky-500/10 text-sky-400 border-sky-500/30" };
+        return {
+          title: "Captain",
+          badgeClass: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+          dashboardPath: "/team-leader",
+        };
       case "player":
-        return { title: "Player", color: "bg-secondary-500/20 text-secondary-400 border-secondary-500/30" };
+        return {
+          title: "Player",
+          badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+          dashboardPath: "/player",
+        };
       default:
-        return { title: "Member", color: "bg-white/10 text-neutral-300 border-white/10" };
+        return {
+          title: "Member",
+          badgeClass: "bg-neutral-800 text-neutral-400 border-neutral-700/60",
+          dashboardPath: null,
+        };
     }
   };
 
-  const roleMeta = getRoleLabel(user?.role);
+  const roleMeta = getRoleMeta(user?.role);
 
   return (
     <>
@@ -208,20 +224,20 @@ const Navbar = () => {
               </nav>
 
               {/* ── Right: Cart & User Actions ── */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 {shopPageEnabled && (
                   <Link
                     to="/cart"
-                    className={`relative p-2 rounded-lg border transition-colors duration-150 flex items-center justify-center ${
+                    className={`relative w-9 h-9 rounded-lg border transition-colors duration-150 flex items-center justify-center ${
                       isActive("/cart")
-                        ? "border-secondary-500 bg-secondary-500/20 text-secondary-400"
-                        : "border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-secondary-500/40"
+                        ? "border-secondary-500 bg-secondary-500/15 text-secondary-400"
+                        : "border-neutral-800 bg-neutral-900/80 text-neutral-400 hover:text-white hover:border-neutral-700"
                     }`}
                     aria-label="View Shopping Cart"
                   >
-                    <IoCart className="w-4 h-4 text-secondary-400" />
+                    <IoCart className="w-4 h-4" />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[18px] h-4.5 px-1 bg-secondary-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center tabular-nums">
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-secondary-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center tabular-nums">
                         {cartItemCount}
                       </span>
                     )}
@@ -235,46 +251,44 @@ const Navbar = () => {
                 )}
 
                 {isAuthenticated ? (
-                  <div className="hidden sm:flex items-center gap-2 pl-1">
-                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800">
-                      <div className="w-5 h-5 rounded-md bg-secondary-500 text-white font-bold text-[10px] flex items-center justify-center">
-                        {userInitials}
+                  <div className="hidden sm:flex items-center gap-2">
+                    {/* Unified User & Dashboard Pill */}
+                    {roleMeta.dashboardPath ? (
+                      <Link
+                        to={roleMeta.dashboardPath}
+                        title={`Open ${roleMeta.title} Dashboard`}
+                        className="group flex items-center h-9 gap-2 pl-2 pr-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80 hover:bg-neutral-800/80 hover:border-neutral-700 transition-colors"
+                      >
+                        <div className="w-5.5 h-5.5 rounded-full bg-secondary-500/15 text-secondary-400 border border-secondary-500/30 text-[10px] font-bold flex items-center justify-center flex-shrink-0 tracking-wider">
+                          {userInitials}
+                        </div>
+                        <span className="text-xs font-semibold text-neutral-200 group-hover:text-white max-w-[110px] truncate">
+                          {user?.username || user?.email}
+                        </span>
+                        <span
+                          className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${roleMeta.badgeClass}`}
+                        >
+                          {roleMeta.title}
+                        </span>
+                        <IoChevronForward className="w-3 h-3 text-neutral-500 group-hover:text-neutral-300 group-hover:translate-x-0.5 transition-transform" />
+                      </Link>
+                    ) : (
+                      <div className="flex items-center h-9 gap-2 pl-2 pr-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80">
+                        <div className="w-5.5 h-5.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 text-[10px] font-bold flex items-center justify-center flex-shrink-0 tracking-wider">
+                          {userInitials}
+                        </div>
+                        <span className="text-xs font-semibold text-neutral-200 max-w-[110px] truncate">
+                          {user?.username || user?.email}
+                        </span>
+                        <span
+                          className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${roleMeta.badgeClass}`}
+                        >
+                          {roleMeta.title}
+                        </span>
                       </div>
-                      <span className="text-xs font-semibold text-neutral-200 max-w-[110px] truncate">
-                        {user?.username || user?.email}
-                      </span>
-                      <span
-                        className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border ${roleMeta.color}`}
-                      >
-                        {roleMeta.title}
-                      </span>
-                    </div>
-
-                    {user?.role === "admin" && (
-                      <Link
-                        to="/admin"
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Admin
-                      </Link>
-                    )}
-                    {user?.role === "team_leader" && (
-                      <Link
-                        to="/team-leader"
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Captain
-                      </Link>
-                    )}
-                    {user?.role === "player" && (
-                      <Link
-                        to="/player"
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-secondary-500/40 bg-secondary-500/10 text-secondary-400 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Dashboard
-                      </Link>
                     )}
 
+                    {/* Quiet Logout Button */}
                     <button
                       type="button"
                       onClick={() => {
@@ -283,23 +297,23 @@ const Navbar = () => {
                       }}
                       title="Log out"
                       aria-label="Log out"
-                      className="p-1.5 rounded-lg border border-neutral-800 hover:border-neutral-700 bg-neutral-900 text-neutral-400 hover:text-neutral-200 transition-colors"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg border border-neutral-800 hover:border-neutral-700 bg-neutral-900/80 text-neutral-400 hover:text-red-400 hover:bg-neutral-800/60 transition-colors"
                     >
                       <IoLogOutOutline className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="hidden sm:flex items-center gap-2 pl-1">
+                  <div className="hidden sm:flex items-center gap-2">
                     <Link
                       to="/login"
-                      className="px-3 py-1.5 text-xs font-semibold text-neutral-300 hover:text-white transition-colors"
+                      className="px-3 h-9 flex items-center text-xs font-semibold text-neutral-300 hover:text-white transition-colors"
                     >
                       Log in
                     </Link>
 
                     <Link
                       to="/register"
-                      className="px-4 py-1.5 text-xs font-bold text-white rounded-lg bg-secondary-500 hover:bg-secondary-600 uppercase tracking-wider transition-colors shadow-xs"
+                      className="px-3.5 h-9 flex items-center text-xs font-bold text-white rounded-lg bg-secondary-500 hover:bg-secondary-600 uppercase tracking-wider transition-colors shadow-xs"
                     >
                       Register
                     </Link>
@@ -420,67 +434,68 @@ const Navbar = () => {
               <div className="p-4 border-t border-neutral-800 bg-[#0f1013]">
                 {isAuthenticated ? (
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded bg-secondary-500 text-white font-bold text-[10px] flex items-center justify-center">
-                          {userInitials}
+                    {roleMeta.dashboardPath ? (
+                      <Link
+                        to={roleMeta.dashboardPath}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="group flex items-center justify-between p-2.5 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-colors"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-secondary-500/15 border border-secondary-500/30 text-secondary-400 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                            {userInitials}
+                          </div>
+                          <div className="min-w-0 text-left">
+                            <p className="text-xs font-semibold text-neutral-200 group-hover:text-white truncate">
+                              {user?.username || user?.email}
+                            </p>
+                            <span
+                              className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border ${roleMeta.badgeClass}`}
+                            >
+                              {roleMeta.title}
+                            </span>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-semibold text-neutral-200 truncate">
-                            {user?.username || user?.email}
-                          </p>
-                          <span
-                            className={`inline-block text-[9px] font-bold uppercase px-1 py-0.1 rounded border ${roleMeta.color}`}
-                          >
-                            {roleMeta.title}
-                          </span>
+                        <span className="text-[11px] font-semibold text-secondary-400 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                          Dashboard <IoChevronForward className="w-3 h-3" />
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center justify-between p-2.5 rounded-lg bg-neutral-900 border border-neutral-800">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                            {userInitials}
+                          </div>
+                          <div className="min-w-0 text-left">
+                            <p className="text-xs font-semibold text-neutral-200 truncate">
+                              {user?.username || user?.email}
+                            </p>
+                            <span
+                              className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border ${roleMeta.badgeClass}`}
+                            >
+                              {roleMeta.title}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div onClick={() => setIsMenuOpen(false)}>
+                    )}
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="flex-1" onClick={() => setIsMenuOpen(false)}>
                         <NotificationBell />
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout();
+                          setIsMenuOpen(false);
+                          navigate("/");
+                        }}
+                        className="flex-1 py-2 text-xs font-semibold rounded-lg border border-neutral-800 text-neutral-400 hover:text-red-400 bg-neutral-900 hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <IoLogOutOutline className="w-3.5 h-3.5" />
+                        Log out
+                      </button>
                     </div>
-
-                    {user?.role === "admin" && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                    {user?.role === "team_leader" && (
-                      <Link
-                        to="/team-leader"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Captain Dashboard
-                      </Link>
-                    )}
-                    {user?.role === "player" && (
-                      <Link
-                        to="/player"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="block w-full py-2 text-center text-xs font-bold uppercase tracking-wider rounded-lg bg-secondary-500/20 text-secondary-400 border border-secondary-500/40 hover:bg-secondary-500 hover:text-white transition-colors"
-                      >
-                        Player Dashboard
-                      </Link>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        logout();
-                        setIsMenuOpen(false);
-                        navigate("/");
-                      }}
-                      className="w-full py-2 text-xs font-semibold rounded-lg border border-neutral-800 text-neutral-400 hover:text-neutral-200 bg-neutral-900 transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <IoLogOutOutline className="w-3.5 h-3.5" />
-                      Log out
-                    </button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
