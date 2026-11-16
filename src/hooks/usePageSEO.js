@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 
-const BASE_URL = "https://arenaia.com";
+const BASE_URL =
+  typeof window !== "undefined" && window.location.origin
+    ? window.location.origin
+    : "https://arena-nine-omega.vercel.app";
 const DEFAULT_TITLE = "The Arena | Ethiopian Community Soccer Tournaments";
 const DEFAULT_DESC =
   "The Arena brings competitive street soccer tournaments, youth development, and community impact events across Ethiopia (Addis Ababa & Hawassa).";
-const DEFAULT_IMAGE = `${BASE_URL}/logo.jpg`;
+const DEFAULT_IMAGE = "https://arena-nine-omega.vercel.app/arena-gunner-logo.jpg?v=3";
 
 /**
  * usePageSEO - Sets dynamic document title, meta description, Open Graph,
