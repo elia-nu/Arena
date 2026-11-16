@@ -7,7 +7,6 @@ import { useAuth } from "../context/AuthContext";
 import RegistrationModal from "../components/events/RegistrationModal";
 import LightboxViewer from "../components/gallery/LightboxViewer";
 import CountdownTimer from "../components/CountdownTimer";
-import SpotlightCard from "../components/reactbits/SpotlightCard";
 import {
   IoArrowBack,
   IoCalendar,
@@ -23,6 +22,8 @@ import {
   IoInformationCircle,
   IoGlobe,
   IoPlayCircle,
+  IoFootball,
+  IoFootballOutline,
 } from "react-icons/io5";
 import EmptyState from "../components/EmptyState";
 import {
@@ -181,6 +182,8 @@ const EventDetails = () => {
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [tournamentMatches, setTournamentMatches] = useState([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
 
   const getEventStatusFromDates = (startDate, endDate) => {
     const endTimestamp = endDate ? new Date(endDate).getTime() : null;
@@ -313,6 +316,24 @@ const EventDetails = () => {
           registeredTeams: tournament.registeredTeams || [],
           registeredPlayers: tournament.registeredPlayers || [],
         };
+
+        // Populate tournament matches inside the event
+        let matchesList = tournament.matches || [];
+        if (!matchesList || matchesList.length === 0) {
+          try {
+            setMatchesLoading(true);
+            const mRes = await matchAPI.getAll({
+              tournament: tournament._id,
+              limit: 50,
+            });
+            matchesList = mRes.matches || [];
+          } catch (mErr) {
+            console.error("Failed to load tournament matches:", mErr);
+          } finally {
+            setMatchesLoading(false);
+          }
+        }
+        setTournamentMatches(matchesList);
       } else if (type === "match") {
         const response = await matchAPI.getById(id);
         const match = response.match || response;
@@ -472,172 +493,82 @@ const EventDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#07080a] text-white pt-28 sm:pt-32 relative overflow-hidden">
-      {/* Background Stadium Atmosphere */}
-      <div className="absolute inset-0 pointer-events-none">
-        <svg
-          className="absolute inset-0 w-full h-full opacity-15"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="detail-page-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" />
-              <circle cx="0" cy="0" r="1.2" fill="rgba(254, 87, 35, 0.3)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#detail-page-grid)" />
-        </svg>
-
-        {/* Ambient Orange Stadium Blooms */}
-        <div
-          className="absolute top-10 -right-32 w-[600px] h-[600px] rounded-full blur-[180px] pointer-events-none opacity-20"
-          style={{ background: "radial-gradient(circle, #fe5723 0%, transparent 70%)" }}
-        />
-        <div
-          className="absolute top-1/2 -left-40 w-[600px] h-[600px] rounded-full blur-[200px] pointer-events-none opacity-15"
-          style={{ background: "radial-gradient(circle, #ff8b42 0%, transparent 70%)" }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 relative z-10">
-        {/* Modern Back Button */}
-        <motion.button
-          onClick={() => navigate("/events")}
-          className="mb-8 flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/80 hover:text-white hover:bg-white/10 hover:border-secondary-500/50 transition-all duration-300 group shadow-lg"
-          whileHover={{ x: -4 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <IoArrowBack className="w-5 h-5 group-hover:text-secondary-600 transition-colors" />
-          <span className="font-semibold">Back to Events</span>
-        </motion.button>
-
-        {/* Hero Section with Image */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative mb-8 lg:mb-12"
-        >
-          <div className="relative h-[380px] sm:h-[420px] lg:h-[480px] rounded-2xl overflow-hidden shadow-2xl group">
-            {/* Image with parallax effect */}
-            <motion.div
-              className="absolute inset-0"
-              whileHover={{ scale: 1.03 }}
-              transition={{ duration: 0.7 }}
-            >
-              <img
-                src={absoluteMediaSrc(event.image) || event.image}
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-            {/* Dark gradient overlay (deep blue/purple to dark) */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/75 to-slate-950/98" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-900/50" />
-
-            {/* Status badges - top left: edition status */}
-            <div className="absolute top-5 left-5 flex gap-3 flex-wrap z-10">
-              {event.status === "completed" && (
-                <motion.span
-                  className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-800/90 text-white border border-white/10"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  Past Edition
-                </motion.span>
-              )}
-              {event.registrationOpen && (
-                <motion.span
-                  className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-primary-700/80 text-white border border-white/10 flex items-center gap-2"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
-                  Registration Open
-                </motion.span>
-              )}
-              {!event.registrationOpen && event.status !== "completed" && (
-                <motion.span
-                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[event.status] || statusColors.upcoming} border border-white/10`}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  {formatStatus(event.status)}
-                </motion.span>
-              )}
-            </div>
-
-            {/* Centered title and subtitle */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-              <motion.h1
-                className="text-4xl sm:text-5xl lg:text-6xl font-black text-white drop-shadow-2xl leading-tight tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-              >
-                {event.title}
-              </motion.h1>
-              <motion.p
-                className="text-white/90 text-sm sm:text-base lg:text-lg uppercase tracking-[0.2em] mt-2 font-medium"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-              >
-                {event.endDate
-                  ? new Date(event.endDate).toLocaleDateString("en-US", {
-                      year: "numeric",
-                    })
-                  : new Date(event.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                    })}
-              </motion.p>
-              {event.description && (
-                <motion.p
-                  className="text-white/80 text-sm max-w-2xl mt-4 line-clamp-2 drop-shadow-lg"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  {event.description}
-                </motion.p>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Event Media — only when loading, error, or there is media */}
-        {mediaLoading || mediaError || eventMedia.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 mb-10 backdrop-blur-xl"
+    <div className="min-h-screen bg-[#07080a] text-white pt-24 sm:pt-28 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back navigation */}
+        <div className="mb-6">
+          <button
+            onClick={() => navigate("/events")}
+            className="inline-flex items-center gap-2 text-xs font-medium text-white/60 hover:text-white transition-colors"
           >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <IoInformationCircle className="w-6 h-6 text-secondary-400" />
-                <h3 className="text-xl font-black uppercase tracking-tight text-white">
-                  Event Highlights & Media
-                </h3>
-              </div>
-              {mediaLoading && (
-                <span className="text-xs text-white/50">
-                  Loading media...
+            <IoArrowBack className="w-4 h-4" />
+            <span>All tournaments</span>
+          </button>
+        </div>
+
+        {/* Hero Banner */}
+        <div className="relative mb-8 rounded-2xl overflow-hidden border border-white/10 bg-[#12151d]">
+          <div className="relative h-[240px] sm:h-[300px] lg:h-[340px]">
+            <img
+              src={absoluteMediaSrc(event.image) || event.image}
+              alt={event.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e1015] via-[#0e1015]/60 to-transparent" />
+
+            {/* Badges - Top */}
+            <div className="absolute top-4 left-4 flex gap-2 z-10">
+              {event.status === "completed" ? (
+                <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-black/70 backdrop-blur-sm border border-white/10 text-white/60">
+                  Completed
+                </span>
+              ) : event.status === "live" ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-red-950/80 backdrop-blur-sm border border-red-500/30 text-red-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  Live tournament
+                </span>
+              ) : event.registrationOpen ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/30 text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Registration open
+                </span>
+              ) : (
+                <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-black/70 backdrop-blur-sm border border-white/10 text-white/70">
+                  Upcoming
                 </span>
               )}
             </div>
 
+            {/* Title & Location - Bottom */}
+            <div className="absolute bottom-6 left-6 right-6">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight leading-tight mb-2">
+                {event.title}
+              </h1>
+              <p className="text-xs sm:text-sm text-white/70 max-w-2xl leading-relaxed">
+                {event.description || `${event.location} • Street Soccer Showcase`}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Event Media Highlights — only when loading, error, or media exists */}
+        {mediaLoading || mediaError || eventMedia.length > 0 ? (
+          <div className="bg-[#12151d] rounded-2xl p-6 border border-white/10 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-white">
+                Event highlights &amp; media
+              </h2>
+              {mediaLoading && (
+                <span className="text-xs text-white/50">Loading media...</span>
+              )}
+            </div>
+
             {mediaError && !mediaLoading && (
-              <p className="text-sm text-red-400">{mediaError}</p>
+              <p className="text-xs text-red-400">{mediaError}</p>
             )}
 
             {!mediaLoading && eventMedia.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {eventMedia.map((item) => {
                   const isVideo = item.type === "video";
                   return (
@@ -645,16 +576,16 @@ const EventDetails = () => {
                       key={item._id}
                       type="button"
                       onClick={() => openEventMedia(item)}
-                      className="relative group rounded-2xl overflow-hidden border border-white/10 bg-black/40 transition-transform duration-300 hover:scale-[1.02]"
+                      className="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 transition-colors hover:border-white/20"
                     >
                       <EventMediaTileCover item={item} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70" />
                       <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-xs text-white">
-                        <span className="font-semibold truncate">
+                        <span className="font-medium truncate text-[11px]">
                           {item.category?.replace(/-/g, " ") || "Event"}
                         </span>
                         {isVideo && (
-                          <span className="px-2 py-0.5 rounded-full bg-secondary-500 text-white text-[10px] font-black uppercase tracking-wide">
+                          <span className="px-1.5 py-0.5 rounded bg-secondary-500 text-white text-[10px] font-medium">
                             Video
                           </span>
                         )}
@@ -664,447 +595,414 @@ const EventDetails = () => {
                 })}
               </div>
             )}
-          </motion.div>
+          </div>
         ) : null}
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
-          {/* Left Column - Main Details */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-2 space-y-6"
-          >
-            {/* Key info cards - Spotlight Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <SpotlightCard
-                className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
-                spotlightColor="rgba(254, 87, 35, 0.2)"
-                borderColor="rgba(254, 87, 35, 0.45)"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                    <IoCalendar className="w-5 h-5 text-secondary-400" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
-                  Start date
-                </p>
-                <p className="text-lg font-black text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 4 Stat Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="bg-[#12151d] border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+                <span className="text-[11px] text-white/50 font-medium">Start date</span>
+                <p className="text-base font-semibold text-white mt-2">
                   {new Date(event.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}
                 </p>
-                <p className="text-xs text-secondary-400 font-semibold mt-0.5">
-                  {new Date(event.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                  })}
-                </p>
-              </SpotlightCard>
+                <span className="text-[11px] text-white/40 mt-0.5">
+                  {new Date(event.date).toLocaleDateString("en-US", { year: "numeric" })}
+                </span>
+              </div>
 
-              <SpotlightCard
-                className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
-                spotlightColor="rgba(254, 87, 35, 0.2)"
-                borderColor="rgba(254, 87, 35, 0.45)"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                    <IoLocation className="w-5 h-5 text-secondary-400" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
-                  Location
-                </p>
-                <p className="text-base font-black text-white line-clamp-1">
+              <div className="bg-[#12151d] border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+                <span className="text-[11px] text-white/50 font-medium">Venue</span>
+                <p className="text-base font-semibold text-white mt-2 line-clamp-1">
                   {event.location.includes(",")
                     ? event.location.split(",")[0].trim()
                     : event.location}
                 </p>
-                <p className="text-xs text-white/50 mt-0.5 line-clamp-1 font-medium">
+                <span className="text-[11px] text-white/40 mt-0.5 line-clamp-1">
                   {event.location.includes(",")
                     ? event.location.split(",").slice(1).join(",").trim()
-                    : "Addis Ababa, Ethiopia"}
+                    : "Ethiopia"}
+                </span>
+              </div>
+
+              <div className="bg-[#12151d] border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+                <span className="text-[11px] text-white/50 font-medium">Roster slots</span>
+                <p className="text-base font-semibold text-white mt-2 font-mono tabular-nums">
+                  {event.participants} / {event.maxParticipants}
                 </p>
-              </SpotlightCard>
+                <span className="text-[11px] text-secondary-400 font-medium mt-0.5">
+                  {Math.round(progress)}% registered
+                </span>
+              </div>
 
-              {event.type === "tournament" && event.status !== "completed" && (
-                <>
-                  <SpotlightCard
-                    className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
-                    spotlightColor="rgba(254, 87, 35, 0.2)"
-                    borderColor="rgba(254, 87, 35, 0.45)"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                        <IoPeople className="w-5 h-5 text-secondary-400" />
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
-                      Roster Slots
-                    </p>
-                    <p className="text-lg font-black text-white">
-                      {event.participants}/{event.maxParticipants}
-                    </p>
-                    <p className="text-xs text-secondary-400 font-semibold mt-0.5">Confirmed</p>
-                  </SpotlightCard>
-
-                  <SpotlightCard
-                    className="bg-[#0e1015]/90 rounded-2xl p-5 border border-white/10 shadow-lg text-white"
-                    spotlightColor="rgba(254, 87, 35, 0.2)"
-                    borderColor="rgba(254, 87, 35, 0.45)"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                        <IoCash className="w-5 h-5 text-secondary-400" />
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1 font-bold">
-                      Entry Fee
-                    </p>
-                    <p className="text-lg font-black text-secondary-400">
-                      {event.price > 0 ? `$${event.price.toFixed(2)}` : "Free"}
-                    </p>
-                    <p className="text-xs text-white/50 mt-0.5 font-medium">
-                      {event.tournamentType === "team" ? "Per Squad" : "Per Player"}
-                    </p>
-                  </SpotlightCard>
-                </>
-              )}
+              <div className="bg-[#12151d] border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+                <span className="text-[11px] text-white/50 font-medium">Entry fee</span>
+                <p className="text-base font-semibold text-white mt-2 font-mono tabular-nums">
+                  {event.price > 0 ? `$${event.price}` : "Free"}
+                </p>
+                <span className="text-[11px] text-white/40 mt-0.5">
+                  {event.tournamentType === "team" ? "Per squad" : "Per player"}
+                </span>
+              </div>
             </div>
 
-            {/* Event Information card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 backdrop-blur-xl"
-            >
-              <h2 className="text-xl font-black uppercase tracking-tight text-white mb-6 flex items-center gap-3">
-                <span className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                  <IoInformationCircle className="w-5 h-5 text-secondary-400" />
-                </span>
-                Event Intel & Schedule
+            {/* Event Intel & Schedule */}
+            <div className="bg-[#12151d] border border-white/10 rounded-2xl p-6 space-y-4">
+              <h2 className="text-base font-semibold text-white">
+                Tournament schedule &amp; venue
               </h2>
 
-              <div className="space-y-4">
-                {/* Date & Time */}
-                <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
-                  <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
-                    <IoCalendar className="w-6 h-6 text-secondary-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
-                      Event schedule
-                    </p>
-                    <p className="text-lg font-bold text-white mb-0.5">
+              <div className="space-y-2.5">
+                <div className="flex items-start justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                  <div>
+                    <span className="text-white/50 text-[11px] block mb-0.5">Dates</span>
+                    <span className="font-medium text-white">
                       {new Date(event.date).toLocaleDateString("en-US", {
                         weekday: "long",
                         month: "long",
                         day: "numeric",
                         year: "numeric",
                       })}
-                    </p>
+                    </span>
                     {event.endDate && (
-                      <p className="text-xs text-secondary-400 font-medium">
-                        Ends:{" "}
-                        {new Date(event.endDate).toLocaleDateString("en-US", {
-                          month: "long",
+                      <span className="text-white/50 block mt-0.5 text-[11px]">
+                        Concludes: {new Date(event.endDate).toLocaleDateString("en-US", {
+                          month: "short",
                           day: "numeric",
                           year: "numeric",
                         })}
-                      </p>
+                      </span>
                     )}
                   </div>
                 </div>
 
-                {/* Location */}
-                <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
-                  <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
-                    <IoLocation className="w-6 h-6 text-secondary-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
-                      Venue
-                    </p>
-                    <p className="text-lg font-bold text-white">
-                      {event.location.includes(",")
-                        ? event.location.split(",")[0].trim()
-                        : event.location}
-                    </p>
-                    {event.location.includes(",") && (
-                      <p className="text-xs text-white/50 mt-0.5 font-medium">
-                        {event.location.split(",").slice(1).join(",").trim()}
-                      </p>
-                    )}
+                <div className="flex items-start justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                  <div>
+                    <span className="text-white/50 text-[11px] block mb-0.5">Pitch location</span>
+                    <span className="font-medium text-white">{event.location}</span>
                   </div>
                 </div>
 
-                {/* Registration Deadline */}
                 {event.registrationDeadline && (
-                  <div className="flex items-start gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-2xl border border-white/8">
-                    <div className="p-3 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
-                      <IoTime className="w-6 h-6 text-secondary-400" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[11px] text-white/50 uppercase tracking-widest mb-1.5 font-bold">
-                        Registration deadline
-                      </p>
-                      <p className="text-lg font-bold text-white">
-                        {new Date(
-                          event.registrationDeadline,
-                        ).toLocaleDateString("en-US", {
-                          month: "long",
+                  <div className="flex items-start justify-between p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                    <div>
+                      <span className="text-white/50 text-[11px] block mb-0.5">Registration deadline</span>
+                      <span className="font-medium text-white">
+                        {new Date(event.registrationDeadline).toLocaleDateString("en-US", {
+                          month: "short",
                           day: "numeric",
                           year: "numeric",
                           hour: "numeric",
                           minute: "2-digit",
                         })}
-                      </p>
-                      <p className="text-xs text-secondary-400/80 mt-1 font-medium">
-                        Registration closes 24 hours prior
-                      </p>
+                      </span>
                     </div>
                   </div>
                 )}
 
-                {/* Tournament-specific info */}
-                {event.type === "tournament" && (
-                  <>
-                    {event.status !== "completed" && (
-                      <div className="p-5 bg-white/[0.03] rounded-2xl border border-white/8">
-                        <p className="text-[11px] text-white/50 uppercase tracking-widest mb-2 font-bold">
-                          Roster capacity
-                        </p>
-                        <div className="flex items-center justify-between gap-4 mb-2.5">
-                          <span className="text-base font-black text-white">
-                            {event.participants} / {event.maxParticipants} Registered
-                          </span>
-                          <span className="text-sm font-black text-emerald-400">
-                            {Math.round(progress)}% Filled
-                          </span>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden border border-white/5">
-                          <motion.div
-                            className="bg-gradient-to-r from-secondary-500 via-orange-500 to-amber-400 h-full rounded-full shadow-[0_0_10px_rgba(254,87,35,0.6)]"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.max(progress, 2)}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Prize Pool - championship golden card */}
-                    {event.prizePool > 0 && (
-                      <div className="relative overflow-hidden p-6 rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-[#0e1015] to-amber-950/20 shadow-[0_0_30px_rgba(245,158,11,0.12)]">
-                        <div className="absolute -right-6 -bottom-6 w-28 h-28 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-                        <div className="flex items-center gap-4">
-                          <div className="p-3.5 bg-amber-500/20 border border-amber-500/40 rounded-2xl">
-                            <IoTrophy className="w-8 h-8 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-[11px] text-amber-400/80 uppercase tracking-widest mb-1 font-bold">
-                              Championship Prize Pool
-                            </p>
-                            <p className="text-3xl sm:text-4xl font-black text-amber-300 tracking-tight drop-shadow-[0_0_15px_rgba(251,191,36,0.25)]">
-                              $
-                              {Number(event.prizePool).toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Event tags - pill style with icons */}
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      {event.tournamentType && (
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/[0.04] text-white/90 uppercase tracking-wider">
-                          <IoFlag className="w-4 h-4 text-secondary-400" />
-                          {event.tournamentType === "both"
-                            ? "Individual / Team"
-                            : event.tournamentType}
-                        </span>
-                      )}
+                {/* Prize pool summary */}
+                {event.prizePool > 0 && (
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+                    <div>
+                      <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider block">
+                        Prize pool
+                      </span>
+                      <span className="text-xl font-bold text-white font-mono tabular-nums">
+                        ${Number(event.prizePool).toLocaleString("en-US")}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
                       {event.format && (
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/[0.04] text-white/90 uppercase tracking-wider">
-                          <IoTrophy className="w-4 h-4 text-amber-400" />
+                        <span className="px-2.5 py-1 rounded-md text-[11px] bg-white/5 border border-white/10 text-white/70 capitalize">
                           {event.format.replace("-", " ")}
                         </span>
                       )}
+                      {event.tournamentType && (
+                        <span className="px-2.5 py-1 rounded-md text-[11px] bg-white/5 border border-white/10 text-white/70 capitalize">
+                          {event.tournamentType}
+                        </span>
+                      )}
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
-            </motion.div>
+            </div>
+
+            {/* Tournament Matches & Fixtures */}
+            {event.type === "tournament" && (
+              <div className="bg-[#12151d] border border-white/10 rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+                  <div>
+                    <h2 className="text-base font-semibold text-white">
+                      Matches &amp; fixtures
+                    </h2>
+                    <p className="text-xs text-white/50 mt-0.5">
+                      Pairings, scheduled times, and match outcomes
+                    </p>
+                  </div>
+                  {tournamentMatches.length > 0 && (
+                    <span className="px-2.5 py-1 rounded-md text-xs font-mono bg-white/5 border border-white/10 text-white/70">
+                      {tournamentMatches.length} fixtures
+                    </span>
+                  )}
+                </div>
+
+                {matchesLoading ? (
+                  <div className="space-y-2.5">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-20 bg-white/5 rounded-xl animate-pulse" />
+                    ))}
+                  </div>
+                ) : tournamentMatches.length === 0 ? (
+                  <div className="p-8 rounded-xl bg-white/[0.02] border border-white/5 text-center">
+                    <IoFootballOutline className="w-8 h-8 text-white/30 mx-auto mb-2" />
+                    <p className="text-xs font-medium text-white/70">
+                      Fixtures announcement soon
+                    </p>
+                    <p className="text-[11px] text-white/40 mt-1 max-w-sm mx-auto">
+                      Match pairings will be published once squad registration concludes.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {tournamentMatches.map((m, idx) => {
+                      const team1Name =
+                        m.team1?.team?.name || m.team1?.player?.username || "TBD";
+                      const team2Name =
+                        m.team2?.team?.name || m.team2?.player?.username || "TBD";
+                      const isLive = m.status === "live";
+                      const isCompleted = m.status === "completed";
+                      const team1Score = m.team1?.score ?? m.result?.score?.team1Score ?? 0;
+                      const team2Score = m.team2?.score ?? m.result?.score?.team2Score ?? 0;
+
+                      return (
+                        <div
+                          key={m._id || idx}
+                          className={`p-4 rounded-xl border transition-colors ${
+                            isLive
+                              ? "bg-red-950/20 border-red-500/30"
+                              : isCompleted
+                              ? "bg-white/[0.02] border-white/10"
+                              : "bg-white/[0.02] border-white/5"
+                          }`}
+                        >
+                          {/* Round & Status Bar */}
+                          <div className="flex items-center justify-between text-xs mb-3 pb-2 border-b border-white/5">
+                            <span className="text-[11px] font-medium text-white/60">
+                              {m.round || `Match ${m.matchNumber || idx + 1}`}
+                              {m.matchNumber ? ` • #${m.matchNumber}` : ""}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              {m.scheduledTime && (
+                                <span className="text-white/50 text-[11px] font-mono">
+                                  {m.scheduledTime}
+                                </span>
+                              )}
+                              {isLive ? (
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-medium text-[10px]">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                  Live
+                                </span>
+                              ) : isCompleted ? (
+                                <span className="px-2 py-0.5 rounded bg-white/5 text-white/50 text-[10px]">
+                                  Final
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded bg-white/5 text-white/40 text-[10px]">
+                                  Scheduled
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Teams & Score */}
+                          <div className="grid grid-cols-5 items-center gap-2">
+                            <div className="col-span-2 flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs font-semibold text-white/80 shrink-0">
+                                {team1Name.slice(0, 2).toUpperCase()}
+                              </div>
+                              <span className={`text-xs font-medium truncate ${isCompleted && team1Score > team2Score ? "text-white font-semibold" : "text-white/80"}`}>
+                                {team1Name}
+                              </span>
+                            </div>
+
+                            <div className="col-span-1 text-center font-mono text-xs tabular-nums text-white/70">
+                              {isLive || isCompleted ? (
+                                <span className="px-2 py-0.5 rounded bg-black/40 border border-white/10">
+                                  {team1Score} - {team2Score}
+                                </span>
+                              ) : (
+                                <span className="text-white/30 text-[11px]">vs</span>
+                              )}
+                            </div>
+
+                            <div className="col-span-2 flex items-center justify-end gap-2.5 min-w-0 text-right">
+                              <span className={`text-xs font-medium truncate ${isCompleted && team2Score > team1Score ? "text-white font-semibold" : "text-white/80"}`}>
+                                {team2Name}
+                              </span>
+                              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs font-semibold text-white/80 shrink-0">
+                                {team2Name.slice(0, 2).toUpperCase()}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Footer */}
+                          {(m.venue || m.location) && (
+                            <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-white/40">
+                              <span className="truncate">{m.venue || m.location}</span>
+                              <span className="font-mono">
+                                {new Date(m.scheduledDate).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Confirmed Registered Squads */}
+            {event.type === "tournament" &&
+              event.registeredTeams &&
+              event.registeredTeams.length > 0 && (
+                <div className="bg-[#12151d] border border-white/10 rounded-2xl p-6">
+                  <div className="mb-4">
+                    <h2 className="text-base font-semibold text-white">
+                      Confirmed squads ({event.registeredTeams.length})
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {event.registeredTeams.map((reg, idx) => {
+                      const team = reg.team || reg;
+                      const teamName = team?.name || `Squad ${idx + 1}`;
+                      return (
+                        <div
+                          key={team?._id || idx}
+                          className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2.5"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-xs font-semibold text-white/80 shrink-0">
+                            {teamName.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="text-xs font-medium text-white/80 truncate">
+                            {teamName}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
             {/* Rules Section */}
             {event.rules && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="bg-[#0e1015]/90 rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 backdrop-blur-xl"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="p-2.5 bg-secondary-500/10 border border-secondary-500/30 rounded-xl">
-                    <IoShieldCheckmark className="w-5 h-5 text-secondary-400" />
-                  </span>
-                  <h3 className="text-xl font-black uppercase tracking-tight text-white">
-                    Rules & Regulations
-                  </h3>
-                </div>
-                <div className="text-white/80 whitespace-pre-wrap leading-relaxed bg-white/[0.03] p-6 rounded-2xl border border-white/8 text-sm">
+              <div className="bg-[#12151d] border border-white/10 rounded-2xl p-6">
+                <h2 className="text-base font-semibold text-white mb-3">
+                  Rules &amp; guidelines
+                </h2>
+                <div className="text-xs text-white/70 leading-relaxed whitespace-pre-wrap">
                   {event.rules}
                 </div>
-              </motion.div>
+              </div>
             )}
-
-          </motion.div>
+          </div>
 
           {/* Right Column - Sidebar */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="space-y-6 lg:col-span-1"
-          >
+          <div className="space-y-6 lg:col-span-1">
             {/* Countdown Timer */}
             {event.status === "upcoming" && event.date && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-[#0e1015]/90 rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-xl"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-2 h-2 rounded-full bg-secondary-500 animate-ping" />
-                  <p className="text-xs text-secondary-400 uppercase tracking-widest font-black">
-                    Kickoff Countdown
-                  </p>
-                </div>
+              <div className="bg-[#12151d] border border-white/10 rounded-2xl p-5">
+                <span className="text-xs text-white/50 block mb-2 font-medium">
+                  Kickoff countdown
+                </span>
                 <CountdownTimer
                   targetDate={event.date}
                   registrationDeadline={event.registrationDeadline}
                   theme="dark"
                 />
-              </motion.div>
+              </div>
             )}
 
-            {/* Quick Facts */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-[#0e1015]/90 rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-xl"
-            >
-              <h4 className="text-lg font-black uppercase tracking-tight text-white mb-5 flex items-center gap-2">
-                <IoStar className="w-5 h-5 text-secondary-400" />
-                Tournament Intel
-              </h4>
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                  <span className="p-2 bg-amber-500/10 border border-amber-500/20 rounded-xl flex-shrink-0">
-                    <IoStar className="w-4 h-4 text-amber-400" />
-                  </span>
-                  <div>
-                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
-                      Event type
-                    </p>
-                    <p className="text-sm font-bold text-white capitalize">
-                      {event.type === "tournament" && event.tournamentType
-                        ? `${event.tournamentType === "both" ? "Team / Individual" : event.tournamentType} Tournament`
-                        : event.type}
-                    </p>
-                  </div>
-                </div>
-                {event.type === "tournament" && (
-                  <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                    <span className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl flex-shrink-0">
-                      <IoShieldCheckmark className="w-4 h-4 text-blue-400" />
-                    </span>
-                    <div>
-                      <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
-                        Format
-                      </p>
-                      <p className="text-sm font-bold text-white capitalize">
-                        Double elimination
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                  <span className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex-shrink-0">
-                    <IoGlobe className="w-4 h-4 text-emerald-400" />
-                  </span>
-                  <div>
-                    <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
-                      Region
-                    </p>
-                    <p className="text-sm font-bold text-white">
-                      Ethiopia (Addis Ababa & Hawassa)
-                    </p>
-                  </div>
-                </div>
-                {event.type === "tournament" &&
-                  event.tournamentType !== "individual" &&
-                  event.minTeamMembers && (
-                    <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                      <span className="p-2 bg-secondary-500/10 border border-secondary-500/20 rounded-xl flex-shrink-0">
-                        <IoPeople className="w-4 h-4 text-secondary-400" />
-                      </span>
-                      <div>
-                        <p className="text-[10px] text-white/50 uppercase tracking-widest font-bold">
-                          Squad Size
-                        </p>
-                        <p className="text-sm font-bold text-white">
-                          {event.minTeamMembers}–{event.maxTeamMembers} players
-                        </p>
-                      </div>
-                    </div>
-                  )}
-              </div>
-            </motion.div>
+            {/* Tournament Details */}
+            <div className="bg-[#12151d] border border-white/10 rounded-2xl p-5 space-y-3">
+              <h3 className="text-sm font-semibold text-white mb-3">
+                Tournament details
+              </h3>
 
-            {/* CTA - Ready to compete */}
+              <div className="flex items-center justify-between text-xs py-1 border-b border-white/5">
+                <span className="text-white/50">Division</span>
+                <span className="text-white font-medium capitalize">
+                  {event.type === "tournament" && event.tournamentType
+                    ? `${event.tournamentType === "both" ? "Team / Solo" : event.tournamentType}`
+                    : event.type}
+                </span>
+              </div>
+
+              {event.format && (
+                <div className="flex items-center justify-between text-xs py-1 border-b border-white/5">
+                  <span className="text-white/50">Format</span>
+                  <span className="text-white font-medium capitalize">
+                    {event.format.replace("-", " ")}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between text-xs py-1 border-b border-white/5">
+                <span className="text-white/50">Region</span>
+                <span className="text-white font-medium">Ethiopia</span>
+              </div>
+
+              {event.minTeamMembers && (
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-white/50">Squad size</span>
+                  <span className="text-white font-mono text-[11px]">
+                    {event.minTeamMembers}–{event.maxTeamMembers} players
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Registration Action Card */}
             {event.type === "tournament" && event.status !== "completed" && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-secondary-600/30 via-[#0e1015] to-black border border-secondary-500/40 shadow-[0_0_35px_rgba(254,87,35,0.25)] text-white backdrop-blur-xl"
-              >
-                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-secondary-500/20 rounded-full blur-2xl pointer-events-none" />
-                <h3 className="text-xl font-black uppercase tracking-tight mb-2">Ready to rumble?</h3>
-                <p className="text-white/70 text-xs sm:text-sm mb-6 leading-relaxed">
-                  Lock in your squad's place in the Arena and compete for the championship.
+              <div className="rounded-2xl p-5 bg-[#12151d] border border-white/10">
+                <h3 className="text-sm font-semibold text-white mb-1">
+                  Squad entry
+                </h3>
+                <p className="text-xs text-white/60 mb-4 leading-relaxed">
+                  Register your squad to compete in this event.
                 </p>
+
                 {isAlreadyRegistered ? (
-                  <div className="w-full px-6 py-4 border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold text-sm rounded-xl flex items-center justify-center gap-2">
-                    <IoCheckmarkCircle className="w-5 h-5" />
-                    Confirmed Entry
+                  <div className="w-full py-2.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-medium text-xs rounded-xl flex items-center justify-center gap-1.5">
+                    <IoCheckmarkCircle className="w-4 h-4" />
+                    Entry confirmed
                   </div>
                 ) : showRegisterButton ? (
-                  <motion.button
+                  <button
                     onClick={handleRegisterClick}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-400 hover:to-secondary-500 text-white font-black text-sm uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(254,87,35,0.4)]"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-2.5 bg-secondary-500 hover:bg-secondary-600 text-white font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5"
                   >
-                    <IoCheckmarkCircle className="w-5 h-5" />
-                    Register now
-                  </motion.button>
+                    <IoCheckmarkCircle className="w-4 h-4" />
+                    Register squad
+                  </button>
                 ) : (
-                  <div className="w-full px-6 py-4 border border-white/10 bg-white/5 text-white/50 font-bold text-sm rounded-xl text-center uppercase tracking-wider">
+                  <div className="w-full py-2.5 border border-white/10 bg-white/5 text-white/40 text-xs rounded-xl text-center">
                     Registration closed
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -7,21 +7,21 @@ const EventFilters = ({
   const typeOptions = [];
 
   const statusOptions = [
-    { value: "all", label: "All Status" },
+    { value: "all", label: "All status" },
     { value: "upcoming", label: "Upcoming" },
     { value: "live", label: "Live" },
   ];
 
   const option =
-    "rounded-full px-5 py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 outline-none";
+    "px-4 py-2 text-xs font-medium rounded-lg border transition-colors outline-none";
 
   const optionActive =
-    "bg-gradient-to-r from-secondary-500 to-secondary-600 text-white shadow-lg shadow-secondary-500/35 scale-105 border border-secondary-400/40";
+    "bg-secondary-500 border-secondary-500 text-white font-semibold shadow-xs";
   const optionInactive =
-    "bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white";
+    "bg-white/[0.04] border-white/10 text-white/70 hover:bg-white/[0.08] hover:text-white";
 
   const FilterRow = ({ value, options, onChange }) => (
-    <div className="flex flex-wrap justify-center gap-1.5">
+    <div className="flex flex-wrap justify-center gap-2">
       {options.map((opt) => (
         <button
           key={opt.value}

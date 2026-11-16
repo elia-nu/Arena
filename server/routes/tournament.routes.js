@@ -268,6 +268,16 @@ router.get("/:id", async (req, res) => {
     tournament.displayStatus = displayStatus;
     tournament.registrationOpen = registrationOpen;
 
+    // Fetch matches for this tournament
+    const matches = await Match.find({ tournament: tournament._id })
+      .populate("team1.team", "name")
+      .populate("team1.player", "username firstName lastName")
+      .populate("team2.team", "name")
+      .populate("team2.player", "username firstName lastName")
+      .populate("winner", "name")
+      .sort({ matchNumber: 1, scheduledDate: 1 });
+    tournament.matches = matches;
+
     res.json({ tournament });
   } catch (error) {
     res.status(500).json({
