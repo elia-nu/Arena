@@ -1,9 +1,17 @@
 import "./env.js";
 import { v2 as cloudinary } from "cloudinary";
 
+// Default Cloudinary credentials for Arena project as fallback when deployed without explicit .env
+const DEFAULT_CLOUDINARY = {
+  cloud_name: "cts82zxe",
+  api_key: "749361545742321",
+  api_secret: "MLzR7ucgEE49Ku8NkqDJyRxTidI",
+};
+
 /**
  * Re-reads environment variables and configures Cloudinary.
- * Supports both CLOUDINARY_URL or individual keys (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).
+ * Supports both CLOUDINARY_URL or individual keys (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET),
+ * falling back to default project credentials if environment variables are not supplied.
  */
 export const configureCloudinary = () => {
   const rawUrl = process.env.CLOUDINARY_URL?.trim().replace(/^["']+|["']+$/g, "");
@@ -35,6 +43,17 @@ export const configureCloudinary = () => {
       cloud_name: cloudName,
       api_key: apiKey,
       api_secret: apiSecret,
+      secure: true,
+    });
+    return true;
+  }
+
+  // Fallback to project default credentials
+  if (DEFAULT_CLOUDINARY.cloud_name && DEFAULT_CLOUDINARY.api_key && DEFAULT_CLOUDINARY.api_secret) {
+    cloudinary.config({
+      cloud_name: DEFAULT_CLOUDINARY.cloud_name,
+      api_key: DEFAULT_CLOUDINARY.api_key,
+      api_secret: DEFAULT_CLOUDINARY.api_secret,
       secure: true,
     });
     return true;

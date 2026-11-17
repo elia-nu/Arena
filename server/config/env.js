@@ -10,17 +10,21 @@ dotenv.config({ path: path.join(projectRoot, "server", ".env") });
 dotenv.config();
 
 // Clean carriage returns or extra whitespace from crucial env keys
-if (process.env.CLOUDINARY_URL) {
-  process.env.CLOUDINARY_URL = process.env.CLOUDINARY_URL.trim().replace(/\r/g, "");
-}
-if (process.env.CLOUDINARY_CLOUD_NAME) {
-  process.env.CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME.trim().replace(/\r/g, "");
-}
-if (process.env.CLOUDINARY_API_KEY) {
-  process.env.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY.trim().replace(/\r/g, "");
-}
-if (process.env.CLOUDINARY_API_SECRET) {
-  process.env.CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET.trim().replace(/\r/g, "");
+for (const key of [
+  "CLOUDINARY_URL",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+]) {
+  if (process.env[key] !== undefined) {
+    process.env[key] = process.env[key]
+      .trim()
+      .replace(/\r/g, "")
+      .replace(/^["']+|["']+$/g, "");
+    if (!process.env[key]) {
+      delete process.env[key];
+    }
+  }
 }
 
 export const normalizeEmailPassword = (password) => {
