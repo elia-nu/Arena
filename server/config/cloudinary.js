@@ -1,3 +1,4 @@
+import "./env.js";
 import { v2 as cloudinary } from "cloudinary";
 
 /**
@@ -5,16 +6,17 @@ import { v2 as cloudinary } from "cloudinary";
  * Supports both CLOUDINARY_URL or individual keys (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET).
  */
 export const configureCloudinary = () => {
-  if (process.env.CLOUDINARY_URL) {
+  const rawUrl = process.env.CLOUDINARY_URL?.trim().replace(/^["']+|["']+$/g, "");
+  if (rawUrl) {
     try {
-      const match = process.env.CLOUDINARY_URL.match(
-        /^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/
+      const match = rawUrl.match(
+        /^cloudinary:\/\/([^:]+):([^@]+)@([^\r\n]+)$/
       );
       if (match) {
         cloudinary.config({
-          api_key: match[1],
-          api_secret: match[2],
-          cloud_name: match[3],
+          api_key: match[1].trim(),
+          api_secret: match[2].trim(),
+          cloud_name: match[3].trim(),
           secure: true,
         });
         return true;
@@ -24,15 +26,15 @@ export const configureCloudinary = () => {
     }
   }
 
-  if (
-    process.env.CLOUDINARY_CLOUD_NAME &&
-    process.env.CLOUDINARY_API_KEY &&
-    process.env.CLOUDINARY_API_SECRET
-  ) {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim().replace(/^["']+|["']+$/g, "");
+  const apiKey = process.env.CLOUDINARY_API_KEY?.trim().replace(/^["']+|["']+$/g, "");
+  const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim().replace(/^["']+|["']+$/g, "");
+
+  if (cloudName && apiKey && apiSecret) {
     cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
       secure: true,
     });
     return true;
@@ -42,15 +44,10 @@ export const configureCloudinary = () => {
 };
 
 /**
- * Checks if Cloudinary credentials are set in environment.
+ * Checks if Cloudinary credentials are set and configured in environment.
  */
 export const isCloudinaryConfigured = () => {
-  return Boolean(
-    process.env.CLOUDINARY_URL ||
-      (process.env.CLOUDINARY_CLOUD_NAME &&
-        process.env.CLOUDINARY_API_KEY &&
-        process.env.CLOUDINARY_API_SECRET)
-  );
+  return configureCloudinary();
 };
 
 // Initialize config on load

@@ -525,49 +525,43 @@ router.post(
 
       const isVideo = req.file.mimetype.startsWith("video/");
 
-      // If Cloudinary is configured, upload to Cloudinary and clean up the temporary disk file
-      if (isCloudinaryConfigured()) {
-        try {
-          const cloudResult = await uploadFileToCloudinary(req.file.path, {
-            resource_type: "auto",
-            folder: "arena",
-          });
-
-          // Clean up local temp file after successful cloud upload
-          fs.unlink(req.file.path, () => {});
-
-          return res.status(201).json({
-            url: cloudResult.secure_url,
-            publicId: cloudResult.public_id,
-            filename: cloudResult.public_id,
-            originalName: req.file.originalname,
-            mimetype: req.file.mimetype,
-            size: cloudResult.bytes || req.file.size,
-            mediaType:
-              cloudResult.resource_type || (isVideo ? "video" : "image"),
-            width: cloudResult.width,
-            height: cloudResult.height,
-            duration: cloudResult.duration,
-          });
-        } catch (cloudError) {
-          console.error(
-            "Cloudinary upload failed, falling back to local file:",
-            cloudError
-          );
-          // Keep file on disk and fall through to local storage
-        }
+      if (!isCloudinaryConfigured()) {
+        fs.unlink(req.file.path, () => {});
+        return res.status(500).json({
+          message:
+            "Cloudinary is not configured. Cloud storage is required for media uploads.",
+        });
       }
 
-      const url = `/uploads/media/${req.file.filename}`;
+      try {
+        const cloudResult = await uploadFileToCloudinary(req.file.path, {
+          resource_type: "auto",
+          folder: "arena",
+        });
 
-      res.status(201).json({
-        url,
-        filename: req.file.filename,
-        originalName: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        mediaType: isVideo ? "video" : "image",
-      });
+        // Clean up local temp file after successful cloud upload
+        fs.unlink(req.file.path, () => {});
+
+        return res.status(201).json({
+          url: cloudResult.secure_url,
+          publicId: cloudResult.public_id,
+          filename: cloudResult.public_id,
+          originalName: req.file.originalname,
+          mimetype: req.file.mimetype,
+          size: cloudResult.bytes || req.file.size,
+          mediaType:
+            cloudResult.resource_type || (isVideo ? "video" : "image"),
+          width: cloudResult.width,
+          height: cloudResult.height,
+          duration: cloudResult.duration,
+        });
+      } catch (cloudError) {
+        fs.unlink(req.file.path, () => {});
+        console.error("Cloudinary upload failed:", cloudError);
+        return res.status(500).json({
+          message: `Cloudinary upload failed: ${cloudError.message || cloudError}`,
+        });
+      }
     } catch (error) {
       console.error("Error uploading media file:", error);
       res
@@ -628,30 +622,49 @@ router.post(
         : [];
 
       const isFeatured = featured === "true" || featured === true;
+
+      if (!isCloudinaryConfigured()) {
+        for (const file of files) {
+          fs.unlink(file.path, () => {});
+        }
+        return res.status(500).json({
+          message:
+            "Cloudinary is not configured. Cloud storage is required for media uploads.",
+        });
+      }
+
       const createdItems = [];
+      const errors = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const isVideo = file.mimetype.startsWith("video/");
-        let url = `/uploads/media/${file.filename}`;
-        let publicId = null;
+        let cloudResult;
 
-        if (isCloudinaryConfigured()) {
-          try {
-            const cloudResult = await uploadFileToCloudinary(file.path, {
-              resource_type: "auto",
-              folder: "arena",
-            });
-            fs.unlink(file.path, () => {});
-            url = cloudResult.secure_url;
-            publicId = cloudResult.public_id;
-          } catch (cloudError) {
-            console.error(
-              "Cloudinary upload failed for bulk item, using local disk:",
-              cloudError
-            );
-          }
+        try {
+          cloudResult = await uploadFileToCloudinary(file.path, {
+            resource_type: "auto",
+            folder: "arena",
+          });
+        } catch (cloudError) {
+          console.error(
+            `Cloudinary upload failed for ${file.originalname}:`,
+            cloudError
+          );
+          errors.push({
+            file: file.originalname,
+            error: cloudError.message || "Cloudinary upload failed",
+          });
+        } finally {
+          fs.unlink(file.path, () => {});
         }
+
+        if (!cloudResult || !cloudResult.secure_url) {
+          continue;
+        }
+
+        const url = cloudResult.secure_url;
+        const publicId = cloudResult.public_id;
 
         // Title generation
         let eventTitle = "";
@@ -675,7 +688,11 @@ router.post(
           platform: isVideo ? "direct" : null,
           url,
           publicId,
-          thumbnail: isVideo ? null : url,
+          thumbnail: isVideo
+            ? url.includes("res.cloudinary.com")
+              ? url.replace(/\.[^/.]+$/, ".jpg")
+              : null
+            : url,
           category: category || "events",
           event: eventTitle,
           location: (location || "").trim(),
@@ -691,10 +708,19 @@ router.post(
         createdItems.push(newMedia);
       }
 
+      if (createdItems.length === 0 && files.length > 0) {
+        return res.status(500).json({
+          message: "All file uploads to Cloudinary failed",
+          errors,
+        });
+      }
+
       res.status(201).json({
-        message: `Successfully uploaded ${createdItems.length} media items`,
+        message: `Successfully uploaded ${createdItems.length} media items to Cloudinary`,
         media: createdItems,
+        items: createdItems,
         count: createdItems.length,
+        errors: errors.length ? errors : undefined,
       });
     } catch (error) {
       console.error("Error bulk uploading media:", error);
