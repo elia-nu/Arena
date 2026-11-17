@@ -23,6 +23,10 @@ import {
   FaFilm,
   FaLayerGroup,
   FaTags,
+  FaImages,
+  FaPlus,
+  FaExclamationTriangle,
+  FaRedo,
 } from "react-icons/fa";
 import {
   isValidMediaUrl,
@@ -81,6 +85,7 @@ const MediaManagement = () => {
   const [metaError, setMetaError] = useState(null);
 
   // Upload modal state
+  const [uploadModalMode, setUploadModalMode] = useState("single"); // "single" | "bulk"
   const [uploadType, setUploadType] = useState("image"); // "image" | "video"
   const [imageSourceMode, setImageSourceMode] = useState("file"); // "file" | "url"
   const [videoSourceMode, setVideoSourceMode] = useState("youtube"); // "youtube" | "file"
@@ -93,6 +98,29 @@ const MediaManagement = () => {
 
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
+
+  // Bulk Upload state
+  const [bulkFiles, setBulkFiles] = useState([]);
+  const [bulkPreviews, setBulkPreviews] = useState([]);
+  const [bulkForm, setBulkForm] = useState({
+    titlePrefix: "",
+    titleMode: "filename", // "filename" | "numbered" | "same"
+    category: "events",
+    theme: "",
+    location: "",
+    tags: "",
+    visibility: "public",
+    featured: false,
+    description: "",
+  });
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({
+    current: 0,
+    total: 0,
+    percent: 0,
+    filename: "",
+  });
+  const bulkFileInputRef = useRef(null);
 
   // Upload Form
   const [uploadForm, setUploadForm] = useState({
@@ -128,6 +156,17 @@ const MediaManagement = () => {
     featured: false,
   });
 
+  // Edit modal replacement state
+  const [editSelectedFile, setEditSelectedFile] = useState(null);
+  const [editFilePreviewUrl, setEditFilePreviewUrl] = useState(null);
+  const [editSelectedCoverFile, setEditSelectedCoverFile] = useState(null);
+  const [editCoverPreviewUrl, setEditCoverPreviewUrl] = useState(null);
+  const [editImageMode, setEditImageMode] = useState("file"); // "file" (replace file) | "url" (edit URL)
+  const [editImageError, setEditImageError] = useState(false);
+  const [editThumbnailError, setEditThumbnailError] = useState(false);
+  const editFileInputRef = useRef(null);
+  const editCoverInputRef = useRef(null);
+
   const categoryValues = useMemo(
     () =>
       categoryDocs.length > 0
@@ -141,6 +180,24 @@ const MediaManagement = () => {
       themeDocs.length > 0 ? themeDocs.map((t) => t.value) : DEFAULT_THEMES,
     [themeDocs],
   );
+
+  // Fallback-safe category options for edit (preserves current category even if not in defaults)
+  const editCategoryOptions = useMemo(() => {
+    const list = [...categoryValues];
+    if (editForm.category && !list.includes(editForm.category)) {
+      list.push(editForm.category);
+    }
+    return list;
+  }, [categoryValues, editForm.category]);
+
+  // Fallback-safe theme options for edit
+  const editThemeOptions = useMemo(() => {
+    const list = [...themeValues];
+    if (editForm.theme && !list.includes(editForm.theme)) {
+      list.push(editForm.theme);
+    }
+    return list;
+  }, [themeValues, editForm.theme]);
 
   // Fetch Meta (themes and categories)
   const fetchMeta = async () => {
@@ -205,8 +262,25 @@ const MediaManagement = () => {
       if (coverPreviewUrl && coverPreviewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(coverPreviewUrl);
       }
+      if (editFilePreviewUrl && editFilePreviewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(editFilePreviewUrl);
+      }
+      if (editCoverPreviewUrl && editCoverPreviewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(editCoverPreviewUrl);
+      }
+      bulkPreviews.forEach((item) => {
+        if (item.previewUrl && item.previewUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
     };
-  }, [filePreviewUrl, coverPreviewUrl]);
+  }, [
+    filePreviewUrl,
+    coverPreviewUrl,
+    editFilePreviewUrl,
+    editCoverPreviewUrl,
+    bulkPreviews,
+  ]);
 
   // Detected YouTube video ID & thumbnail from upload URL
   const detectedYouTubeId = useMemo(() => {
@@ -369,10 +443,110 @@ const MediaManagement = () => {
     if (coverInputRef.current) coverInputRef.current.value = "";
   };
 
+  // Bulk Upload File Handlers
+  const handleBulkFilesSelected = (fileList) => {
+    if (!fileList || !fileList.length) return;
+    const incoming = Array.from(fileList);
+    const validImages = incoming.filter((f) => f.type.startsWith("image/"));
+
+    if (validImages.length === 0) {
+      setError("Please select valid image files (JPEG, PNG, WEBP, GIF, SVG).");
+      return;
+    }
+
+    if (validImages.length < incoming.length) {
+      setError("Some non-image files were skipped.");
+    } else {
+      setError(null);
+    }
+
+    const newPreviews = validImages.map((file) => ({
+      id: `${file.name}-${Date.now()}-${Math.random()}`,
+      file,
+      name: file.name,
+      size: (file.size / 1024).toFixed(0),
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+    setBulkFiles((prev) => [...prev, ...validImages]);
+    setBulkPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const removeBulkFile = (index) => {
+    setBulkPreviews((prev) => {
+      const target = prev[index];
+      if (target?.previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+    setBulkFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAllBulkFiles = () => {
+    bulkPreviews.forEach((item) => {
+      if (item.previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+    });
+    setBulkFiles([]);
+    setBulkPreviews([]);
+    if (bulkFileInputRef.current) bulkFileInputRef.current.value = "";
+  };
+
+  const handleBulkSubmit = async (e) => {
+    e.preventDefault();
+    if (bulkFiles.length === 0) {
+      setError("Please select at least one image file to upload.");
+      return;
+    }
+
+    setError(null);
+    setBulkUploading(true);
+    setBulkProgress({
+      current: 0,
+      total: bulkFiles.length,
+      percent: 0,
+      filename: "",
+    });
+
+    try {
+      const res = await mediaAPI.bulkUploadFiles(
+        bulkFiles,
+        {
+          titlePrefix: bulkForm.titlePrefix,
+          titleMode: bulkForm.titleMode,
+          category: bulkForm.category || categoryValues[0] || "events",
+          theme: bulkForm.theme || "",
+          location: bulkForm.location || "",
+          tags: formatTags(bulkForm.tags),
+          visibility: bulkForm.visibility || "public",
+          featured: bulkForm.featured,
+          description: bulkForm.description || "",
+        },
+        (progress) => {
+          setBulkProgress(progress);
+        }
+      );
+
+      showSuccess(`Successfully uploaded ${res.count || bulkFiles.length} images!`);
+      clearAllBulkFiles();
+      setShowUploadModal(false);
+      fetchMedia();
+    } catch (err) {
+      console.error("Bulk upload failed:", err);
+      setError(err?.message || "Failed to upload some or all images.");
+    } finally {
+      setBulkUploading(false);
+      setBulkProgress({ current: 0, total: 0, percent: 0, filename: "" });
+    }
+  };
+
   // Reset form
   const resetUploadModal = () => {
     removeSelectedFile();
     removeCoverFile();
+    clearAllBulkFiles();
     setUploadForm({
       url: "",
       thumbnail: "",
@@ -387,7 +561,19 @@ const MediaManagement = () => {
       featured: false,
       useAutoThumbnail: true,
     });
+    setBulkForm({
+      titlePrefix: "",
+      titleMode: "filename",
+      category: categoryValues[0] || "events",
+      theme: "",
+      location: "",
+      tags: "",
+      visibility: "public",
+      featured: false,
+      description: "",
+    });
     setUploading(false);
+    setBulkUploading(false);
     setUploadProgressText("");
     setError(null);
   };
@@ -528,14 +714,29 @@ const MediaManagement = () => {
       media.platform === "youtube" ||
       (media.url && parseYouTubeUrl(media.url) !== null);
 
+    // Clean up previous blob preview urls if any
+    if (editFilePreviewUrl && editFilePreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editFilePreviewUrl);
+    }
+    if (editCoverPreviewUrl && editCoverPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editCoverPreviewUrl);
+    }
+    setEditSelectedFile(null);
+    setEditFilePreviewUrl(null);
+    setEditSelectedCoverFile(null);
+    setEditCoverPreviewUrl(null);
+    setEditImageError(false);
+    setEditThumbnailError(false);
+    setEditImageMode("file");
+
     setEditForm({
       type: media.type,
       platform: media.platform,
       sourceMode:
         media.type === "video" ? (isYt ? "youtube" : "file") : "url",
-      url: media.url,
+      url: media.url || "",
       thumbnail: media.thumbnail || "",
-      category: media.category || "events",
+      category: media.category || categoryValues[0] || "events",
       event: media.event || "",
       location: media.location || "",
       theme: media.theme || "",
@@ -547,6 +748,87 @@ const MediaManagement = () => {
     });
     setShowEditModal(true);
     setError(null);
+  };
+
+  const closeEditModal = () => {
+    if (uploading) return;
+    if (editFilePreviewUrl && editFilePreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editFilePreviewUrl);
+    }
+    if (editCoverPreviewUrl && editCoverPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editCoverPreviewUrl);
+    }
+    setEditSelectedFile(null);
+    setEditFilePreviewUrl(null);
+    setEditSelectedCoverFile(null);
+    setEditCoverPreviewUrl(null);
+    setEditImageError(false);
+    setEditThumbnailError(false);
+    setShowEditModal(false);
+    setCurrentMedia(null);
+    setError(null);
+  };
+
+  const handleEditFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (editForm.type === "image" && !file.type.startsWith("image/")) {
+      setError("Please choose a valid image file (JPEG, PNG, WEBP, GIF, SVG).");
+      return;
+    }
+    if (editForm.type === "video" && !file.type.startsWith("video/")) {
+      setError("Please choose a valid video file.");
+      return;
+    }
+
+    if (editFilePreviewUrl && editFilePreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editFilePreviewUrl);
+    }
+
+    setEditSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setEditFilePreviewUrl(objectUrl);
+    setEditImageError(false);
+    setError(null);
+  };
+
+  const removeEditFile = () => {
+    if (editFilePreviewUrl && editFilePreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editFilePreviewUrl);
+    }
+    setEditSelectedFile(null);
+    setEditFilePreviewUrl(null);
+    if (editFileInputRef.current) editFileInputRef.current.value = "";
+  };
+
+  const handleEditCoverFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file for thumbnail.");
+      return;
+    }
+
+    if (editCoverPreviewUrl && editCoverPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editCoverPreviewUrl);
+    }
+
+    setEditSelectedCoverFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setEditCoverPreviewUrl(objectUrl);
+    setEditThumbnailError(false);
+    setError(null);
+  };
+
+  const removeEditCoverFile = () => {
+    if (editCoverPreviewUrl && editCoverPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(editCoverPreviewUrl);
+    }
+    setEditSelectedCoverFile(null);
+    setEditCoverPreviewUrl(null);
+    if (editCoverInputRef.current) editCoverInputRef.current.value = "";
   };
 
   // Submit Edit Form
@@ -561,33 +843,65 @@ const MediaManagement = () => {
 
     try {
       setUploading(true);
+      let finalMediaUrl = editForm.url.trim();
+      let finalThumbnail = editForm.thumbnail?.trim();
+      let finalPublicId = currentMedia.publicId;
+
+      // 1. If replacement media file was chosen, upload it
+      if (editSelectedFile) {
+        setUploadProgressText(`Uploading replacement ${editForm.type}...`);
+        const uploadRes = await mediaAPI.uploadFile(editSelectedFile);
+        finalMediaUrl = uploadRes.url;
+        if (uploadRes.publicId) finalPublicId = uploadRes.publicId;
+
+        // If image and no custom cover file, sync thumbnail to the new image URL
+        if (editForm.type === "image" && !editSelectedCoverFile) {
+          finalThumbnail = finalMediaUrl;
+        }
+      }
+
+      // 2. If replacement cover file was chosen, upload it
+      if (editSelectedCoverFile) {
+        setUploadProgressText("Uploading custom thumbnail...");
+        const coverRes = await mediaAPI.uploadImage(editSelectedCoverFile);
+        finalThumbnail = coverRes.url;
+      }
+
       let platform = editForm.platform;
 
       if (editForm.type === "video") {
-        if (editForm.url.includes("youtube.com") || editForm.url.includes("youtu.be")) {
+        if (
+          finalMediaUrl.includes("youtube.com") ||
+          finalMediaUrl.includes("youtu.be")
+        ) {
           platform = "youtube";
-        } else if (editForm.url.includes("tiktok.com")) {
+        } else if (finalMediaUrl.includes("tiktok.com")) {
           platform = "tiktok";
-        } else if (editForm.url.startsWith("/uploads/")) {
+        } else if (
+          finalMediaUrl.startsWith("/uploads/") ||
+          finalMediaUrl.includes("cloudinary.com")
+        ) {
           platform = "direct";
         }
       }
 
-      let thumbnail = editForm.thumbnail?.trim();
-      if (editForm.type === "video" && platform === "youtube" && !thumbnail) {
-        const ytId = parseYouTubeUrl(editForm.url);
+      if (editForm.type === "video" && platform === "youtube" && !finalThumbnail) {
+        const ytId = parseYouTubeUrl(finalMediaUrl);
         if (ytId) {
-          thumbnail = getYouTubeThumbnail(ytId, "hqdefault");
+          finalThumbnail = getYouTubeThumbnail(ytId, "hqdefault");
         }
-      } else if (editForm.type === "image" && !thumbnail) {
-        thumbnail = editForm.url;
+      } else if (editForm.type === "image" && !finalThumbnail) {
+        finalThumbnail = finalMediaUrl;
       }
+
+      setUploadProgressText("Saving updates...");
 
       const payload = {
         type: editForm.type,
         platform,
-        url: editForm.url,
-        thumbnail: thumbnail || null,
+        url: finalMediaUrl,
+        publicId: finalPublicId,
+        thumbnail: finalThumbnail || null,
         category: editForm.category,
         event: editForm.event.trim(),
         location: editForm.location.trim(),
@@ -601,14 +915,14 @@ const MediaManagement = () => {
 
       await mediaAPI.update(currentMedia._id, payload);
       showSuccess("Media updated successfully!");
-      setShowEditModal(false);
-      setCurrentMedia(null);
+      closeEditModal();
       fetchMedia();
     } catch (err) {
       console.error("Error updating media:", err);
       setError(err?.message || "Failed to update media. Please try again.");
     } finally {
       setUploading(false);
+      setUploadProgressText("");
     }
   };
 
@@ -710,6 +1024,18 @@ const MediaManagement = () => {
             <button
               onClick={() => {
                 resetUploadModal();
+                setUploadModalMode("bulk");
+                setShowUploadModal(true);
+              }}
+              className="inline-flex items-center gap-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/25 transition-all transform active:scale-95 cursor-pointer text-sm"
+            >
+              <FaLayerGroup className="w-4 h-4" />
+              <span>Bulk Add Images</span>
+            </button>
+            <button
+              onClick={() => {
+                resetUploadModal();
+                setUploadModalMode("single");
                 setShowUploadModal(true);
               }}
               className="inline-flex items-center gap-2.5 bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-secondary-500/25 transition-all transform active:scale-95 cursor-pointer text-sm"
@@ -1170,28 +1496,390 @@ const MediaManagement = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-primary-100 dark:border-primary-800">
+              <div className="flex items-center justify-between pb-4 mb-5 border-b border-primary-100 dark:border-primary-800">
                 <div>
                   <h3 className="text-2xl font-black text-primary-950 dark:text-white">
-                    Upload & Add Media
+                    {uploadModalMode === "bulk" ? "Bulk Add Images" : "Upload & Add Media"}
                   </h3>
                   <p className="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                    Choose image or video, then upload a file or embed YouTube.
+                    {uploadModalMode === "bulk"
+                      ? "Select and upload multiple images at once with shared metadata."
+                      : "Choose image or video, then upload a file or embed YouTube."}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
-                    if (!uploading) setShowUploadModal(false);
+                    if (!uploading && !bulkUploading) setShowUploadModal(false);
                   }}
-                  disabled={uploading}
+                  disabled={uploading || bulkUploading}
                   className="p-2 rounded-xl text-primary-400 hover:text-primary-700 dark:hover:text-white transition disabled:opacity-40 cursor-pointer"
                 >
                   <FaTimes className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleUploadSubmit} className="space-y-6">
+              {/* Mode Switcher Tabs */}
+              <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-primary-100 dark:bg-primary-800/80 mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUploadModalMode("single");
+                    setError(null);
+                  }}
+                  disabled={uploading || bulkUploading}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                    uploadModalMode === "single"
+                      ? "bg-white dark:bg-primary-900 text-primary-950 dark:text-white shadow-xs"
+                      : "text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-white"
+                  }`}
+                >
+                  <FaUpload className="w-3.5 h-3.5" />
+                  <span>Single Media</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUploadModalMode("bulk");
+                    setError(null);
+                  }}
+                  disabled={uploading || bulkUploading}
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                    uploadModalMode === "bulk"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-white"
+                  }`}
+                >
+                  <FaLayerGroup className="w-3.5 h-3.5" />
+                  <span>Bulk Add Images</span>
+                  {bulkFiles.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-white text-emerald-700 font-extrabold shadow-sm">
+                      {bulkFiles.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* ========================================================= */}
+              {/* BULK UPLOAD TAB                                           */}
+              {/* ========================================================= */}
+              {uploadModalMode === "bulk" ? (
+                <form onSubmit={handleBulkSubmit} className="space-y-6">
+                  {/* Dropzone / Image Picker */}
+                  <div>
+                    <input
+                      ref={bulkFileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        handleBulkFilesSelected(e.target.files);
+                        e.target.value = "";
+                      }}
+                      className="hidden"
+                      id="bulk-image-input"
+                    />
+
+                    {bulkPreviews.length === 0 ? (
+                      <label
+                        htmlFor="bulk-image-input"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          handleBulkFilesSelected(e.dataTransfer.files);
+                        }}
+                        className="cursor-pointer border-2 border-dashed border-emerald-400/80 hover:border-emerald-500 rounded-3xl p-10 text-center flex flex-col items-center justify-center transition bg-emerald-50/40 dark:bg-emerald-950/20 group"
+                      >
+                        <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                          <FaLayerGroup className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <span className="font-extrabold text-base text-primary-950 dark:text-white">
+                          Select multiple images to bulk upload
+                        </span>
+                        <span className="text-xs text-primary-500 dark:text-primary-400 mt-1">
+                          Click to browse or drag & drop multiple JPG, PNG, WEBP, or GIF files
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-600/20">
+                          <FaPlus className="w-3 h-3" /> Choose Images
+                        </span>
+                      </label>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold uppercase tracking-wider text-primary-800 dark:text-primary-200">
+                              Selected Images ({bulkPreviews.length})
+                            </span>
+                            <span className="text-[11px] text-primary-500 font-mono">
+                              Total: {(bulkFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(1)} MB
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => bulkFileInputRef.current?.click()}
+                              disabled={bulkUploading}
+                              className="px-3 py-1.5 rounded-xl bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 text-xs font-bold hover:bg-primary-200 dark:hover:bg-primary-700 transition flex items-center gap-1 cursor-pointer disabled:opacity-40"
+                            >
+                              <FaPlus className="w-3 h-3" /> Add More
+                            </button>
+                            <button
+                              type="button"
+                              onClick={clearAllBulkFiles}
+                              disabled={bulkUploading}
+                              className="px-3 py-1.5 rounded-xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-200 transition cursor-pointer disabled:opacity-40"
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Grid preview of selected images */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-60 overflow-y-auto p-2 rounded-2xl bg-primary-50/70 dark:bg-primary-950/50 border border-primary-200 dark:border-primary-800">
+                          {bulkPreviews.map((item, index) => (
+                            <div
+                              key={item.id}
+                              className="group relative rounded-xl overflow-hidden aspect-video bg-black border border-primary-200 dark:border-primary-700 flex flex-col justify-end"
+                            >
+                              <img
+                                src={item.previewUrl}
+                                alt={item.name}
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+                              <button
+                                type="button"
+                                onClick={() => removeBulkFile(index)}
+                                disabled={bulkUploading}
+                                className="absolute top-1.5 right-1.5 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition cursor-pointer shadow-sm z-10 disabled:opacity-40"
+                                title="Remove this image"
+                              >
+                                <FaTimes className="w-3 h-3" />
+                              </button>
+                              <div className="relative z-10 p-1.5">
+                                <p className="text-[10px] text-white font-semibold truncate leading-tight">
+                                  {item.name}
+                                </p>
+                                <span className="text-[9px] text-primary-300 font-mono">
+                                  {item.size} KB
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Batch Metadata Settings */}
+                  <div className="p-5 rounded-2xl bg-primary-50/70 dark:bg-primary-950/60 border border-primary-200/80 dark:border-primary-800 space-y-4">
+                    <label className="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300 block">
+                      Batch Details (Applied to all {bulkFiles.length} images)
+                    </label>
+
+                    {/* Naming strategy */}
+                    <div className="space-y-2">
+                      <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300">
+                        Title Naming Strategy:
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {[
+                          { id: "filename", label: "Use Filenames", desc: "e.g. photo-1" },
+                          { id: "numbered", label: "Title + Number", desc: "e.g. Match #1, #2" },
+                          { id: "same", label: "Same Title", desc: "e.g. Summer Cup" },
+                        ].map((mode) => (
+                          <button
+                            key={mode.id}
+                            type="button"
+                            onClick={() => setBulkForm({ ...bulkForm, titleMode: mode.id })}
+                            className={`p-2.5 rounded-xl border text-left transition cursor-pointer ${
+                              bulkForm.titleMode === mode.id
+                                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 font-bold"
+                                : "border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-900 text-primary-700 dark:text-primary-300"
+                            }`}
+                          >
+                            <span className="text-xs block font-bold">{mode.label}</span>
+                            <span className="text-[10px] text-primary-400 block">{mode.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mt-2 mb-1">
+                          Base Title / Event Prefix {bulkForm.titleMode !== "filename" && "*"}
+                        </label>
+                        <input
+                          type="text"
+                          value={bulkForm.titlePrefix}
+                          onChange={(e) => setBulkForm({ ...bulkForm, titlePrefix: e.target.value })}
+                          placeholder={
+                            bulkForm.titleMode === "filename"
+                              ? "Optional prefix (e.g. Summer Cup)"
+                              : "e.g. Arena Tournaments 2026"
+                          }
+                          required={bulkForm.titleMode !== "filename"}
+                          className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-sm text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Category & Theme */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                          Category *
+                        </label>
+                        <select
+                          value={bulkForm.category}
+                          onChange={(e) => setBulkForm({ ...bulkForm, category: e.target.value })}
+                          className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-bold text-primary-950 dark:text-white cursor-pointer"
+                        >
+                          {categoryValues.map((cat) => (
+                            <option key={cat} value={cat}>
+                              {cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                          Theme
+                        </label>
+                        <select
+                          value={bulkForm.theme}
+                          onChange={(e) => setBulkForm({ ...bulkForm, theme: e.target.value })}
+                          className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-bold text-primary-950 dark:text-white cursor-pointer"
+                        >
+                          <option value="">No theme</option>
+                          {themeValues.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Location & Tags */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                          Location (optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={bulkForm.location}
+                          onChange={(e) => setBulkForm({ ...bulkForm, location: e.target.value })}
+                          placeholder="e.g. Dome Pitch 1"
+                          className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                          Tags (comma-separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={bulkForm.tags}
+                          onChange={(e) => setBulkForm({ ...bulkForm, tags: e.target.value })}
+                          placeholder="action, finals, community"
+                          className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Visibility & Featured */}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-primary-700 dark:text-primary-300">
+                          Visibility:
+                        </label>
+                        <select
+                          value={bulkForm.visibility}
+                          onChange={(e) => setBulkForm({ ...bulkForm, visibility: e.target.value })}
+                          className="px-3 py-1.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-bold"
+                        >
+                          <option value="public">Public</option>
+                          <option value="private">Private</option>
+                        </select>
+                      </div>
+
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={bulkForm.featured}
+                          onChange={(e) => setBulkForm({ ...bulkForm, featured: e.target.checked })}
+                          className="w-4 h-4 rounded border-primary-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        />
+                        <span className="text-xs font-bold text-primary-800 dark:text-primary-200 flex items-center gap-1">
+                          <FaStar className="text-amber-400" /> Featured
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Bulk Progress Bar */}
+                  {bulkUploading && (
+                    <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-200">
+                        <span className="flex items-center gap-2">
+                          <FaSpinner className="animate-spin text-emerald-600" />
+                          Uploading {bulkProgress.current} of {bulkProgress.total}...
+                        </span>
+                        <span>{bulkProgress.percent}%</span>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-emerald-200 dark:bg-emerald-900 overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-600 rounded-full transition-all duration-300"
+                          style={{ width: `${bulkProgress.percent}%` }}
+                        />
+                      </div>
+                      {bulkProgress.filename && (
+                        <p className="text-[11px] text-emerald-700 dark:text-emerald-300 truncate font-mono">
+                          Current: {bulkProgress.filename}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-primary-100 dark:border-primary-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearAllBulkFiles();
+                        setShowUploadModal(false);
+                      }}
+                      disabled={bulkUploading}
+                      className="flex-1 py-3 rounded-2xl border border-primary-300 dark:border-primary-700 font-bold text-xs text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 transition disabled:opacity-40 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={bulkUploading || bulkFiles.length === 0}
+                      className="flex-1 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 transition disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      {bulkUploading ? (
+                        <>
+                          <FaSpinner className="animate-spin w-4 h-4" />
+                          <span>Uploading ({bulkProgress.current}/{bulkProgress.total})...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaLayerGroup className="w-4 h-4" />
+                          <span>Upload & Publish {bulkFiles.length} Images</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* ========================================================= */
+                /* SINGLE UPLOAD FORM                                        */
+                /* ========================================================= */
+                <form onSubmit={handleUploadSubmit} className="space-y-6">
                 {/* STEP 1: SELECT MEDIA TYPE (IMAGE vs VIDEO) */}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300 mb-2">
@@ -1776,13 +2464,14 @@ const MediaManagement = () => {
                   </button>
                 </div>
               </form>
+            )}
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* REDESIGNED EDIT MODAL                                    */}
+      {/* REDESIGNED EDIT MODAL WITH FILE REPLACEMENT & FALLBACKS   */}
       {/* ========================================================= */}
       <AnimatePresence>
         {showEditModal && currentMedia && (
@@ -1792,7 +2481,7 @@ const MediaManagement = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => {
-              if (!uploading) setShowEditModal(false);
+              if (!uploading) closeEditModal();
             }}
           >
             <motion.div
@@ -1802,20 +2491,19 @@ const MediaManagement = () => {
               exit={{ scale: 0.94, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-primary-100 dark:border-primary-800">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-4 mb-5 border-b border-primary-100 dark:border-primary-800">
                 <div>
                   <h3 className="text-2xl font-black text-primary-950 dark:text-white">
                     Edit Media Item
                   </h3>
                   <p className="text-xs text-primary-500 dark:text-primary-400 mt-0.5">
-                    Update media URL, YouTube link, thumbnail, category, or visibility.
+                    Update details, replace media files, or adjust metadata & visibility.
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (!uploading) setShowEditModal(false);
-                  }}
+                  onClick={closeEditModal}
                   disabled={uploading}
                   className="p-2 rounded-xl text-primary-400 hover:text-primary-700 dark:hover:text-white transition disabled:opacity-40 cursor-pointer"
                 >
@@ -1823,99 +2511,345 @@ const MediaManagement = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleEditSubmit} className="space-y-4">
-                {/* Media Type & Platform Info */}
-                <div className="p-4 rounded-2xl bg-primary-50 dark:bg-primary-950/60 border border-primary-200/80 dark:border-primary-800 flex items-center justify-between">
+              <form onSubmit={handleEditSubmit} className="space-y-5">
+                {/* Media Type & Platform Info Bar */}
+                <div className="p-3.5 rounded-2xl bg-primary-50 dark:bg-primary-950/60 border border-primary-200/80 dark:border-primary-800 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     {editForm.type === "image" ? (
-                      <span className="p-2 rounded-xl bg-emerald-500 text-white">
+                      <span className="p-2 rounded-xl bg-emerald-500 text-white shadow-sm">
                         <FaImage className="w-4 h-4" />
                       </span>
                     ) : editDetectedYouTubeId ? (
-                      <span className="p-2 rounded-xl bg-red-600 text-white">
+                      <span className="p-2 rounded-xl bg-red-600 text-white shadow-sm">
                         <FaYoutube className="w-4 h-4" />
                       </span>
                     ) : (
-                      <span className="p-2 rounded-xl bg-cyan-600 text-white">
+                      <span className="p-2 rounded-xl bg-cyan-600 text-white shadow-sm">
                         <FaVideo className="w-4 h-4" />
                       </span>
                     )}
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-primary-800 dark:text-primary-200">
+                      <span className="text-xs font-bold uppercase tracking-wider text-primary-800 dark:text-primary-200 block">
                         {editForm.type === "image"
                           ? "Image Item"
                           : editDetectedYouTubeId
                           ? "YouTube Video"
                           : "Direct Video File"}
                       </span>
-                      <p className="text-[11px] text-primary-500 font-mono line-clamp-1 max-w-xs">
-                        {editForm.url}
+                      <p className="text-[11px] text-primary-500 font-mono truncate max-w-xs">
+                        {editSelectedFile ? `New file: ${editSelectedFile.name}` : editForm.url}
                       </p>
                     </div>
                   </div>
-                </div>
-
-                {/* Media Source URL */}
-                <div>
-                  <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
-                    Source URL
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.url}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, url: e.target.value })
-                    }
-                    placeholder="https://..."
-                    className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-mono text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
-                  />
-                  {editDetectedYouTubeId && (
-                    <div className="mt-2 flex items-center gap-2 text-xs text-red-600 dark:text-red-400 font-semibold">
-                      <FaYoutube className="w-4 h-4" />
-                      <span>YouTube ID: {editDetectedYouTubeId}</span>
-                    </div>
+                  {currentMedia._id && (
+                    <span className="text-[10px] text-primary-400 font-mono bg-primary-200/50 dark:bg-primary-800/50 px-2 py-0.5 rounded-md">
+                      ID: {currentMedia._id.slice(-6)}
+                    </span>
                   )}
                 </div>
 
-                {/* Thumbnail / Cover Image */}
-                <div>
-                  <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
-                    Cover Thumbnail URL
+                {/* ========================================================= */}
+                {/* PREVIEW CONTAINER WITH REPLACEMENT STATUS & ERROR FALLBACK */}
+                {/* ========================================================= */}
+                <div className="space-y-3">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300">
+                    Media Preview & Replacement
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={editForm.thumbnail}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, thumbnail: e.target.value })
-                      }
-                      placeholder="https://..."
-                      className="flex-1 px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
-                    />
-                    {editDetectedYouTubeThumbnail && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setEditForm({
-                            ...editForm,
-                            thumbnail: editDetectedYouTubeThumbnail,
-                          })
-                        }
-                        className="px-3 py-2 bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs rounded-xl hover:bg-red-200 transition cursor-pointer"
-                      >
-                        Use YouTube Thumbnail
-                      </button>
+
+                  <div className="relative rounded-2xl overflow-hidden aspect-video max-h-56 bg-primary-950 border border-primary-300 dark:border-primary-700 flex items-center justify-center">
+                    {/* 1. New file preview if user picked one */}
+                    {editFilePreviewUrl ? (
+                      <>
+                        {editForm.type === "video" ? (
+                          <video
+                            src={editFilePreviewUrl}
+                            controls
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <img
+                            src={editFilePreviewUrl}
+                            alt="New replacement preview"
+                            className="w-full h-full object-contain"
+                          />
+                        )}
+                        <div className="absolute top-2 left-2 px-2.5 py-1 bg-emerald-600 text-white text-[11px] font-bold rounded-lg shadow-md flex items-center gap-1.5 z-10">
+                          <FaCheck className="w-3 h-3" /> New Replacement File Selected
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeEditFile}
+                          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition cursor-pointer shadow-md z-10"
+                          title="Cancel replacement file"
+                        >
+                          <FaTimes className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    ) : editImageError ? (
+                      /* 2. Error fallback when current URL failed to load */
+                      <div className="p-6 text-center text-primary-300 flex flex-col items-center justify-center max-w-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-2.5">
+                          <FaExclamationTriangle className="w-6 h-6" />
+                        </div>
+                        <p className="text-xs font-bold text-amber-300">
+                          Current image preview unavailable
+                        </p>
+                        <p className="text-[11px] text-primary-400 font-mono truncate max-w-xs mt-0.5">
+                          {editForm.url || "No URL provided"}
+                        </p>
+                        <p className="text-xs text-primary-400 mt-2">
+                          The file was deleted or URL expired. Click "Replace Image File" below to upload a fresh image.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditImageMode("file");
+                            editFileInputRef.current?.click();
+                          }}
+                          className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white text-xs font-bold shadow cursor-pointer"
+                        >
+                          <FaCloudUploadAlt className="w-3.5 h-3.5" />
+                          <span>Replace Image Now</span>
+                        </button>
+                      </div>
+                    ) : editDetectedYouTubeId ? (
+                      /* 3. YouTube preview */
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <img
+                          src={
+                            editForm.thumbnail
+                              ? absoluteMediaSrc(editForm.thumbnail) || editForm.thumbnail
+                              : editDetectedYouTubeThumbnail
+                          }
+                          alt="YouTube Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <FaYoutube className="w-12 h-12 text-red-600 filter drop-shadow" />
+                        </div>
+                      </div>
+                    ) : editForm.url ? (
+                      /* 4. Normal image/video preview */
+                      editForm.type === "video" ? (
+                        <video
+                          src={absoluteMediaSrc(editForm.url) || editForm.url}
+                          controls
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <img
+                          src={absoluteMediaSrc(editForm.url) || editForm.url}
+                          alt={editForm.event || "Preview"}
+                          className="w-full h-full object-contain"
+                          onError={() => setEditImageError(true)}
+                        />
+                      )
+                    ) : (
+                      /* 5. Empty placeholder */
+                      <div className="text-primary-500 text-xs flex flex-col items-center">
+                        <FaImage className="w-8 h-8 mb-1" />
+                        <span>No media source provided</span>
+                      </div>
                     )}
                   </div>
-                  {editForm.thumbnail && (
-                    <div className="mt-2 rounded-xl overflow-hidden aspect-video max-h-36 bg-black w-48 border border-primary-200 dark:border-primary-700">
-                      <img
-                        src={absoluteMediaSrc(editForm.thumbnail) || editForm.thumbnail}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
+
+                  {/* Mode Selector for Editing Source: File vs URL */}
+                  {editForm.type === "image" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="inline-flex rounded-xl bg-primary-100 dark:bg-primary-800 p-1">
+                          <button
+                            type="button"
+                            onClick={() => setEditImageMode("file")}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+                              editImageMode === "file"
+                                ? "bg-white dark:bg-primary-900 text-primary-950 dark:text-white shadow-xs"
+                                : "text-primary-600 dark:text-primary-400"
+                            }`}
+                          >
+                            <FaCloudUploadAlt className="w-3.5 h-3.5 text-secondary-500" />
+                            <span>Replace Image File</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditImageMode("url")}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+                              editImageMode === "url"
+                                ? "bg-white dark:bg-primary-900 text-primary-950 dark:text-white shadow-xs"
+                                : "text-primary-600 dark:text-primary-400"
+                            }`}
+                          >
+                            <FaLink className="w-3.5 h-3.5" />
+                            <span>Edit Image URL</span>
+                          </button>
+                        </div>
+
+                        {editSelectedFile && (
+                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                            ✓ Replacement queued
+                          </span>
+                        )}
+                      </div>
+
+                      <input
+                        ref={editFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleEditFileChange}
+                        className="hidden"
+                        id="edit-image-file-input"
                       />
+
+                      {editImageMode === "file" ? (
+                        <div
+                          onClick={() => editFileInputRef.current?.click()}
+                          className="cursor-pointer border-2 border-dashed border-primary-300 dark:border-primary-700 hover:border-secondary-500 rounded-2xl p-5 text-center flex flex-col items-center justify-center transition bg-primary-50/50 dark:bg-primary-950/40"
+                        >
+                          <FaCloudUploadAlt className="w-8 h-8 text-secondary-500 mb-1.5" />
+                          <span className="font-bold text-xs text-primary-900 dark:text-primary-100">
+                            {editSelectedFile
+                              ? `Selected: ${editSelectedFile.name} (${(editSelectedFile.size / 1024).toFixed(0)} KB)`
+                              : "Click to choose a replacement image from your device"}
+                          </span>
+                          <span className="text-[11px] text-primary-400 mt-0.5">
+                            Supports PNG, JPG, WEBP, GIF, SVG (up to 20MB)
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          <input
+                            type="text"
+                            value={editForm.url}
+                            onChange={(e) => {
+                              setEditForm({ ...editForm, url: e.target.value });
+                              setEditImageError(false);
+                            }}
+                            placeholder="https://images.unsplash.com/... or /uploads/media/..."
+                            className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-mono text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  {/* Video URL or Replacement Controls */}
+                  {editForm.type === "video" && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                          Video Source URL (YouTube or Direct Video File)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={editForm.url}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, url: e.target.value })
+                            }
+                            placeholder="https://www.youtube.com/watch?v=... or /uploads/media/..."
+                            className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-mono text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
+                          />
+                          {editDetectedYouTubeId && (
+                            <FaYoutube className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 w-5 h-5 pointer-events-none" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Video File Replacement button if direct video */}
+                      <input
+                        ref={editFileInputRef}
+                        type="file"
+                        accept="video/mp4,video/webm,video/quicktime,video/x-m4v,video/ogg"
+                        onChange={handleEditFileChange}
+                        className="hidden"
+                      />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => editFileInputRef.current?.click()}
+                          className="px-3.5 py-2 bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 text-xs font-bold rounded-xl hover:bg-primary-200 dark:hover:bg-primary-700 transition flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <FaVideo className="w-3.5 h-3.5 text-secondary-500" />
+                          <span>Replace Video File from Device</span>
+                        </button>
+                        {editSelectedFile && (
+                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                            ✓ {editSelectedFile.name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Cover Thumbnail Section */}
+                  <div className="pt-2 border-t border-primary-100 dark:border-primary-800/80">
+                    <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
+                      Cover Thumbnail {editForm.type === "image" ? "(Optional, defaults to image)" : "(Required for video)"}
+                    </label>
+                    <input
+                      ref={editCoverInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleEditCoverFileChange}
+                      className="hidden"
+                    />
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editForm.thumbnail}
+                        onChange={(e) => {
+                          setEditForm({ ...editForm, thumbnail: e.target.value });
+                          setEditThumbnailError(false);
+                        }}
+                        placeholder="https://... or /uploads/media/..."
+                        className="flex-1 px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-mono text-primary-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => editCoverInputRef.current?.click()}
+                        className="px-3 py-2 bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 font-bold text-xs rounded-xl hover:bg-primary-200 transition cursor-pointer flex items-center gap-1 whitespace-nowrap"
+                        title="Upload cover image file"
+                      >
+                        <FaCloudUploadAlt className="w-3.5 h-3.5" />
+                        <span>Upload Cover</span>
+                      </button>
+                      {editDetectedYouTubeThumbnail && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditForm({
+                              ...editForm,
+                              thumbnail: editDetectedYouTubeThumbnail,
+                            })
+                          }
+                          className="px-3 py-2 bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs rounded-xl hover:bg-red-200 transition cursor-pointer whitespace-nowrap"
+                        >
+                          YouTube Thumb
+                        </button>
+                      )}
+                    </div>
+
+                    {editCoverPreviewUrl && (
+                      <div className="mt-2 relative rounded-xl overflow-hidden aspect-video max-h-32 bg-black w-44 border border-primary-300">
+                        <img
+                          src={editCoverPreviewUrl}
+                          alt="Cover Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded">
+                          New Cover
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeEditCoverFile}
+                          className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 cursor-pointer"
+                        >
+                          <FaTimes className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Event Name */}
@@ -1935,7 +2869,7 @@ const MediaManagement = () => {
                 </div>
 
                 {/* Category & Theme */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
                       Category *
@@ -1947,7 +2881,7 @@ const MediaManagement = () => {
                       }
                       className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-bold text-primary-950 dark:text-white cursor-pointer"
                     >
-                      {categoryValues.map((cat) => (
+                      {editCategoryOptions.map((cat) => (
                         <option key={cat} value={cat}>
                           {cat
                             .replace(/-/g, " ")
@@ -1969,7 +2903,7 @@ const MediaManagement = () => {
                       className="w-full px-4 py-2.5 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs font-bold text-primary-950 dark:text-white cursor-pointer"
                     >
                       <option value="">No theme</option>
-                      {themeValues.map((t) => (
+                      {editThemeOptions.map((t) => (
                         <option key={t} value={t}>
                           {t}
                         </option>
@@ -1978,8 +2912,8 @@ const MediaManagement = () => {
                   </div>
                 </div>
 
-                {/* Location & Tags */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Location & Duration */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
                       Location
@@ -1990,6 +2924,7 @@ const MediaManagement = () => {
                       onChange={(e) =>
                         setEditForm({ ...editForm, location: e.target.value })
                       }
+                      placeholder="e.g. Arena Dome"
                       className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
                     />
                   </div>
@@ -2003,11 +2938,13 @@ const MediaManagement = () => {
                       onChange={(e) =>
                         setEditForm({ ...editForm, duration: e.target.value })
                       }
+                      placeholder="e.g. 02:15"
                       className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
                     />
                   </div>
                 </div>
 
+                {/* Tags */}
                 <div>
                   <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
                     Tags (comma-separated)
@@ -2018,10 +2955,12 @@ const MediaManagement = () => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, tags: e.target.value })
                     }
+                    placeholder="action, tournament, players"
                     className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
                   />
                 </div>
 
+                {/* Description */}
                 <div>
                   <label className="block text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">
                     Description
@@ -2035,10 +2974,12 @@ const MediaManagement = () => {
                         description: e.target.value,
                       })
                     }
+                    placeholder="Short description or context..."
                     className="w-full px-4 py-2 rounded-xl border border-primary-300 dark:border-primary-700 bg-white dark:bg-primary-900 text-xs text-primary-950 dark:text-white"
                   />
                 </div>
 
+                {/* Visibility & Featured */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-2">
                     <label className="text-xs font-bold text-primary-700 dark:text-primary-300">
@@ -2077,27 +3018,31 @@ const MediaManagement = () => {
                   </label>
                 </div>
 
+                {/* Actions */}
                 <div className="flex items-center gap-3 pt-4 border-t border-primary-100 dark:border-primary-800">
                   <button
                     type="button"
-                    onClick={() => setShowEditModal(false)}
+                    onClick={closeEditModal}
                     disabled={uploading}
-                    className="flex-1 py-2.5 rounded-2xl border border-primary-300 dark:border-primary-700 font-bold text-xs text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 transition cursor-pointer"
+                    className="flex-1 py-3 rounded-2xl border border-primary-300 dark:border-primary-700 font-bold text-xs text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 transition cursor-pointer disabled:opacity-40"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={uploading}
-                    className="flex-1 py-2.5 rounded-2xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 py-3 rounded-2xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
                   >
                     {uploading ? (
                       <>
                         <FaSpinner className="animate-spin w-3.5 h-3.5" />
-                        <span>Saving...</span>
+                        <span>{uploadProgressText || "Saving Changes..."}</span>
                       </>
                     ) : (
-                      <span>Save Changes</span>
+                      <>
+                        <FaCheck className="w-3.5 h-3.5" />
+                        <span>Save Changes</span>
+                      </>
                     )}
                   </button>
                 </div>

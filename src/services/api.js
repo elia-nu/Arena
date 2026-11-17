@@ -807,6 +807,119 @@ export const mediaAPI = {
     return mediaAPI.uploadFile(file);
   },
 
+  bulkUploadFiles: async (files, metadata = {}, onProgress = null) => {
+    const token = getToken();
+
+    // First attempt: direct multipart bulk-upload endpoint
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach((file) => {
+        formData.append("files", file);
+      });
+      Object.keys(metadata).forEach((key) => {
+        if (metadata[key] !== undefined && metadata[key] !== null) {
+          formData.append(key, metadata[key]);
+        }
+      });
+
+      const response = await fetch(`${API_BASE_URL}/media/bulk-upload`, {
+        method: "POST",
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+      // If 404 or unsupported on server, gracefully fallback to per-file upload
+      if (response.status !== 404 && response.status !== 501) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || `Bulk upload failed: ${response.status}`);
+      }
+    } catch (err) {
+      if (!err.message?.includes("404") && !err.message?.includes("failed to fetch")) {
+        console.warn("Bulk upload direct endpoint unavailable, falling back to iterative upload:", err);
+      }
+    }
+
+    // Fallback: Upload each file individually with progress callback
+    const total = files.length;
+    const createdMedia = [];
+    const errors = [];
+
+    for (let i = 0; i < total; i++) {
+      const file = files[i];
+      if (onProgress) {
+        onProgress({
+          current: i + 1,
+          total,
+          percent: Math.round(((i + 1) / total) * 100),
+          filename: file.name,
+        });
+      }
+
+      try {
+        const uploadRes = await mediaAPI.uploadFile(file);
+        const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ");
+
+        let eventTitle = "";
+        const titleMode = metadata.titleMode || "filename";
+        const titlePrefix = (metadata.titlePrefix || "").trim();
+
+        if (titleMode === "numbered" && titlePrefix) {
+          eventTitle = `${titlePrefix} #${i + 1}`;
+        } else if (titleMode === "same" && titlePrefix) {
+          eventTitle = titlePrefix;
+        } else if (titlePrefix) {
+          eventTitle = `${titlePrefix} - ${cleanName}`;
+        } else {
+          eventTitle = cleanName || `Media Item ${i + 1}`;
+        }
+
+        const payload = {
+          type: "image",
+          url: uploadRes.url,
+          publicId: uploadRes.publicId || null,
+          thumbnail: uploadRes.url,
+          category: metadata.category || "events",
+          event: eventTitle,
+          location: metadata.location || "",
+          theme: metadata.theme || "",
+          tags: metadata.tags || [],
+          visibility: metadata.visibility || "public",
+          featured: Boolean(metadata.featured),
+          description: metadata.description || "",
+        };
+
+        const created = await mediaAPI.create(payload);
+        createdMedia.push(created.media || created);
+      } catch (fileErr) {
+        console.error(`Error uploading ${file.name}:`, fileErr);
+        errors.push({ file: file.name, error: fileErr.message });
+      }
+    }
+
+    if (createdMedia.length === 0 && errors.length > 0) {
+      throw new Error(`Failed to upload images: ${errors[0].error}`);
+    }
+
+    return {
+      message: `Uploaded ${createdMedia.length} of ${total} images`,
+      media: createdMedia,
+      count: createdMedia.length,
+      errors,
+    };
+  },
+
+  bulkCreate: async (items) => {
+    return apiRequest("/media/bulk", {
+      method: "POST",
+      body: JSON.stringify({ items }),
+    });
+  },
+
   create: async (mediaData) => {
     return apiRequest("/media", {
       method: "POST",

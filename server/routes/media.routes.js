@@ -577,6 +577,163 @@ router.post(
   },
 );
 
+// @route   POST /api/media/bulk-upload
+// @desc    Upload multiple media files (images or video clips) and publish them in bulk
+// @access  Admin only
+router.post(
+  "/bulk-upload",
+  protect,
+  adminOnly,
+  (req, res, next) => {
+    upload.array("files", 50)(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res
+            .status(400)
+            .json({ message: "One or more files are too large. Maximum size is 200MB." });
+        }
+        return res.status(400).json({ message: `Upload error: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ message: err.message || "File upload failed" });
+      }
+      next();
+    });
+  },
+  async (req, res) => {
+    try {
+      const files = req.files || [];
+      if (!files.length) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      const {
+        titlePrefix = "",
+        titleMode = "filename",
+        category = "events",
+        theme = "",
+        location = "",
+        tags = "",
+        visibility = "public",
+        featured = "false",
+        description = "",
+      } = req.body;
+
+      const parsedTags = Array.isArray(tags)
+        ? tags
+        : typeof tags === "string"
+        ? tags
+            .split(",")
+            .map((t) => t.trim().toLowerCase())
+            .filter(Boolean)
+        : [];
+
+      const isFeatured = featured === "true" || featured === true;
+      const createdItems = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const isVideo = file.mimetype.startsWith("video/");
+        let url = `/uploads/media/${file.filename}`;
+        let publicId = null;
+
+        if (isCloudinaryConfigured()) {
+          try {
+            const cloudResult = await uploadFileToCloudinary(file.path, {
+              resource_type: "auto",
+              folder: "arena",
+            });
+            fs.unlink(file.path, () => {});
+            url = cloudResult.secure_url;
+            publicId = cloudResult.public_id;
+          } catch (cloudError) {
+            console.error(
+              "Cloudinary upload failed for bulk item, using local disk:",
+              cloudError
+            );
+          }
+        }
+
+        // Title generation
+        let eventTitle = "";
+        const cleanName = path
+          .parse(file.originalname)
+          .name.replace(/[-_]+/g, " ")
+          .trim();
+
+        if (titleMode === "numbered" && titlePrefix.trim()) {
+          eventTitle = `${titlePrefix.trim()} #${i + 1}`;
+        } else if (titleMode === "same" && titlePrefix.trim()) {
+          eventTitle = titlePrefix.trim();
+        } else if (titlePrefix.trim()) {
+          eventTitle = `${titlePrefix.trim()} - ${cleanName}`;
+        } else {
+          eventTitle = cleanName || `Media Item ${i + 1}`;
+        }
+
+        const newMedia = new Media({
+          type: isVideo ? "video" : "image",
+          platform: isVideo ? "direct" : null,
+          url,
+          publicId,
+          thumbnail: isVideo ? null : url,
+          category: category || "events",
+          event: eventTitle,
+          location: (location || "").trim(),
+          theme: (theme || "").trim(),
+          tags: parsedTags,
+          visibility: visibility || "public",
+          featured: isFeatured,
+          description: (description || "").trim(),
+          uploadedBy: req.user._id,
+        });
+
+        await newMedia.save();
+        createdItems.push(newMedia);
+      }
+
+      res.status(201).json({
+        message: `Successfully uploaded ${createdItems.length} media items`,
+        media: createdItems,
+        count: createdItems.length,
+      });
+    } catch (error) {
+      console.error("Error bulk uploading media:", error);
+      res
+        .status(500)
+        .json({ message: "Error uploading media in bulk", error: error.message });
+    }
+  }
+);
+
+// @route   POST /api/media/bulk
+// @desc    Create multiple media items in batch
+// @access  Admin only
+router.post("/bulk", protect, adminOnly, async (req, res) => {
+  try {
+    const { items } = req.body;
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Items array is required" });
+    }
+
+    const docs = items.map((item) => ({
+      ...item,
+      uploadedBy: req.user._id,
+    }));
+
+    const result = await Media.insertMany(docs);
+    res.status(201).json({
+      message: `Successfully created ${result.length} media items`,
+      media: result,
+      count: result.length,
+    });
+  } catch (error) {
+    console.error("Error bulk creating media:", error);
+    res
+      .status(500)
+      .json({ message: "Error bulk creating media", error: error.message });
+  }
+});
+
 // @route   POST /api/media
 // @desc    Create new media item
 // @access  Admin only
