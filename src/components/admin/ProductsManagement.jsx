@@ -3,14 +3,11 @@ import { motion } from "framer-motion";
 import { shopAPI, mediaAPI } from "../../services/api";
 import { useNotification } from "../NotificationProvider";
 import Pagination from "./Pagination";
-
-const PRODUCT_IMAGE_BASE = "https://api.arenaia.com";
+import { absoluteMediaSrc } from "../../utils/mediaUtils";
 
 const resolveProductImageUrl = (url) => {
-  if (!url || typeof url !== "string") return url;
-  if (url.startsWith("http") || url.startsWith("data:")) return url;
-  if (url.startsWith("/")) return `${PRODUCT_IMAGE_BASE}${url}`;
-  return url;
+  if (!url || typeof url !== "string") return "";
+  return absoluteMediaSrc(url);
 };
 import {
   IoAdd,
@@ -498,7 +495,11 @@ const ProductsManagement = () => {
                             "/placeholder-product.jpg"
                           }
                           alt={product.name}
-                          className="w-12 h-12 object-cover border border-primary-200"
+                          className="w-12 h-12 object-cover rounded-lg border border-primary-200 bg-primary-100 flex-shrink-0"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/placeholder-product.jpg";
+                          }}
                         />
                         <div>
                           <div className="flex items-center gap-2">

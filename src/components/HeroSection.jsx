@@ -327,7 +327,7 @@ const HeroSection = () => {
     >
       <section className="relative w-full min-h-screen flex flex-col justify-between bg-[#0e0f12] text-neutral-200 overflow-hidden selection:bg-secondary-500 selection:text-white">
         {/* Layer 0: GridMotion Kinetic Grid */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-60">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
           <GridMotion
             items={GRID_MOTION_ITEMS}
             rows={5}
@@ -339,9 +339,9 @@ const HeroSection = () => {
             speed={18}
             direction="alternate"
             parallax={0.3}
-            spotlight={0.65}
-            dim={0.25}
-            fade={0.45}
+            spotlight={0.6}
+            dim={0.35}
+            fade={0.55}
             theme="dark"
             tileColor="#131215"
             textColor="#fe5723"
@@ -349,9 +349,9 @@ const HeroSection = () => {
         </div>
 
         {/* Layer 1: Contrast Vignette Backdrops */}
-        <div className="absolute inset-0 z-[1] pointer-events-none bg-black/40">
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/85 via-black/40 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+        <div className="absolute inset-0 z-[1] pointer-events-none bg-black/55">
+          <div className="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-black/90 via-black/60 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/95 via-black/65 to-transparent" />
         </div>
 
         {/* Layer 2: Pitch Markings */}

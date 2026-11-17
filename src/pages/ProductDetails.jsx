@@ -289,6 +289,10 @@ const ProductDetails = () => {
                   src={mainImage}
                   alt={product.name}
                   className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/placeholder-product.jpg";
+                  }}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
@@ -351,6 +355,10 @@ const ProductDetails = () => {
                       src={image}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/placeholder-product.jpg";
+                      }}
                     />
                   </button>
                 ))}

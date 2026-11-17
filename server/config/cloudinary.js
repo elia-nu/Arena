@@ -6,10 +6,22 @@ import { v2 as cloudinary } from "cloudinary";
  */
 export const configureCloudinary = () => {
   if (process.env.CLOUDINARY_URL) {
-    cloudinary.config({
-      cloudinary_url: process.env.CLOUDINARY_URL,
-    });
-    return true;
+    try {
+      const match = process.env.CLOUDINARY_URL.match(
+        /^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/
+      );
+      if (match) {
+        cloudinary.config({
+          api_key: match[1],
+          api_secret: match[2],
+          cloud_name: match[3],
+          secure: true,
+        });
+        return true;
+      }
+    } catch (e) {
+      console.error("Failed to parse CLOUDINARY_URL:", e);
+    }
   }
 
   if (

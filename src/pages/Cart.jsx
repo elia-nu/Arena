@@ -476,6 +476,10 @@ const Cart = () => {
                           }
                           alt={item.name}
                           className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/placeholder-product.jpg";
+                          }}
                         />
                       </Link>
 

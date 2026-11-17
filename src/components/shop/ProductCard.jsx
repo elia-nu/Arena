@@ -52,6 +52,10 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
             src={imageSrc}
             alt={product.name}
             className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder-product.jpg";
+            }}
           />
 
           {hasDiscount && (
@@ -163,6 +167,10 @@ const ProductCard = ({ product, onAddToCart, viewMode = "grid" }) => {
             src={imageSrc}
             alt={product.name}
             className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/placeholder-product.jpg";
+            }}
           />
 
           {hasDiscount && (

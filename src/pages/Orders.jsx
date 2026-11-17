@@ -224,6 +224,10 @@ const Orders = () => {
                         src={absoluteMediaSrc(item.image) || "/placeholder-product.jpg"}
                         alt={item.name}
                         className="w-20 h-20 object-cover border border-primary-200"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/placeholder-product.jpg";
+                        }}
                       />
                       <div className="flex-1">
                         <h4 className="text-sm font-medium text-primary-950 mb-1">
